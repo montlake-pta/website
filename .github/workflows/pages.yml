@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: "17 * * * *"
+  repository_dispatch:
+    types:
+      - wix-content-updated
   workflow_dispatch:
 
 permissions:
@@ -13,10 +18,11 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
+    if: github.event_name != 'schedule' || vars.WIX_SYNC_ENABLED == 'true'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -24,8 +30,26 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Sync content from Wix
+        if: vars.WIX_SYNC_ENABLED == 'true'
+        env:
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
+          WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
+        run: npm run sync:wix
+      - name: Report snapshot mode
+        if: vars.WIX_SYNC_ENABLED != 'true'
+        run: echo "::notice::Wix sync is not enabled; building the checked-in content snapshot."
       - name: Build site
         run: npm run build
+      - name: Check generated site
+        run: npm test
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site

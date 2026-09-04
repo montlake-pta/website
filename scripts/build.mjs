@@ -1,10 +1,13 @@
-import { cp, mkdir, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pages, site } from "../src/site.mjs";
+import { mergeWixContent } from "./render-wix-content.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
+const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
+const renderedPages = mergeWixContent(pages, wixContent);
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
@@ -12,9 +15,9 @@ await cp(join(root, "src", "assets"), join(output, "assets"), { recursive: true 
 await cp(join(root, "src", "styles.css"), join(output, "styles.css"));
 await cp(join(root, "src", "site.js"), join(output, "site.js"));
 
-for (const page of pages) {
+for (const page of renderedPages) {
   const pageDirectory = page.slug ? join(output, page.slug) : output;
-  const base = page.slug ? "../" : "./";
+  const base = page.slug ? "../".repeat(page.slug.split("/").length) : "./";
   await mkdir(pageDirectory, { recursive: true });
   await writeFile(join(pageDirectory, "index.html"), renderPage(page, base));
 }
@@ -23,7 +26,7 @@ await writeFile(join(output, "404.html"), renderNotFound());
 await writeFile(join(output, "robots.txt"), "User-agent: *\nAllow: /\nSitemap: https://montlake-pta.github.io/website/sitemap.xml\n");
 await writeFile(join(output, "sitemap.xml"), renderSitemap());
 
-console.log(`Built ${pages.length} pages in dist/`);
+console.log(`Built ${renderedPages.length} pages in dist/ using ${wixContent.source} content`);
 
 function renderPage(page, base) {
   const canonicalPath = page.slug ? `${page.slug}/` : "";
@@ -49,7 +52,7 @@ function renderPage(page, base) {
     <link rel="icon" href="${base}assets/mark.png">
     <link rel="stylesheet" href="${base}styles.css">
     <script src="${base}site.js" defer></script>
-    <title>${page.title} | ${site.name}</title>
+    <title>${escapeAttribute(page.title)} | ${escapeAttribute(site.name)}</title>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -183,9 +186,9 @@ function renderContentPage(page) {
   return `
       <section class="page-hero ${page.accent || ""}">
         <div>
-          <p class="eyebrow">${page.kicker || "Montlake PTA"}</p>
-          <h1>${page.heading || page.title}</h1>
-          <p>${page.description}</p>
+          <p class="eyebrow">${escapeAttribute(page.kicker || "Montlake PTA")}</p>
+          <h1>${escapeAttribute(page.heading || page.title)}</h1>
+          <p>${escapeAttribute(page.description)}</p>
         </div>
       </section>
       <div class="content-layout">
@@ -248,7 +251,7 @@ function renderNotFound() {
 }
 
 function renderSitemap() {
-  const urls = pages
+  const urls = renderedPages
     .map((page) => `  <url><loc>${site.previewUrl}${page.slug ? `${page.slug}/` : ""}</loc></url>`)
     .join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;

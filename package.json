@@ -4,7 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "bootstrap:wix": "node scripts/bootstrap-wix-snapshot.mjs",
     "build": "node scripts/build.mjs",
+    "setup:wix-cms": "node scripts/setup-wix-cms.mjs",
+    "sync:wix": "node scripts/sync-wix.mjs",
     "test": "node scripts/check-site.mjs"
+  },
+  "dependencies": {
+    "@wix/blog": "^1.0.647",
+    "@wix/data": "^1.0.512",
+    "@wix/events": "^1.0.862",
+    "@wix/sdk": "^1.21.16",
+    "@wix/stores": "^1.0.890",
+    "sanitize-html": "^2.17.7"
   }
 }

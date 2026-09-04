@@ -1,0 +1,15 @@
+export const boardMembers = [
+  { schoolYear: "2026–27", role: "Co-Presidents", names: "Kari Frame and Cailyn Spurrell", email: "president@montlakepta.org", displayOrder: 1, active: true },
+  { schoolYear: "2026–27", role: "Vice President", names: "Harold Pratt", email: "president@montlakepta.org", displayOrder: 2, active: true },
+  { schoolYear: "2026–27", role: "Secretary", names: "Andrea Gimse", email: "secretary@montlakepta.org", displayOrder: 3, active: true },
+  { schoolYear: "2026–27", role: "Co-Treasurers", names: "Liana Bowlin and Avery Caldwell", email: "treasurer@montlakepta.org", displayOrder: 4, active: true },
+  { schoolYear: "2026–27", role: "Communications", names: "Ashley Kavanaugh and Lana Stojcic", email: "communications@montlakepta.org", displayOrder: 5, active: true },
+  { schoolYear: "2026–27", role: "Advocacy", names: "Kelsey Miller", email: "advocacy@montlakepta.org", displayOrder: 6, active: true },
+  { schoolYear: "2026–27", role: "Fundraising", names: "Kelsey Miller and Ewa Sack", email: "fundraising@montlakepta.org", displayOrder: 7, active: true },
+  { schoolYear: "2026–27", role: "Volunteers", names: "Alicia Romano", email: "volunteer@montlakepta.org", displayOrder: 8, active: true },
+  { schoolYear: "2026–27", role: "Outreach", names: "Britt Burritt", email: "outreach@montlakepta.org", displayOrder: 9, active: true },
+  { schoolYear: "2026–27", role: "Events", names: "Megan McGiffin", email: "events@montlakepta.org", displayOrder: 10, active: true },
+  { schoolYear: "2026–27", role: "Special Education, Diversity & Inclusion", names: "Ana Dueñas", email: "sped@montlakepta.org", displayOrder: 11, active: true },
+  { schoolYear: "2026–27", role: "BLT Representatives", names: "Tom Burritt and Ben Vaught", email: "blt@montlakepta.org", displayOrder: 12, active: true },
+  { schoolYear: "2026–27", role: "After-School Enrichment", names: "Diana Bitenas", email: "enrichment@montlakepta.org", displayOrder: 13, active: true },
+];

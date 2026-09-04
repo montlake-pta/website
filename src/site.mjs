@@ -5,12 +5,14 @@ export const site = {
   membershipUrl: "https://montlakepta.givebacks.com/store",
   donateUrl: "https://www.paypal.com/donate/?hosted_button_id=L86AXUQZC74VN",
   navigation: [
-    { label: "Home", slug: "" },
     { label: "New families", slug: "welcome-new-families" },
     { label: "Calendar", slug: "calendar" },
+    { label: "Events", slug: "event-list" },
     { label: "Enrichment", slug: "enrichment" },
+    { label: "News", slug: "blog" },
     { label: "Advocacy", slug: "advocacy" },
-    { label: "About", slug: "pta-board" },
+    { label: "PTA Board", slug: "pta-board" },
+    { label: "Shop", slug: "shop" },
     { label: "Join", slug: "join" },
   ],
 };
@@ -98,6 +100,17 @@ export const pages = [
       <p><a class="button button-primary" href="../calendar/">Open the live calendar</a></p>
       <h2>Help make an event happen</h2>
       <p>Most PTA events are powered by family volunteers. If you have an idea or can offer time, supplies, or professional skills, email <a href="mailto:events@montlakepta.org">events@montlakepta.org</a>.</p>`,
+  },
+  {
+    slug: "shop",
+    title: "Shop",
+    heading: "Seasonal fundraisers and school creations.",
+    kicker: "Montlake PTA shop",
+    description: "Browse current and recent PTA products managed by the school community.",
+    accent: "yellow",
+    content: `
+      <p class="lead">The PTA shop changes throughout the year.</p>
+      <div class="callout">There are no products listed right now. Check the weekly newsletter for new seasonal fundraisers.</div>`,
   },
   {
     slug: "enrichment",
