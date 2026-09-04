@@ -36,7 +36,7 @@ for (const page of renderedPages) {
   }
 }
 
-for (const asset of ["styles.css", "site.js", "assets/mark.png", "assets/school.jpg", "sitemap.xml", "404.html"]) {
+for (const asset of ["styles.css", "site.js", "assets/mark.png", "assets/school.jpg", "assets/community.jpg", "sitemap.xml", "404.html"]) {
   try {
     await access(join(output, asset));
   } catch {
@@ -81,6 +81,10 @@ if (emptyStore.some((page) => page.slug === "post/null")) failures.push("A slugl
 if (emptyStore.find((page) => page.slug === "blog")?.content.includes("../post//")) {
   failures.push("A slugless post created a broken blog index link");
 }
+
+const blogHtml = await readFile(join(output, "blog", "index.html"), "utf8");
+if (blogHtml.includes('class="page-outline"')) failures.push("Blog card titles were incorrectly added to an on-page outline");
+if (blogHtml.includes("&amp;amp;")) failures.push("Generated content contains double-escaped entities");
 
 if (failures.length) {
   console.error(failures.join("\n"));

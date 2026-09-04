@@ -1,0 +1,411 @@
+{
+  "schemaVersion": 2,
+  "title": "Design System: Montlake Field Guide",
+  "frontmatter": {
+    "name": "Montlake PTA",
+    "description": "A warm, practical field guide for the Montlake Elementary community.",
+    "colors": {
+      "wolf-ink": "#111842",
+      "montlake-navy": "#111b52",
+      "midnight-navy": "#070d31",
+      "school-blue": "#86c9ec",
+      "lake-blue": "#176b9a",
+      "mist-blue": "#dcecf6",
+      "paper": "#fbfcff",
+      "warm-field": "#f1f4f8",
+      "silver": "#d6dbe3",
+      "silver-soft": "#eff0f3",
+      "brick": "#a94737",
+      "brick-soft": "#fae9e4",
+      "body-muted": "#53617b",
+      "footer-muted": "#b9c3d7",
+      "footer-subtle": "#8795b3"
+    },
+    "typography": {
+      "scale": {
+        "micro": "0.7rem",
+        "meta": "0.8rem",
+        "small": "0.85rem",
+        "nav": "0.9rem",
+        "utility": "0.92rem",
+        "body": "1rem",
+        "body-large": "1.05rem",
+        "supporting": "1.1rem",
+        "lede-small": "1.2rem",
+        "title-small": "1.25rem",
+        "lede": "1.3rem",
+        "subsection": "1.35rem",
+        "brand": "1.45rem",
+        "lead": "1.5rem",
+        "card-title": "1.55rem",
+        "arrow": "1.75rem",
+        "aside-title": "1.8rem",
+        "section-small": "2rem",
+        "display-compact": "2.4rem",
+        "statistic": "2.5rem",
+        "display-small": "2.6rem",
+        "display-mobile": "2.8rem",
+        "display-base": "3rem",
+        "display-subsection": "3.1rem",
+        "display-hero": "3.2rem",
+        "display-large": "4rem",
+        "display-mobile-large": "4.2rem",
+        "display-section": "4.7rem",
+        "display-mission": "4.8rem",
+        "display-page": "5rem",
+        "display-max": "5.9rem"
+      },
+      "display": {
+        "fontFamily": "Literata, Georgia, serif",
+        "fontSize": "clamp(3rem, 6vw, 5.9rem)",
+        "fontWeight": 600,
+        "lineHeight": 1.05,
+        "letterSpacing": "-0.035em"
+      },
+      "headline": {
+        "fontFamily": "Literata, Georgia, serif",
+        "fontSize": "clamp(2rem, 3.5vw, 4.7rem)",
+        "fontWeight": 600,
+        "lineHeight": 1.05,
+        "letterSpacing": "-0.035em"
+      },
+      "body": {
+        "fontFamily": "Atkinson Hyperlegible Next, Segoe UI, sans-serif",
+        "fontSize": "1rem",
+        "fontWeight": 400,
+        "lineHeight": 1.6
+      },
+      "label": {
+        "fontFamily": "Atkinson Hyperlegible Next, Segoe UI, sans-serif",
+        "fontSize": "0.8rem",
+        "fontWeight": 700,
+        "lineHeight": 1.2
+      }
+    },
+    "rounded": {
+      "control": "999px",
+      "surface": "1rem",
+      "image": "1.25rem",
+      "feature": "1.5rem"
+    },
+    "spacing": {
+      "xs": "0.5rem",
+      "sm": "0.75rem",
+      "md": "1rem",
+      "lg": "1.5rem",
+      "xl": "2rem",
+      "section": "clamp(4.5rem, 8vw, 7rem)"
+    },
+    "components": {
+      "button-primary": {
+        "backgroundColor": "{colors.montlake-navy}",
+        "textColor": "{colors.paper}",
+        "rounded": "{rounded.control}",
+        "padding": "0.7rem 1.25rem",
+        "height": "48px"
+      },
+      "callout": {
+        "backgroundColor": "{colors.mist-blue}",
+        "textColor": "{colors.wolf-ink}",
+        "rounded": "{rounded.surface}",
+        "padding": "1.5rem 1.75rem"
+      }
+    }
+  },
+  "overview": {
+    "subtitle": null,
+    "creativeNorthStar": "The Montlake Field Guide",
+    "philosophy": [
+      "The site combines the confidence of the Montlake wolf mark with the warmth and clarity of a well-used neighborhood guide. It should feel authored by people who know the school and understand that visitors are often looking for one answer quickly. Utility leads; community character follows.",
+      "The visual system uses the wolf logo as an anchor rather than a costume. Deep navy carries structure, school blue marks routes and interaction, cool silver supports quiet surfaces, and warm paper prevents the experience from feeling institutional. Brick appears sparingly to create contrast and human warmth."
+    ],
+    "keyCharacteristics": [
+      "practical navigation before promotional storytelling;",
+      "literary but highly legible typography;",
+      "open reading surfaces with restrained containers;",
+      "circular linework and badge-derived details rather than generic decoration;",
+      "community photography that shows real people and programs."
+    ]
+  },
+  "colors": {
+    "subtitle": null,
+    "description": "The palette is school-aligned, high-contrast, and mostly neutral by area.",
+    "groups": [
+      {
+        "role": "Primary",
+        "colors": [
+          {
+            "name": "Montlake Navy",
+            "value": "#111b52",
+            "valueRange": null,
+            "format": "hex",
+            "description": "primary buttons, structural surfaces, and identity-bearing sections."
+          },
+          {
+            "name": "Midnight Navy",
+            "value": "#070d31",
+            "valueRange": null,
+            "format": "hex",
+            "description": "announcement bar and footer."
+          },
+          {
+            "name": "Wolf Ink",
+            "value": "#111842",
+            "valueRange": null,
+            "format": "hex",
+            "description": "body text and headings."
+          }
+        ]
+      },
+      {
+        "role": "Secondary",
+        "colors": [
+          {
+            "name": "School Blue",
+            "value": "#86c9ec",
+            "valueRange": null,
+            "format": "hex",
+            "description": "badge-derived highlights and quiet visual geometry."
+          },
+          {
+            "name": "Lake Blue",
+            "value": "#176b9a",
+            "valueRange": null,
+            "format": "hex",
+            "description": "links, utility icons, and interactive emphasis."
+          }
+        ]
+      },
+      {
+        "role": "Tertiary",
+        "colors": [
+          {
+            "name": "Community Brick",
+            "value": "#a94737",
+            "valueRange": null,
+            "format": "hex",
+            "description": "rare emphasis, hover states, and human warmth."
+          },
+          {
+            "name": "Brick Wash",
+            "value": "#fae9e4",
+            "valueRange": null,
+            "format": "hex",
+            "description": "a quiet page-heading tint for community and event pages."
+          }
+        ]
+      },
+      {
+        "role": "Neutral",
+        "colors": [
+          {
+            "name": "Cool Paper",
+            "value": "#fbfcff",
+            "valueRange": null,
+            "format": "hex",
+            "description": "primary reading surface."
+          },
+          {
+            "name": "School Field",
+            "value": "#f1f4f8",
+            "valueRange": null,
+            "format": "hex",
+            "description": "supporting content surface."
+          },
+          {
+            "name": "Wolf Silver",
+            "value": "#d6dbe3",
+            "valueRange": null,
+            "format": "hex",
+            "description": "neutral brand reference."
+          },
+          {
+            "name": "Silver Mist",
+            "value": "#eff0f3",
+            "valueRange": null,
+            "format": "hex",
+            "description": "utility and secondary surfaces."
+          },
+          {
+            "name": "Body Muted",
+            "value": "#53617b",
+            "valueRange": null,
+            "format": "hex",
+            "description": "secondary text on light backgrounds."
+          },
+          {
+            "name": "Footer Muted",
+            "value": "#b9c3d7",
+            "valueRange": null,
+            "format": "hex",
+            "description": "supporting text on Midnight Navy."
+          },
+          {
+            "name": "Footer Subtle",
+            "value": "#8795b3",
+            "valueRange": null,
+            "format": "hex",
+            "description": "legal and tertiary footer text."
+          }
+        ]
+      }
+    ],
+    "rules": [
+      {
+        "name": "The 80/15/5 Rule",
+        "body": "Warm neutrals occupy most of a page, navy provides\nstructure, and saturated blue or brick stays rare enough to retain meaning."
+      }
+    ]
+  },
+  "typography": {
+    "subtitle": null,
+    "fonts": {
+      "display": {
+        "family": "Literata",
+        "fallback": "Georgia fallback"
+      },
+      "body": {
+        "family": "Atkinson Hyperlegible Next",
+        "fallback": "Segoe UI fallback"
+      }
+    },
+    "character": "Literata brings a bookish, public-school voice without becoming precious. Atkinson Hyperlegible Next keeps dates, contacts, and instructions easy to distinguish during quick scans.",
+    "hierarchy": [
+      {
+        "name": "Display",
+        "specs": [
+          "600",
+          "up to `5.9rem`",
+          "`1.05`"
+        ],
+        "purpose": "homepage and page-level statements."
+      },
+      {
+        "name": "Headline",
+        "specs": [
+          "600",
+          "fluid `2rem–4.7rem`",
+          "`1.05`"
+        ],
+        "purpose": "major section boundaries."
+      },
+      {
+        "name": "Title",
+        "specs": [
+          "600",
+          "`1.35rem–2.4rem`"
+        ],
+        "purpose": "cards, utility routes, and subsections."
+      },
+      {
+        "name": "Body",
+        "specs": [
+          "400",
+          "`1rem`",
+          "`1.6`"
+        ],
+        "purpose": "reading copy with a maximum measure of `68ch`."
+      },
+      {
+        "name": "Label",
+        "specs": [
+          "700",
+          "minimum `0.8rem`"
+        ],
+        "purpose": "metadata and compact utility text."
+      }
+    ],
+    "rules": [
+      {
+        "name": "The Functional Floor Rule",
+        "body": "Text that helps a person navigate or act never\ndrops below `0.8rem`."
+      }
+    ]
+  },
+  "layout": {
+    "subtitle": null,
+    "description": "The site uses a centered `1180px` maximum container with generous section spacing. The homepage begins with a compact operational link rail, then a two-column community-led hero. Repeated parent tasks use open rows and dividers instead of equal-weight cards. Content pages are Read surfaces: a clear page heading, optional “On this page” navigation for long documents, a `68ch` reading measure, and a single help aside. Mobile order always matches document and keyboard order.",
+    "rules": []
+  },
+  "elevation": {
+    "subtitle": null,
+    "description": "The system is flat by default. Borders, background tone, and spacing establish most hierarchy. A single soft ambient shadow is reserved for the hero image and floating navigation menu, where elevation clarifies layering. **The Flat-by-Default Rule.** If spacing and tone can establish the relationship, do not add another card or shadow.",
+    "rules": [
+      {
+        "name": "The Flat-by-Default Rule",
+        "body": "If spacing and tone can establish the relationship,\ndo not add another card or shadow."
+      }
+    ],
+    "shadows": []
+  },
+  "shapes": {
+    "subtitle": null,
+    "description": "Rounded rectangles support approachable controls and content surfaces. Pill shapes are reserved for buttons. Circular linework references the wolf badge in large identity moments; it is not repeated on every component.",
+    "rules": []
+  },
+  "components": {
+    "subtitle": null,
+    "components": [
+      {
+        "name": "Buttons",
+        "description": "both light and dark surfaces.",
+        "properties": {
+          "shape": "pill (`999px`) with a `48px` minimum height."
+        },
+        "variants": [
+          {
+            "name": "Primary",
+            "description": "Montlake Navy with Warm Paper text."
+          },
+          {
+            "name": "Hover",
+            "description": "Community Brick with white text."
+          },
+          {
+            "name": "Focus",
+            "description": "two-tone Warm Paper and Midnight Navy ring that remains visible on both light and dark surfaces."
+          },
+          {
+            "name": "Secondary",
+            "description": "transparent with a navy border."
+          }
+        ]
+      },
+      {
+        "name": "Utility Links",
+        "description": "Compact icon-and-label routes use authored outline SVGs, visible secondary text, and borders rather than individual card shadows.",
+        "properties": {},
+        "variants": []
+      },
+      {
+        "name": "Cards and Lists",
+        "description": "Cards are used only for genuinely repeatable content such as posts and products. Operational choices and informational groups prefer rows, spacing, and dividers.",
+        "properties": {},
+        "variants": []
+      },
+      {
+        "name": "Callouts",
+        "description": "Callouts use Mist Blue, a subtle full border, and a `1rem` radius. Never use a thick colored side tab.",
+        "properties": {},
+        "variants": []
+      }
+    ]
+  },
+  "dosDonts": {
+    "dos": [
+      "Put calendar, newsletter, after-school, and attendance routes near the top.",
+      "Use real Montlake photography with accurate alt text.",
+      "Use dividers and proximity before adding containers.",
+      "Preserve generous reading measure and strong focus treatment.",
+      "Let the logo inform color and geometry subtly."
+    ],
+    "donts": [
+      "Reintroduce eyebrow labels above headings or decorative section numbers.",
+      "Use equal-size icon cards as default page scaffolding.",
+      "Use thick accent borders, side-tab callouts, or emoji as icons.",
+      "Make school blue the background of every section.",
+      "Reduce functional labels below `0.8rem`.",
+      "Let visual order differ from document or keyboard order on mobile."
+    ]
+  }
+}

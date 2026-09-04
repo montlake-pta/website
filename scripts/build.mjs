@@ -58,8 +58,8 @@ function renderPage(page, base) {
     <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="site-header">
       <div class="announcement">
-        <p>Every child. One voice.</p>
-        <a href="${site.newsletterUrl}">Get weekly school updates <span aria-hidden="true">→</span></a>
+        <p>School hours: 7:55 AM–2:25 PM · Wednesday dismissal: 1:10 PM</p>
+        <a href="${site.newsletterUrl}">Tuesday newsletter <span aria-hidden="true">→</span></a>
       </div>
       <div class="nav-shell">
         <a class="brand" href="${base}" aria-label="${site.name} home">
@@ -76,6 +76,7 @@ function renderPage(page, base) {
         </nav>
       </div>
     </header>
+    ${renderDailyTools(base)}
     <main id="main-content">
       ${page.home ? renderHome(base) : renderContentPage(page)}
     </main>
@@ -89,8 +90,7 @@ function renderHome(base) {
   return `
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Montlake Elementary · Seattle</p>
-          <h1>Rooted in community.<br><em>Growing every child.</em></h1>
+          <h1>Rooted in Montlake.<br><em>Growing every child.</em></h1>
           <p class="hero-lede">We bring families, educators, and neighbors together to help every Montlake student learn, belong, and thrive.</p>
           <div class="button-row">
             <a class="button button-primary" href="${base}welcome-new-families/">Start here, new families</a>
@@ -99,62 +99,53 @@ function renderHome(base) {
         </div>
         <div class="hero-visual">
           <div class="hero-image">
-            <img src="${base}assets/school.jpg" alt="A Montlake student beside artwork at the elementary school construction site" width="2016" height="1512">
+            <img src="${base}assets/community.jpg" alt="Montlake Elementary teachers and staff gathered together" width="1800" height="1350">
           </div>
-          <div class="hero-note">
-            <span class="scribble" aria-hidden="true">✦</span>
-            <p><strong>Small school,<br>big community.</strong></p>
-          </div>
+          <p class="hero-caption">The people who make Montlake a place to learn and belong.</p>
         </div>
       </section>
 
       <section class="quick-actions" aria-labelledby="quick-actions-title">
         <div class="section-heading">
-          <p class="eyebrow">Find it fast</p>
           <h2 id="quick-actions-title">What do you need today?</h2>
+          <p>Direct routes to the information families use most.</p>
         </div>
-        <div class="action-grid">
-          <a class="action-card coral" href="${base}calendar/">
-            <span class="card-number">01</span>
-            <h3>School calendar</h3>
-            <p>Dates, meetings, and community events in one place.</p>
-            <span class="card-link">See what’s happening →</span>
+        <div class="action-list">
+          <a class="action-item" href="${base}calendar/">
+            <div><h3>School calendar</h3><p>Dates, meetings, and community events in one place.</p></div>
+            <span aria-hidden="true">→</span>
           </a>
-          <a class="action-card yellow" href="${base}enrichment/">
-            <span class="card-number">02</span>
-            <h3>After-school enrichment</h3>
-            <p>Classes, pickup details, scholarships, and contacts.</p>
-            <span class="card-link">Explore programs →</span>
+          <a class="action-item" href="${base}enrichment/">
+            <div><h3>After-school enrichment</h3><p>Classes, pickup details, scholarships, and contacts.</p></div>
+            <span aria-hidden="true">→</span>
           </a>
-          <a class="action-card blue" href="${base}welcome-new-families/">
-            <span class="card-number">03</span>
-            <h3>New family guide</h3>
-            <p>Bell times, childcare, Kindergarten, and key accounts.</p>
-            <span class="card-link">Get oriented →</span>
+          <a class="action-item" href="${base}welcome-new-families/">
+            <div><h3>New family guide</h3><p>Bell times, childcare, Kindergarten, and key accounts.</p></div>
+            <span aria-hidden="true">→</span>
           </a>
         </div>
       </section>
 
       <section class="mission-section">
-        <div class="mission-intro">
-          <p class="eyebrow light">Why we’re here</p>
-          <h2>More than a fundraiser.<br>We’re a <em>community builder.</em></h2>
-        </div>
-        <div class="mission-copy">
-          <p>Montlake PTA is an association of parents, caregivers, community members, and school staff working together for our students.</p>
-          <ul class="mission-list">
-            <li><span>Voice</span> Advocate for every child</li>
-            <li><span>Resource</span> Connect families and schools</li>
-            <li><span>Belonging</span> Build a welcoming community</li>
-          </ul>
-          <a class="text-link light" href="${base}advocacy/">How we advocate <span aria-hidden="true">→</span></a>
+        <div class="mission-shell">
+          <div class="mission-intro">
+            <h2>More than a fundraiser. A community that <em>shows up.</em></h2>
+          </div>
+          <div class="mission-copy">
+            <p>Montlake PTA is an association of parents, caregivers, community members, and school staff working together for our students.</p>
+            <ul class="mission-list">
+              <li><span>Voice</span> Advocate for every child</li>
+              <li><span>Resource</span> Connect families and schools</li>
+              <li><span>Belonging</span> Build a welcoming community</li>
+            </ul>
+            <a class="text-link light" href="${base}advocacy/">How we advocate <span aria-hidden="true">→</span></a>
+          </div>
         </div>
       </section>
 
       <section class="impact-section">
         <div class="section-heading split-heading">
           <div>
-            <p class="eyebrow">Your support at work</p>
             <h2>Stronger school.<br>Richer experiences.</h2>
           </div>
           <p>PTA funding supports staffing, student programs, community events, classroom supplies, scholarships, and equipment.</p>
@@ -169,7 +160,6 @@ function renderHome(base) {
 
       <section class="join-band">
         <div>
-          <p class="eyebrow">There’s a place for you</p>
           <h2>Show up in the way that works for your family.</h2>
         </div>
         <div>
@@ -183,21 +173,21 @@ function renderHome(base) {
 }
 
 function renderContentPage(page) {
+  const prepared = prepareContent(page.content);
   return `
       <section class="page-hero ${page.accent || ""}">
         <div>
-          <p class="eyebrow">${escapeAttribute(page.kicker || "Montlake PTA")}</p>
           <h1>${escapeAttribute(page.heading || page.title)}</h1>
           <p>${escapeAttribute(page.description)}</p>
         </div>
       </section>
       <div class="content-layout">
         <article class="prose">
-          ${page.content}
+          ${prepared.outline}
+          ${prepared.content}
         </article>
         <aside class="page-aside">
           <div class="aside-card">
-            <p class="eyebrow">Need help?</p>
             <h2>We’re neighbors. Ask us.</h2>
             <p>Not sure where to start? The PTA can point you in the right direction.</p>
             <a class="text-link" href="mailto:askthepta@montlakepta.org">askthepta@montlakepta.org <span aria-hidden="true">→</span></a>
@@ -218,6 +208,13 @@ function renderFooter(base) {
           <p>Working together so every child can learn, belong, and thrive.</p>
         </div>
         <div>
+          <h2>Explore</h2>
+          <a href="${base}event-list/">Events</a>
+          <a href="${base}advocacy/">Advocacy</a>
+          <a href="${base}budget/">PTA budget</a>
+          <a href="${base}shop/">Seasonal shop</a>
+        </div>
+        <div>
           <h2>Connect</h2>
           <a href="${site.newsletterUrl}">Weekly newsletter</a>
           <a href="mailto:askthepta@montlakepta.org">Email the PTA</a>
@@ -235,6 +232,68 @@ function renderFooter(base) {
         <p>Built for our school community.</p>
       </div>
     </footer>`;
+}
+
+function renderDailyTools(base) {
+  return `
+    <nav class="daily-tools" aria-label="Frequently used school links">
+      <div>
+        <a href="${base}calendar/">${icon("calendar")}<span><strong>Calendar</strong><small>Dates & events</small></span></a>
+        <a href="${site.newsletterUrl}">${icon("newsletter")}<span><strong>Weekly update</strong><small>PTA newsletter</small></span></a>
+        <a href="${base}enrichment/">${icon("backpack")}<span><strong>After school</strong><small>Care & enrichment</small></span></a>
+        <a href="mailto:montlake.attendance@seattleschools.org">${icon("check")}<span><strong>Report absence</strong><small>Email attendance</small></span></a>
+      </div>
+    </nav>`;
+}
+
+function prepareContent(content) {
+  if (content.includes('class="content-grid"')) return { content, outline: "" };
+
+  const headings = [];
+  const headingCounts = new Map();
+  const preparedContent = content.replace(/<h2>([\s\S]*?)<\/h2>/g, (_match, heading) => {
+    const label = decodeHtml(heading.replace(/<[^>]+>/g, "").trim());
+    const baseId = slugify(label);
+    const count = (headingCounts.get(baseId) || 0) + 1;
+    headingCounts.set(baseId, count);
+    const id = count === 1 ? baseId : `${baseId}-${count}`;
+    headings.push({ id, label });
+    return `<h2 id="${id}">${heading}</h2>`;
+  });
+  if (headings.length < 3) return { content: preparedContent, outline: "" };
+  const links = headings.map(({ id, label }) => `<a href="#${id}">${escapeAttribute(label)}</a>`).join("");
+  return {
+    content: preparedContent,
+    outline: `<nav class="page-outline" aria-label="On this page"><strong>On this page</strong><div>${links}</div></nav>`,
+  };
+}
+
+function icon(name) {
+  const paths = {
+    calendar: '<rect x="3.5" y="5.5" width="17" height="15" rx="2"/><path d="M7 3.5v4M17 3.5v4M3.5 10h17"/><path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>',
+    newsletter: '<path d="M4 5.5h16v13H4z"/><path d="m4 7 8 6 8-6"/><path d="m4 18 6-6M20 18l-6-6"/>',
+    backpack: '<path d="M7 8V6.5A5 5 0 0 1 12 2a5 5 0 0 1 5 4.5V8"/><rect x="5" y="7" width="14" height="15" rx="3"/><path d="M8 14h8M8 18h8M5 12H3v6h2M19 12h2v6h-2"/>',
+    check: '<path d="M5 4h14v17H5z"/><path d="M9 4V2.5h6V4M8.5 12l2.2 2.2 4.8-5"/>',
+  };
+  return `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${paths[name]}</svg>`;
+}
+
+function slugify(value) {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function decodeHtml(value) {
+  return value
+    .replaceAll("&amp;", "&")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">");
 }
 
 function renderNotFound() {

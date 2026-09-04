@@ -7,12 +7,9 @@ export const site = {
   navigation: [
     { label: "New families", slug: "welcome-new-families" },
     { label: "Calendar", slug: "calendar" },
-    { label: "Events", slug: "event-list" },
     { label: "Enrichment", slug: "enrichment" },
     { label: "News", slug: "blog" },
-    { label: "Advocacy", slug: "advocacy" },
     { label: "PTA Board", slug: "pta-board" },
-    { label: "Shop", slug: "shop" },
     { label: "Join", slug: "join" },
   ],
 };
