@@ -199,7 +199,6 @@ function renderContentPage(page) {
             <p>Not sure where to start? The PTA can point you in the right direction.</p>
             <a class="text-link" href="mailto:askthepta@montlakepta.org">askthepta@montlakepta.org <span aria-hidden="true">→</span></a>
           </div>
-          ${page.source ? `<p class="source-note">Content migrated from the <a href="${page.source}">current Wix page</a>.</p>` : ""}
         </aside>
       </div>`;
 }

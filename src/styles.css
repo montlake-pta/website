@@ -605,12 +605,6 @@ h2 em {
   font-size: 1.8rem;
 }
 
-.source-note {
-  margin-top: 1.25rem;
-  color: #566b67;
-  font-size: 0.75rem;
-}
-
 .site-footer {
   margin-top: 7rem;
   padding: 5rem max(1rem, calc((100% - var(--max)) / 2)) 1.5rem;

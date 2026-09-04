@@ -40,8 +40,8 @@ The redesign keeps the PTA's current operational tools in place:
 - 6crickets for enrichment registration
 - SchoolAuction.net for the seasonal auction
 
-The Wix site remains at `montlakepta.org` during the preview period. Its news
+The existing site remains at `montlakepta.org` during the preview period. Its news
 archive and historical event/store detail pages have not been moved because
-those Wix features require a separate content export or publishing workflow.
+those platform features require a separate content export or publishing workflow.
 Do not add a `CNAME` file or change DNS until that content and the desired
 domain cutover date are confirmed.

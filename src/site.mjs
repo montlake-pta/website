@@ -15,8 +15,6 @@ export const site = {
   ],
 };
 
-const source = (slug = "") => `https://www.montlakepta.org/${slug}`;
-
 export const pages = [
   {
     slug: "",
@@ -31,7 +29,6 @@ export const pages = [
     kicker: "Your family’s field guide",
     description: "The essential people, dates, programs, and links for a confident start at Montlake Elementary.",
     accent: "blue",
-    source: source("welcome-new-families"),
     content: `
       <p class="lead">We’re so glad you’re here. Montlake is a small neighborhood school known for academic excellence, garden and art programs, and an active, welcoming community.</p>
       <div class="callout"><strong>Have a new-family question?</strong> Email <a href="mailto:outreach@montlakepta.org?subject=New%20Family%20Question">outreach@montlakepta.org</a>. Incoming Kindergarten families can also <a href="https://forms.cloud.microsoft/r/Y9vi39Kxbq">register for Kindergarten Transition</a>.</div>
@@ -83,7 +80,6 @@ export const pages = [
     kicker: "Dates & events",
     description: "The live Montlake calendar for school dates, PTA meetings, and community events.",
     accent: "yellow",
-    source: source("calendar"),
     content: `
       <p class="lead">This calendar stays connected to the PTA’s existing Google Calendar, so updates appear here automatically.</p>
       <p><a class="button button-primary" href="https://calendar.google.com/calendar/ical/c_85551f0d8214f96fbf6bb14c67224de93550a0d69a65773fc3b80597196de3cb%40group.calendar.google.com/public/basic.ics">Add to your calendar</a></p>
@@ -96,7 +92,6 @@ export const pages = [
     kicker: "Community events",
     description: "Find upcoming Montlake Elementary and PTA events on the live community calendar.",
     accent: "coral",
-    source: source("event-list"),
     content: `
       <p class="lead">From family meetups and performances to fundraisers and community conversations, our events are a chance to connect beyond the school-day rush.</p>
       <div class="callout"><strong>Looking for the latest dates?</strong> Our rebuilt site uses the existing live Google Calendar so schedules stay in sync.</div>
@@ -111,7 +106,6 @@ export const pages = [
     kicker: "After-school programs",
     description: "Registration, scholarships, dismissal, and contact information for PTA after-school enrichment.",
     accent: "coral",
-    source: source("enrichment"),
     content: `
       <p class="lead">The PTA offers after-school classes each trimester, with options that often include art, baking, LEGO, theater, languages, and more.</p>
       <p><a class="button button-primary" href="https://www.6crickets.com/">View classes on 6crickets</a></p>
@@ -138,7 +132,6 @@ export const pages = [
     kicker: "Every voice matters",
     description: "Learn about policies affecting students and take practical action for strong, equitable public schools.",
     accent: "blue",
-    source: source("advocacy"),
     content: `
       <p class="lead">Montlake families have a powerful opportunity to understand the policies affecting students and advocate for leaders and solutions that help every child thrive.</p>
       <p>Questions, ideas, or ready to get involved? Email <a href="mailto:advocacy@montlakepta.org">advocacy@montlakepta.org</a>.</p>
@@ -177,7 +170,6 @@ export const pages = [
     kicker: "Membership",
     description: "Become a voting member and strengthen the network supporting Montlake students and families.",
     accent: "yellow",
-    source: source("join"),
     content: `
       <p class="lead">PTA membership builds a stronger Montlake community and gives you voting privileges on the annual budget and other key decisions.</p>
       <p>Membership is renewed each school year. When you join Montlake PTA, you also become part of Washington State PTA and National PTA—adding your voice to families advocating for children across the state and country.</p>
@@ -193,7 +185,6 @@ export const pages = [
     kicker: "Give to Montlake",
     description: "Make a one-time or recurring gift, request an employer match, or donate by check.",
     accent: "coral",
-    source: source("donate"),
     content: `
       <p class="lead">Your gift helps fund staffing, student programs, classroom needs, community events, scholarships, and equipment.</p>
       <p><a class="button button-primary" href="https://www.paypal.com/donate/?hosted_button_id=L86AXUQZC74VN">Donate securely online</a></p>
@@ -218,7 +209,6 @@ export const pages = [
     kicker: "Where funds go",
     description: "See how community fundraising supports staffing, student programs, events, supplies, and school equipment.",
     accent: "blue",
-    source: source("budget"),
     content: `
       <p class="lead">Each year, Montlake PTA raises funds from our community to support Montlake Elementary.</p>
       <h2>Staffing is the biggest investment</h2>
@@ -235,7 +225,6 @@ export const pages = [
     kicker: "About the PTA",
     description: "Connect with the 2026–27 Montlake PTA officers and committee leads.",
     accent: "yellow",
-    source: source("pta-board"),
     content: `
       <p class="lead">The PTA board coordinates fundraising, programs, events, advocacy, family outreach, and more. Reach out directly—we welcome your ideas and involvement.</p>
       <ul class="card-list">
@@ -263,7 +252,6 @@ export const pages = [
     kicker: "Support & inclusion",
     description: "Starting points for special education screening, district services, family guidance, and community support.",
     accent: "blue",
-    source: source("special-education"),
     content: `
       <p class="lead">Families who think their child may need special education services can contact <a href="https://www.seattleschools.org/departments/early-learning/child-find/">Child Find</a> for screening and next steps.</p>
       <h2>Seattle Public Schools resources</h2>
@@ -283,7 +271,6 @@ export const pages = [
     kicker: "Annual fundraiser",
     description: "The spring auction supports essential staffing, student programs, scholarships, and community-building events.",
     accent: "coral",
-    source: source("spring-auction"),
     content: `
       <p class="lead">Our spring auction brings the community together around experiences, local businesses, and a shared goal: strong support for Montlake students.</p>
       <p><a class="button button-primary" href="https://montlakepta.schoolauction.net/2026auction/catalog">Browse the 2026 auction catalog</a></p>
@@ -299,7 +286,6 @@ export const pages = [
     kicker: "Annual giving",
     description: "Give online, request an employer match, use payroll deduction, or contribute by check.",
     accent: "yellow",
-    source: source("fall-fundraiser-2025"),
     content: `
       <p class="lead">The fall fundraiser gives the PTA a strong foundation for staffing support, programs, and community needs throughout the year.</p>
       <p><a class="button button-primary" href="https://www.paypal.com/donate/?hosted_button_id=L86AXUQZC74VN">Give online</a></p>
@@ -320,10 +306,9 @@ export const pages = [
     kicker: "Celebrate our staff",
     description: "Volunteer, contribute, and help recognize the teachers and staff who make Montlake special.",
     accent: "coral",
-    source: source("appreciation"),
     content: `
       <p class="lead">Staff Appreciation Week is our chance to make every teacher and staff member feel seen, supported, and celebrated.</p>
-      <p>The latest Wix campaign listed May 5–9 and invited families to provide items, volunteer, and write personal accolades.</p>
+      <p>The annual campaign invites families to provide items, volunteer, and write personal accolades.</p>
       <div class="button-row">
         <a class="button button-primary" href="https://montlake.classroomparent.com/events/23142/volunteering">View volunteer signup</a>
         <a class="button button-secondary" href="https://48144b22-8a8f-491b-b2a1-7edf8a0c71b8.usrfiles.com/ugd/48144b_a8b207a88da44774acefc01a083fa5eb.pdf">Read the accolade guide</a>
@@ -337,7 +322,6 @@ export const pages = [
     kicker: "Seasonal fundraiser",
     description: "Order holiday evergreens and help with the annual pickup event supporting Montlake Elementary.",
     accent: "blue",
-    source: source("evergreens"),
     content: `
       <p class="lead">The annual evergreens sale is a community tradition and seasonal fundraiser for Montlake Elementary.</p>
       <p><a class="button button-primary" href="https://www.signupgenius.com/go/10C044DAAAF2AA4FCCF8-60124101-montlake">Volunteer for pickup</a></p>
@@ -350,10 +334,9 @@ export const pages = [
     kicker: "PTA news",
     description: "School news, family resources, program announcements, meeting information, and community stories.",
     accent: "yellow",
-    source: source("blog"),
     content: `
-      <p class="lead">The news archive is still managed in Wix during this migration. Current and historical posts remain available there while the new publishing workflow is completed.</p>
-      <p><a class="button button-primary" href="https://www.montlakepta.org/blog">Open the current news archive</a></p>
+      <p class="lead">Current and historical school news remains available in the news archive while a new publishing workflow is completed.</p>
+      <p><a class="button button-primary" href="https://www.montlakepta.org/blog">Open the news archive</a></p>
       <h2>Never miss an update</h2>
       <p>The weekly newsletter is the fastest way to receive school leadership notes, specialist updates, event reminders, and PTA announcements.</p>
       <p><a href="https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp">Subscribe to the Tuesday newsletter</a>.</p>`,
@@ -377,7 +360,6 @@ export const pages = [
     kicker: "What we support",
     description: "Explore the programs, services, and community work supported by Montlake PTA.",
     accent: "blue",
-    source: source("challenges"),
     content: `
       <p class="lead">PTA support reaches across the school day and beyond—from staffing and classroom needs to enrichment, advocacy, access, and community connection.</p>
       <ul class="card-list">
