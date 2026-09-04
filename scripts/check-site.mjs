@@ -90,6 +90,7 @@ if (blogHtml.includes('class="page-outline"')) failures.push("Blog card titles w
 if (blogHtml.includes("&amp;amp;")) failures.push("Generated content contains double-escaped entities");
 
 const homeHtml = await readFile(join(output, "index.html"), "utf8");
+if (!homeHtml.includes('class="nav-give" href="./donate/"')) failures.push("Primary navigation Donate action does not link to the landing page");
 if (!homeHtml.includes('class="freshness-section"')) failures.push("Homepage is missing the Wix-backed freshness section");
 if (wixContent.blogPosts.length && !homeHtml.includes('href="./post/')) {
   failures.push("Homepage is not linking to the latest Wix blog posts");

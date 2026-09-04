@@ -74,7 +74,7 @@ function renderPage(page, base) {
         </button>
         <nav id="site-navigation" class="site-navigation" aria-label="Main navigation">
           ${nav}
-          <a class="nav-give" href="${site.donateUrl}">Donate</a>
+          <a class="nav-give" href="${base}donate/">Donate</a>
         </nav>
       </div>
     </header>
