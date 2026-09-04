@@ -24,6 +24,7 @@ body:
         - Wix Events
         - Wix Stores
         - Wix CMS collection
+        - Constant Contact newsletter archive
         - GitHub Actions or repository settings
         - Unsure
     validations:

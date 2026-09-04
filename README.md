@@ -14,6 +14,8 @@ source.
 - Shared page templates and metadata: `scripts/build.mjs`
 - Wix content snapshot: `src/data/wix-content.json`
 - Wix integration settings: `src/wix.config.json`
+- Newsletter archive snapshot: `src/data/newsletters.json`
+- Newsletter archive settings: `src/newsletter.config.json`
 - Product and audience guidance: `PRODUCT.md`
 - Visual system and design rules: `DESIGN.md`
 
@@ -115,6 +117,32 @@ records in Wix CMS and each site build will pull them automatically.
 `npm run bootstrap:wix` refreshes the checked-in public snapshot. It is intended
 only for initial migration or disaster recovery; normal deployments use the
 authenticated SDK sync.
+
+## Newsletter archive
+
+The `/newsletter/` page uses Constant Contact's public Email Archive feed, so it
+does not require OAuth or an API secret. It displays the newest archived
+campaign by default, generates a stable page for every archived edition, and
+keeps signup calls to action above and below the current issue.
+
+In Constant Contact, open **Campaigns → Settings → Email Archive**, enable the
+archive, select the campaigns to publish, and copy the widget code. Find the
+public value in `data-m="..."`, then configure it as a repository variable:
+
+```sh
+gh variable set CONSTANT_CONTACT_ARCHIVE_ID --body '<data-m value>' --repo montlake-pta/website
+gh workflow run pages.yml --repo montlake-pta/website
+```
+
+The hourly Pages workflow requests:
+
+```text
+https://campaignlp.constantcontact.com/v1/archive/<data-m>/activities?limit=100
+```
+
+The response contains public campaign subjects and permanent URLs. The build
+embeds the selected campaign in a sandboxed iframe rather than injecting remote
+email HTML into the site.
 
 ## Existing services retained
 

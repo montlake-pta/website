@@ -8,6 +8,7 @@
     "build": "node scripts/build.mjs",
     "check:agents": "node scripts/check-agent-harness.mjs",
     "setup:wix-cms": "node scripts/setup-wix-cms.mjs",
+    "sync:newsletters": "node scripts/sync-newsletters.mjs",
     "sync:wix": "node scripts/sync-wix.mjs",
     "test": "node scripts/check-site.mjs"
   },

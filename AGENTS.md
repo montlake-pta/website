@@ -53,7 +53,10 @@ the documented `user-invocable: false` agent-profile override.
 | Wix-to-site data normalization | `scripts/sync-wix.mjs` |
 | Wix CMS creation and seed behavior | `scripts/setup-wix-cms.mjs` |
 | Dynamic page rendering and HTML sanitization | `scripts/render-wix-content.mjs` |
+| Public newsletter archive synchronization | `scripts/sync-newsletters.mjs` |
+| Newsletter latest/archive page generation | `scripts/render-newsletters.mjs` |
 | Offline/public migration snapshot | `src/data/wix-content.json` |
+| Offline newsletter snapshot | `src/data/newsletters.json` |
 | Deployment | `.github/workflows/pages.yml` |
 
 `dist/` is generated output. Never edit or commit it.
@@ -117,6 +120,19 @@ python3 -m http.server 4173 --directory dist
 - Sanitize CMS rich text with an explicit allowlist. Do not broaden the
   allowlist without a concrete content requirement and a security review.
 - Keep `src/data/wix-content.json` deterministic and free of credentials.
+
+### Newsletter integration
+
+- The Constant Contact archive feed is public and uses the archive widget's
+  non-secret `data-m` identifier; it does not require OAuth.
+- Accept campaign URLs only from `conta.cc` and
+  `myemail.constantcontact.com`.
+- Do not inject remote email HTML into the generated document. Render the public
+  campaign permalink in a sandboxed iframe and retain an explicit external link.
+- Preserve archive order because Constant Contact returns newest archived
+  campaigns first.
+- Keep `src/data/newsletters.json` deterministic and safe for public source
+  control.
 
 ### Design and accessibility
 

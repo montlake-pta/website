@@ -9,6 +9,7 @@ export const site = {
     { label: "Calendar", slug: "calendar" },
     { label: "Enrichment", slug: "enrichment" },
     { label: "News", slug: "blog" },
+    { label: "Newsletter", slug: "newsletter" },
     { label: "PTA Board", slug: "pta-board" },
     { label: "Join", slug: "join" },
   ],
@@ -71,6 +72,18 @@ export const pages = [
         <li><strong>Meals:</strong> manage funds with <a href="https://www.myschoolbucks.com/ver2/getmain?requestAction=home">MySchoolBucks</a> and review <a href="https://www.seattleschools.org/departments/culinary-services/">Culinary Services</a>.</li>
         <li><strong>Enrollment:</strong> begin at the <a href="https://www.seattleschools.org/enroll/">SPS enrollment site</a>. Families outside the attendance area should review <a href="https://www.seattleschools.org/enroll/find-your-school/school-choice/">School Choice</a>.</li>
       </ul>`,
+  },
+  {
+    slug: "newsletter",
+    title: "Newsletter",
+    heading: "The weekly Montlake newsletter.",
+    kicker: "Stay connected",
+    description: "Read the latest Tuesday newsletter, browse past editions, and sign up to receive future updates.",
+    accent: "blue",
+    disableOutline: true,
+    content: `
+      <p class="lead">The newsletter archive will appear here.</p>
+      <p><a class="button button-primary" href="https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp">Sign up for the newsletter</a></p>`,
   },
   {
     slug: "calendar",

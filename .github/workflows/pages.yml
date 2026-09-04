@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.event_name != 'schedule' || vars.WIX_SYNC_ENABLED == 'true'
+    if: github.event_name != 'schedule' || vars.WIX_SYNC_ENABLED == 'true' || vars.CONSTANT_CONTACT_ARCHIVE_ID != ''
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -43,6 +43,14 @@ jobs:
           WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
           WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
         run: npm run sync:wix
+      - name: Sync public newsletter archive
+        if: vars.CONSTANT_CONTACT_ARCHIVE_ID != ''
+        env:
+          CONSTANT_CONTACT_ARCHIVE_ID: ${{ vars.CONSTANT_CONTACT_ARCHIVE_ID }}
+        run: npm run sync:newsletters
+      - name: Report newsletter snapshot mode
+        if: vars.CONSTANT_CONTACT_ARCHIVE_ID == ''
+        run: echo "::notice::Constant Contact archive is not configured; building the checked-in newsletter snapshot."
       - name: Report snapshot mode
         if: vars.WIX_SYNC_ENABLED != 'true'
         run: echo "::notice::Wix sync is not enabled; building the checked-in content snapshot."

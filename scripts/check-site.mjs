@@ -3,12 +3,15 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pages } from "../src/site.mjs";
 import { mergeWixContent } from "./render-wix-content.mjs";
+import { mergeNewsletterContent } from "./render-newsletters.mjs";
+import { createNewsletterSnapshot } from "./sync-newsletters.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
 const failures = [];
 const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
-const renderedPages = mergeWixContent(pages, wixContent);
+const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
+const renderedPages = mergeNewsletterContent(mergeWixContent(pages, wixContent), newsletterContent, "https://example.com/signup");
 
 for (const page of renderedPages) {
   const file = join(output, page.slug, "index.html");
@@ -133,6 +136,64 @@ if (!freshHome.includes("Feb 2, 2099") || !freshHome.includes("Feb 3, 2099")) {
 }
 if (freshHome.includes("./event-details/past-event/")) failures.push("Fresh homepage feed included an expired event without an end date");
 if (!freshHome.includes("home-post-no-image")) failures.push("Image-free homepage posts do not use the single-column layout");
+
+const newsletterFixture = mergeNewsletterContent(pages, {
+  schemaVersion: 1,
+  source: "test",
+  syncedAt: "2099-01-02T00:00:00Z",
+  archiveId: "a07example",
+  editions: [
+    {
+      id: "newest",
+      slug: "weekly-newsletter-january-2-2099-newest",
+      title: "Weekly Newsletter January 2, 2099",
+      publishedAt: "2099-01-02T12:00:00Z",
+      campaignUrl: "https://conta.cc/example-new",
+      archiveOrder: 0,
+    },
+    {
+      id: "older",
+      slug: "weekly-newsletter-december-20-2098-older",
+      title: "Weekly Newsletter December 20, 2098",
+      publishedAt: "2098-12-20T12:00:00Z",
+      campaignUrl: "https://myemail.constantcontact.com/example-old",
+      archiveOrder: 1,
+    },
+  ],
+}, "https://example.com/signup");
+const newsletterLanding = newsletterFixture.find((page) => page.slug === "newsletter");
+if (!newsletterLanding?.content.includes("Weekly Newsletter January 2, 2099")) failures.push("Newsletter landing page does not default to the latest edition");
+if (!newsletterLanding?.content.includes("Sign up for the newsletter")) failures.push("Newsletter landing page is missing its signup CTA");
+if (!newsletterFixture.some((page) => page.slug === "newsletter/weekly-newsletter-december-20-2098-older")) {
+  failures.push("Newsletter archive did not generate a stable edition route");
+}
+
+const syncedNewsletter = await createNewsletterSnapshot({
+  archiveId: "a07test",
+  syncedAt: "2099-01-02T00:00:00Z",
+  fetchImpl: async (url, options = {}) => {
+    if (url.includes("campaignlp.constantcontact.com")) {
+      return {
+        ok: true,
+        json: async () => [{
+          subject: "Weekly Newsletter January 2, 2099",
+          campaignUrl: "https://conta.cc/example",
+        }],
+      };
+    }
+    if (options.method === "HEAD" && url === "https://conta.cc/example") {
+      return {
+        ok: true,
+        url: "https://myemail.constantcontact.com/weekly-newsletter.html?soid=example",
+      };
+    }
+    throw new Error(`Unexpected newsletter test request: ${url}`);
+  },
+});
+if (syncedNewsletter.editions.length !== 1) failures.push("Public newsletter sync did not normalize a non-empty archive");
+if (syncedNewsletter.editions[0]?.campaignUrl !== "https://myemail.constantcontact.com/weekly-newsletter.html?soid=example") {
+  failures.push("Public newsletter sync did not resolve and validate the final campaign URL");
+}
 
 if (failures.length) {
   console.error(failures.join("\n"));

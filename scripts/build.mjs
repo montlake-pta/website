@@ -3,11 +3,13 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pages, site } from "../src/site.mjs";
 import { mergeWixContent } from "./render-wix-content.mjs";
+import { mergeNewsletterContent } from "./render-newsletters.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
 const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
-const renderedPages = mergeWixContent(pages, wixContent);
+const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
+const renderedPages = mergeNewsletterContent(mergeWixContent(pages, wixContent), newsletterContent, site.newsletterUrl);
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
@@ -59,7 +61,7 @@ function renderPage(page, base) {
     <header class="site-header">
       <div class="announcement">
         <p>School hours: 7:55 AM–2:25 PM · Wednesday dismissal: 1:10 PM</p>
-        <a href="${site.newsletterUrl}">Tuesday newsletter <span aria-hidden="true">→</span></a>
+        <a href="${base}newsletter/">Tuesday newsletter <span aria-hidden="true">→</span></a>
       </div>
       <div class="nav-shell">
         <a class="brand" href="${base}" aria-label="${site.name} home">
@@ -191,7 +193,7 @@ function renderEmptyHomeFeed(base) {
 }
 
 function renderContentPage(page) {
-  const prepared = prepareContent(page.content);
+  const prepared = prepareContent(page.content, page.disableOutline);
   return `
       <section class="page-hero ${page.accent || ""}">
         <div>
@@ -234,7 +236,7 @@ function renderFooter(base) {
         </div>
         <div>
           <h2>Connect</h2>
-          <a href="${site.newsletterUrl}">Weekly newsletter</a>
+          <a href="${base}newsletter/">Weekly newsletter</a>
           <a href="mailto:askthepta@montlakepta.org">Email the PTA</a>
           <a href="https://www.facebook.com/montlakepta">Facebook</a>
           <a href="https://www.instagram.com/montlakepta">Instagram</a>
@@ -257,15 +259,15 @@ function renderDailyTools(base) {
     <nav class="daily-tools" aria-label="Frequently used school links">
       <div>
         <a href="${base}calendar/">${icon("calendar")}<span><strong>Calendar</strong><small>Dates & events</small></span></a>
-        <a href="${site.newsletterUrl}">${icon("newsletter")}<span><strong>Weekly update</strong><small>PTA newsletter</small></span></a>
+        <a href="${base}newsletter/">${icon("newsletter")}<span><strong>Weekly update</strong><small>PTA newsletter</small></span></a>
         <a href="${base}enrichment/">${icon("backpack")}<span><strong>After school</strong><small>Care & enrichment</small></span></a>
         <a href="mailto:montlake.attendance@seattleschools.org">${icon("check")}<span><strong>Report absence</strong><small>Email attendance</small></span></a>
       </div>
     </nav>`;
 }
 
-function prepareContent(content) {
-  if (content.includes('class="content-grid"')) return { content, outline: "" };
+function prepareContent(content, disableOutline = false) {
+  if (disableOutline || content.includes('class="content-grid"')) return { content, outline: "" };
 
   const headings = [];
   const headingCounts = new Map();

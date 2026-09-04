@@ -5,7 +5,8 @@ commands; search only when the request or current code reveals a gap.
 
 This is a Node.js 24, dependency-light static-site generator. Wix is the
 authoritative source for Blog, Events, Stores, `BoardMembers`, and
-`WebsitePages`; GitHub Actions builds static HTML for GitHub Pages.
+`WebsitePages`; Constant Contact's public archive is authoritative for
+newsletter editions; GitHub Actions builds static HTML for GitHub Pages.
 
 - Never edit or commit `dist/`.
 - Edit `src/site.mjs` for static fallback content and routes,

@@ -1,6 +1,6 @@
 ---
 description: 'Rules for generated pages, frontend behavior, accessibility, and the Montlake design system'
-applyTo: 'src/**/*.mjs,src/**/*.js,src/**/*.css,scripts/build.mjs,scripts/render-wix-content.mjs,scripts/check-site.mjs,PRODUCT.md,DESIGN.md'
+applyTo: 'src/**/*.mjs,src/**/*.js,src/**/*.css,scripts/build.mjs,scripts/render-wix-content.mjs,scripts/render-newsletters.mjs,scripts/check-site.mjs,PRODUCT.md,DESIGN.md'
 ---
 
 # Site source instructions
