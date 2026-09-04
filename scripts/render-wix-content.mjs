@@ -42,6 +42,7 @@ export function mergeWixContent(staticPages, content) {
   const storeCollections = content.storeCollections.filter(hasValidSlug);
   applyCmsPages(pageMap, content.cms.pages);
   applyBoardMembers(pageMap, content.cms.boardMembers);
+  applyHomeFeed(pageMap, blogPosts, events);
   applyBlogIndex(pageMap, blogPosts);
   applyEventsIndex(pageMap, events);
   addStoreIndex(pageMap, products);
@@ -59,6 +60,50 @@ export function mergeWixContent(staticPages, content) {
   }
 
   return [...pageMap.values()];
+}
+
+function applyHomeFeed(pageMap, posts, events) {
+  const home = pageMap.get("");
+  if (!home) return;
+
+  const now = Date.now();
+  const latestPosts = [...posts]
+    .sort((left, right) => dateValue(right.publishedAt) - dateValue(left.publishedAt))
+    .slice(0, 3);
+  const upcomingEvents = [...events]
+    .filter((event) => event.startAt && !isCanceled(event) && dateValue(event.endAt || event.startAt) >= now)
+    .sort((left, right) => dateValue(left.startAt) - dateValue(right.startAt))
+    .slice(0, 3);
+
+  home.homeFeed = `
+    <section class="freshness-section" aria-labelledby="freshness-title">
+      <div class="freshness-shell">
+        <div class="freshness-heading">
+          <h2 id="freshness-title">Right now at Montlake</h2>
+          <p>Upcoming community dates and the newest updates from the PTA.</p>
+        </div>
+        <div class="freshness-grid">
+          <section class="freshness-column" aria-labelledby="coming-up-title">
+            <div class="freshness-column-heading">
+              <h3 id="coming-up-title">Coming up</h3>
+              <a href="./event-list/">All events <span aria-hidden="true">→</span></a>
+            </div>
+            ${upcomingEvents.length
+              ? `<div class="home-event-list">${upcomingEvents.map(homeEvent).join("")}</div>`
+              : `<div class="freshness-empty"><p>No upcoming events are posted yet.</p><a href="./calendar/">Open the school calendar <span aria-hidden="true">→</span></a></div>`}
+          </section>
+          <section class="freshness-column" aria-labelledby="latest-updates-title">
+            <div class="freshness-column-heading">
+              <h3 id="latest-updates-title">Latest updates</h3>
+              <a href="./blog/">All news <span aria-hidden="true">→</span></a>
+            </div>
+            ${latestPosts.length
+              ? `<div class="home-post-list">${latestPosts.map(homePost).join("")}</div>`
+              : `<div class="freshness-empty"><p>No updates are posted yet.</p><a href="${escapeAttribute("https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp")}">Get the weekly newsletter <span aria-hidden="true">→</span></a></div>`}
+          </section>
+        </div>
+      </div>
+    </section>`;
 }
 
 function applyCmsPages(pageMap, pages) {
@@ -123,8 +168,8 @@ function applyEventsIndex(pageMap, events) {
   if (!events.length || !pageMap.has("event-list")) return;
   const now = Date.now();
   const sorted = [...events].sort((left, right) => dateValue(left.startAt) - dateValue(right.startAt));
-  const upcoming = sorted.filter((event) => !isCanceled(event) && (!event.endAt || dateValue(event.endAt) >= now));
-  const previous = sorted.filter((event) => isCanceled(event) || (event.endAt && dateValue(event.endAt) < now)).reverse().slice(0, 12);
+  const upcoming = sorted.filter((event) => !isCanceled(event) && dateValue(event.endAt || event.startAt) >= now);
+  const previous = sorted.filter((event) => isCanceled(event) || dateValue(event.endAt || event.startAt) < now).reverse().slice(0, 12);
 
   pageMap.get("event-list").content = `
     <p class="lead">From family meetups and performances to fundraisers and community conversations, events are a chance to connect beyond the school-day rush.</p>
@@ -216,6 +261,35 @@ function renderBoardCards(members) {
     </li>`).join("")}</ul>`;
 }
 
+function homeEvent(event) {
+  const date = dateParts(event.startAt);
+  return `
+    <article class="home-event">
+      <time datetime="${escapeAttribute(event.startAt)}">
+        <span>${escapeHtml(date.month)}</span>
+        <strong>${escapeHtml(date.day)}</strong>
+      </time>
+      <div>
+        <p>${escapeHtml(formatDateRange(event.startAt, event.endAt))}</p>
+        <h4><a href="./event-details/${event.slug}/">${escapeHtml(event.title)}</a></h4>
+        ${event.location ? `<span>${escapeHtml(event.location)}</span>` : ""}
+      </div>
+    </article>`;
+}
+
+function homePost(post) {
+  const hasImage = Boolean(post.image);
+  return `
+    <article class="home-post${hasImage ? "" : " home-post-no-image"}">
+      ${hasImage ? image(post.image, "", "home-post-image") : ""}
+      <div>
+        <p>${escapeHtml(formatDate(post.publishedAt))}</p>
+        <h4><a href="./post/${post.slug}/">${escapeHtml(post.title)}</a></h4>
+        <span>${escapeHtml(excerpt(post.excerpt || post.contentText, 130))}</span>
+      </div>
+    </article>`;
+}
+
 function eventCard(event) {
   return `
     <article class="content-card">
@@ -262,6 +336,18 @@ function formatDate(value) {
   return new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "America/Los_Angeles" }).format(date);
 }
 
+function dateParts(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.valueOf())) return { month: "", day: "" };
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: "America/Los_Angeles",
+  });
+  const parts = Object.fromEntries(formatter.formatToParts(date).map((part) => [part.type, part.value]));
+  return { month: parts.month || "", day: parts.day || "" };
+}
+
 function formatDateRange(start, end) {
   if (!start) return "";
   const startDate = new Date(start);
@@ -269,7 +355,29 @@ function formatDateRange(start, end) {
   const date = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "America/Los_Angeles" }).format(startDate);
   const time = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" });
   if (!end || Number.isNaN(new Date(end).valueOf())) return `${date} · ${time.format(startDate)}`;
-  return `${date} · ${time.format(startDate)}–${time.format(new Date(end))}`;
+  const endDate = new Date(end);
+  if (localDateKey(startDate) !== localDateKey(endDate)) {
+    const endLabel = new Intl.DateTimeFormat("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "America/Los_Angeles",
+    }).format(endDate);
+    return `${date}, ${time.format(startDate)}–${endLabel}, ${time.format(endDate)}`;
+  }
+  return `${date} · ${time.format(startDate)}–${time.format(endDate)}`;
+}
+
+function localDateKey(date) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "America/Los_Angeles",
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
 }
 
 function formatCurrency(value, currency = "USD") {

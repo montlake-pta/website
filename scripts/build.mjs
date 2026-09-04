@@ -78,7 +78,7 @@ function renderPage(page, base) {
     </header>
     ${renderDailyTools(base)}
     <main id="main-content">
-      ${page.home ? renderHome(base) : renderContentPage(page)}
+      ${page.home ? renderHome(page, base) : renderContentPage(page)}
     </main>
     ${renderFooter(base)}
   </body>
@@ -86,7 +86,7 @@ function renderPage(page, base) {
 `;
 }
 
-function renderHome(base) {
+function renderHome(page, base) {
   return `
       <section class="hero">
         <div class="hero-copy">
@@ -104,6 +104,8 @@ function renderHome(base) {
           <p class="hero-caption">The people who make Montlake a place to learn and belong.</p>
         </div>
       </section>
+
+      ${page.homeFeed || renderEmptyHomeFeed(base)}
 
       <section class="quick-actions" aria-labelledby="quick-actions-title">
         <div class="section-heading">
@@ -170,6 +172,22 @@ function renderHome(base) {
           </div>
         </div>
       </section>`;
+}
+
+function renderEmptyHomeFeed(base) {
+  return `
+    <section class="freshness-section" aria-labelledby="freshness-title">
+      <div class="freshness-shell">
+        <div class="freshness-heading">
+          <h2 id="freshness-title">Right now at Montlake</h2>
+          <p>Upcoming community dates and the newest updates from the PTA.</p>
+        </div>
+        <div class="freshness-empty">
+          <p>New events and updates will appear here as they are published.</p>
+          <a href="${base}calendar/">Open the school calendar <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>`;
 }
 
 function renderContentPage(page) {

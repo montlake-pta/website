@@ -75,6 +75,7 @@ a {
 h1,
 h2,
 h3,
+h4,
 p {
   margin-top: 0;
 }
@@ -378,6 +379,190 @@ h2 em {
   color: var(--muted);
   font-size: 0.85rem;
   text-align: right;
+}
+
+.freshness-section {
+  padding: 1rem;
+  background: var(--silver-soft);
+  border-block: 1px solid var(--line);
+}
+
+.freshness-shell {
+  width: min(100%, var(--max));
+  margin: auto;
+  padding-block: clamp(4rem, 7vw, 6rem);
+}
+
+.freshness-heading {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 3rem;
+  align-items: end;
+}
+
+.freshness-heading h2 {
+  max-width: 11ch;
+  margin-bottom: 0;
+  font-size: clamp(2.6rem, 5vw, 4.7rem);
+}
+
+.freshness-heading > p {
+  max-width: 34rem;
+  margin-bottom: 0.6rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.freshness-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  margin-top: 3rem;
+  border-top: 1px solid var(--line);
+}
+
+.freshness-column {
+  min-width: 0;
+  padding: 2rem 1rem 0;
+}
+
+.freshness-column:first-child {
+  padding-right: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.freshness-column + .freshness-column {
+  position: relative;
+  padding-left: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.freshness-column + .freshness-column::before {
+  position: absolute;
+  top: 2rem;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: var(--line);
+  content: "";
+}
+
+.freshness-column-heading {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.freshness-column-heading h3 {
+  margin: 0;
+  font-family: "Literata", Georgia, serif;
+  font-size: 1.55rem;
+}
+
+.freshness-column-heading a,
+.freshness-empty a {
+  color: var(--blue-strong);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+.home-event,
+.home-post {
+  display: grid;
+  padding-block: 1.25rem;
+  gap: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.home-event {
+  grid-template-columns: 4rem minmax(0, 1fr);
+}
+
+.home-event time {
+  display: flex;
+  width: 4rem;
+  height: 4.25rem;
+  flex-direction: column;
+  justify-content: center;
+  color: var(--forest-dark);
+  background: var(--blue-soft);
+  border-radius: 1rem;
+  text-align: center;
+  line-height: 1;
+}
+
+.home-event time span {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.home-event time strong {
+  margin-top: 0.25rem;
+  font-family: "Literata", Georgia, serif;
+  font-size: 1.55rem;
+}
+
+.home-event p,
+.home-post p {
+  margin-bottom: 0.35rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.home-event h4,
+.home-post h4 {
+  margin-bottom: 0.35rem;
+  font-family: "Literata", Georgia, serif;
+  font-size: 1.15rem;
+  line-height: 1.3;
+}
+
+.home-event h4 a,
+.home-post h4 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.home-event h4 a:hover,
+.home-post h4 a:hover {
+  color: var(--blue-strong);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.home-event div > span,
+.home-post div > span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.home-post {
+  grid-template-columns: 7rem minmax(0, 1fr);
+}
+
+.home-post-no-image {
+  grid-template-columns: 1fr;
+}
+
+.home-post-image {
+  width: 7rem;
+  height: 5.25rem;
+  border-radius: 0.75rem;
+  object-fit: cover;
+}
+
+.freshness-empty {
+  min-height: 9rem;
+  padding: 1.5rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+}
+
+.freshness-empty p {
+  margin-bottom: 0.75rem;
 }
 
 .quick-actions,
@@ -1017,6 +1202,33 @@ h2 em {
     border-top: 1px solid var(--line);
   }
 
+  .freshness-heading,
+  .freshness-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .freshness-heading {
+    gap: 1rem;
+  }
+
+  .freshness-heading h2 {
+    max-width: none;
+  }
+
+  .freshness-column:first-child {
+    padding-inline: 0;
+  }
+
+  .freshness-column + .freshness-column {
+    margin-top: 1rem;
+    padding-inline: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .freshness-column + .freshness-column::before {
+    display: none;
+  }
+
   .impact-grid article {
     padding: 2rem 0;
     border-right: 0;
@@ -1124,6 +1336,19 @@ h2 em {
   .content-grid,
   .event-facts {
     grid-template-columns: 1fr;
+  }
+
+  .home-post {
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+  }
+
+  .home-post-no-image {
+    grid-template-columns: 1fr;
+  }
+
+  .home-post-image {
+    width: 5.5rem;
+    height: 4.5rem;
   }
 
   .footer-main {

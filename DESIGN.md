@@ -27,6 +27,7 @@ typography:
     body: "1rem"
     body-large: "1.05rem"
     supporting: "1.1rem"
+    compact-title: "1.15rem"
     lede-small: "1.2rem"
     title-small: "1.25rem"
     lede: "1.3rem"
@@ -74,6 +75,7 @@ typography:
     lineHeight: 1.2
 rounded:
   control: "999px"
+  compact: "0.75rem"
   surface: "1rem"
   image: "1.25rem"
   feature: "1.5rem"
@@ -182,7 +184,8 @@ drops below `0.8rem`.
 
 The site uses a centered `1180px` maximum container with generous section
 spacing. The homepage begins with a compact operational link rail, then a
-two-column community-led hero. Repeated parent tasks use open rows and dividers
+two-column community-led hero and a live editorial module for upcoming events
+and current PTA updates. Repeated parent tasks use open rows and dividers
 instead of equal-weight cards.
 
 Content pages are Read surfaces: a clear page heading, optional “On this page”

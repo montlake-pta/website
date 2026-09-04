@@ -86,6 +86,54 @@ const blogHtml = await readFile(join(output, "blog", "index.html"), "utf8");
 if (blogHtml.includes('class="page-outline"')) failures.push("Blog card titles were incorrectly added to an on-page outline");
 if (blogHtml.includes("&amp;amp;")) failures.push("Generated content contains double-escaped entities");
 
+const homeHtml = await readFile(join(output, "index.html"), "utf8");
+if (!homeHtml.includes('class="freshness-section"')) failures.push("Homepage is missing the Wix-backed freshness section");
+if (wixContent.blogPosts.length && !homeHtml.includes('href="./post/')) {
+  failures.push("Homepage is not linking to the latest Wix blog posts");
+}
+if (!homeHtml.includes('href="./event-list/"')) failures.push("Homepage is missing the events archive link");
+
+const freshHome = mergeWixContent(pages, {
+  schemaVersion: 1,
+  source: "test",
+  blogPosts: [{
+    slug: "current-update",
+    title: "Current update",
+    excerpt: "Fresh school news",
+    publishedAt: "2099-01-01T12:00:00Z",
+  }],
+  events: [
+    {
+      slug: "future-event",
+      title: "Future event",
+      startAt: "2099-02-01T18:00:00Z",
+      endAt: null,
+    },
+    {
+      slug: "multi-day-event",
+      title: "Multi-day event",
+      startAt: "2099-02-02T18:00:00Z",
+      endAt: "2099-02-04T02:00:00Z",
+    },
+    {
+      slug: "past-event",
+      title: "Past event",
+      startAt: "2000-02-01T18:00:00Z",
+      endAt: null,
+    },
+  ],
+  products: [],
+  storeCollections: [],
+  cms: { boardMembers: [], pages: [] },
+}).find((page) => page.home)?.homeFeed || "";
+if (!freshHome.includes("./post/current-update/")) failures.push("Fresh homepage feed omitted a current blog post");
+if (!freshHome.includes("./event-details/future-event/")) failures.push("Fresh homepage feed omitted an upcoming event");
+if (!freshHome.includes("Feb 2, 2099") || !freshHome.includes("Feb 3, 2099")) {
+  failures.push("Fresh homepage feed did not show both dates for a multi-day event");
+}
+if (freshHome.includes("./event-details/past-event/")) failures.push("Fresh homepage feed included an expired event without an end date");
+if (!freshHome.includes("home-post-no-image")) failures.push("Image-free homepage posts do not use the single-column layout");
+
 if (failures.length) {
   console.error(failures.join("\n"));
   process.exit(1);
