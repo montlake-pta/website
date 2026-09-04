@@ -43,7 +43,7 @@ function renderPage(page, base) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="${escapeAttribute(page.description)}">
-    <meta name="theme-color" content="#174c43">
+    <meta name="theme-color" content="#111b52">
     <meta property="og:title" content="${escapeAttribute(page.title)} | ${site.name}">
     <meta property="og:description" content="${escapeAttribute(page.description)}">
     <meta property="og:type" content="website">

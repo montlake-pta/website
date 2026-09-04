@@ -1,14 +1,14 @@
 :root {
-  --ink: #16332e;
-  --forest: #174c43;
-  --forest-dark: #0c352e;
-  --cream: #f7f1e7;
-  --paper: #fffdf8;
-  --coral: #ed765f;
-  --yellow: #f3c851;
-  --blue: #94c8d4;
-  --line: rgba(22, 51, 46, 0.18);
-  --shadow: 0 18px 50px rgba(22, 51, 46, 0.12);
+  --ink: #111842;
+  --forest: #111b52;
+  --forest-dark: #070d31;
+  --cream: #edf2f7;
+  --paper: #fcfdff;
+  --coral: #2f92c9;
+  --yellow: #c9ced8;
+  --blue: #86c9ec;
+  --line: rgba(17, 24, 66, 0.18);
+  --shadow: 0 18px 50px rgba(7, 13, 49, 0.14);
   --radius: 1.5rem;
   --max: 1180px;
 }
@@ -172,7 +172,7 @@ h2 em {
 }
 
 .site-navigation .nav-give:hover {
-  color: white;
+  color: var(--forest-dark);
   background: var(--coral);
 }
 
@@ -239,6 +239,7 @@ h2 em {
 }
 
 .button-primary:hover {
+  color: var(--forest-dark);
   border-color: var(--coral);
   background: var(--coral);
 }
@@ -483,15 +484,15 @@ h2 em {
 }
 
 .page-hero.coral {
-  background: #f8d6ce;
+  background: #d7ebf7;
 }
 
 .page-hero.blue {
-  background: #d8edf1;
+  background: #c6e4f3;
 }
 
 .page-hero.yellow {
-  background: #f9e9a6;
+  background: #e4e7ed;
 }
 
 .page-hero > div {
@@ -540,7 +541,7 @@ h2 em {
 }
 
 .prose a:not(.button) {
-  color: #126b5d;
+  color: #176b9a;
   font-weight: 700;
   text-underline-offset: 0.2em;
 }
@@ -634,7 +635,7 @@ h2 em {
 
 .card-meta {
   margin-bottom: 0.65rem;
-  color: #566b67;
+  color: #53617b;
   font-size: 0.75rem !important;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -723,7 +724,7 @@ h2 em {
 .footer-brand > p {
   max-width: 350px;
   margin-top: 1.5rem;
-  color: #bad0ca;
+  color: #b9c3d7;
 }
 
 .footer-main h2 {
@@ -749,7 +750,7 @@ h2 em {
 
 .footer-main address {
   margin-bottom: 0.75rem;
-  color: #bad0ca;
+  color: #b9c3d7;
   font-style: normal;
 }
 
@@ -758,7 +759,7 @@ h2 em {
   justify-content: space-between;
   margin-top: 4rem;
   padding-top: 1.5rem;
-  color: #8eaaa3;
+  color: #8795b3;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
   font-size: 0.72rem;
 }
