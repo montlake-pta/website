@@ -14,6 +14,13 @@ source.
 - Shared page templates and metadata: `scripts/build.mjs`
 - Wix content snapshot: `src/data/wix-content.json`
 - Wix integration settings: `src/wix.config.json`
+- Product and audience guidance: `PRODUCT.md`
+- Visual system and design rules: `DESIGN.md`
+
+The repository includes the project-scoped Impeccable skill under
+`.github/skills/impeccable/`. In a new Copilot session, use `/impeccable` for
+design audits and refinements; its hook checks direct UI edits against the
+documented system.
 
 The generated `dist/` directory is intentionally ignored. GitHub Actions builds
 it when changes reach `main`.
