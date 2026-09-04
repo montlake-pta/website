@@ -22,6 +22,26 @@ The repository includes the project-scoped Impeccable skill under
 design audits and refinements; its hook checks direct UI edits against the
 documented system.
 
+## Agentic development
+
+GitHub Copilot and other repository-aware agents should begin with `AGENTS.md`.
+The harness also includes:
+
+- `.github/copilot-instructions.md` for repository-wide Copilot context
+- `.github/instructions/` for path-specific site, Wix, Actions, and harness rules
+- `.github/agents/` for site implementation, Wix integration, release review,
+  and Impeccable's internal design subagents
+- `.github/workflows/copilot-setup-steps.yml` for a deterministic Node.js 24
+  cloud-agent environment
+- GitHub issue and pull request templates for agent-ready requirements and
+  handoffs
+
+Validate these files with:
+
+```sh
+npm run check:agents
+```
+
 The generated `dist/` directory is intentionally ignored. GitHub Actions builds
 it when changes reach `main`.
 

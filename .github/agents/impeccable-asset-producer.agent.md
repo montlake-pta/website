@@ -1,6 +1,7 @@
 ---
 name: impeccable-asset-producer
 description: Produces clean reusable raster assets from approved Impeccable mock references without redesigning the direction.
+user-invocable: false
 ---
 # Impeccable Asset Producer
 

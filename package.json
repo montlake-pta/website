@@ -6,6 +6,7 @@
   "scripts": {
     "bootstrap:wix": "node scripts/bootstrap-wix-snapshot.mjs",
     "build": "node scripts/build.mjs",
+    "check:agents": "node scripts/check-agent-harness.mjs",
     "setup:wix-cms": "node scripts/setup-wix-cms.mjs",
     "sync:wix": "node scripts/sync-wix.mjs",
     "test": "node scripts/check-site.mjs"

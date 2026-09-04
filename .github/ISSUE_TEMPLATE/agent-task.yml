@@ -1,0 +1,51 @@
+name: Agent-ready website change
+description: Define a scoped website task with enough context for Copilot to implement and validate it.
+title: "[Website] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Provide the intended outcome and observable acceptance criteria. Do not include credentials or private student/family information.
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Intended outcome
+      description: What should be different for a visitor or maintainer when this is complete?
+      placeholder: A parent can...
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Primary source of truth
+      options:
+        - Repository static content
+        - Wix Blog
+        - Wix Events
+        - Wix Stores
+        - Wix CMS collection
+        - GitHub Actions or repository settings
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List concrete, observable requirements.
+      placeholder: |
+        - Existing URL continues to work
+        - The new content appears on mobile and desktop
+        - The Wix-authored value updates on the next sync
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Add relevant URLs, screenshots, issue links, or existing pages.
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints or exclusions
+      description: Note anything that must not change.

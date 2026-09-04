@@ -1,6 +1,7 @@
 ---
 name: impeccable-finish-reviewer
 description: Reviews a finished Impeccable build against its direction contract, the approved comp, and the chosen world's quality bar, returning an ordered list of material fixes.
+user-invocable: false
 ---
 # Impeccable Finish Reviewer
 

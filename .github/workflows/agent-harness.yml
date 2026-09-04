@@ -1,0 +1,49 @@
+name: Check Agent Harness
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - AGENTS.md
+      - .github/agents/**
+      - .github/copilot-instructions.md
+      - .github/instructions/**
+      - .github/ISSUE_TEMPLATE/**
+      - .github/pull_request_template.md
+      - .github/workflows/agent-harness.yml
+      - .github/workflows/copilot-setup-steps.yml
+      - scripts/check-agent-harness.mjs
+      - package.json
+      - package-lock.json
+  pull_request:
+    paths:
+      - AGENTS.md
+      - .github/agents/**
+      - .github/copilot-instructions.md
+      - .github/instructions/**
+      - .github/ISSUE_TEMPLATE/**
+      - .github/pull_request_template.md
+      - .github/workflows/agent-harness.yml
+      - .github/workflows/copilot-setup-steps.yml
+      - scripts/check-agent-harness.mjs
+      - package.json
+      - package-lock.json
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Validate agent harness
+        run: npm run check:agents

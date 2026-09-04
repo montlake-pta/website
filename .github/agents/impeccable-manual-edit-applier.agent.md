@@ -1,6 +1,7 @@
 ---
 name: impeccable-manual-edit-applier
 description: Applies leased Impeccable live manual copy-edit batches to source and returns canonical Apply results.
+user-invocable: false
 ---
 # Impeccable Manual Edit Applier
 
