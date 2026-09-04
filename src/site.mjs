@@ -208,6 +208,8 @@ export const pages = [
     kicker: "Give to Montlake",
     description: "Make a one-time or recurring gift, request an employer match, or donate by check.",
     accent: "coral",
+    layout: "donate",
+    disableOutline: true,
     content: `
       <p class="lead">Your gift helps fund staffing, student programs, classroom needs, community events, scholarships, and equipment.</p>
       <p><a class="button button-primary" href="https://www.paypal.com/donate/?hosted_button_id=L86AXUQZC74VN">Donate securely online</a></p>

@@ -39,7 +39,7 @@ for (const page of renderedPages) {
   }
 }
 
-for (const asset of ["styles.css", "site.js", "assets/mark.png", "assets/school.jpg", "assets/community.jpg", "sitemap.xml", "404.html"]) {
+for (const asset of ["styles.css", "site.js", "assets/mark.png", "assets/school.jpg", "assets/community.jpg", "assets/donate-science-fair.jpg", "sitemap.xml", "404.html"]) {
   try {
     await access(join(output, asset));
   } catch {
@@ -95,6 +95,14 @@ if (wixContent.blogPosts.length && !homeHtml.includes('href="./post/')) {
   failures.push("Homepage is not linking to the latest Wix blog posts");
 }
 if (!homeHtml.includes('href="./event-list/"')) failures.push("Homepage is missing the events archive link");
+
+const donateHtml = await readFile(join(output, "donate", "index.html"), "utf8");
+if (!donateHtml.includes('class="donate-hero"')) failures.push("Donation page is missing its landing-page hero");
+if (!donateHtml.includes('id="employer-matching"')) failures.push("Donation page is missing the employer-matching destination");
+if (!donateHtml.includes("Explore employer matching")) failures.push("Donation page is missing its employer-matching action");
+if (donateHtml.includes("Double your impact")) failures.push("Donation page makes an unsupported matching-rate claim");
+if (!donateHtml.includes("75–80%")) failures.push("Donation page is missing the staffing impact proof");
+if (!donateHtml.includes("Federal Tax ID 91-1117733")) failures.push("Donation page is missing nonprofit trust information");
 
 const freshHome = mergeWixContent(pages, {
   schemaVersion: 1,

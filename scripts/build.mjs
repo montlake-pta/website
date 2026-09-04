@@ -80,7 +80,7 @@ function renderPage(page, base) {
     </header>
     ${renderDailyTools(base)}
     <main id="main-content">
-      ${page.home ? renderHome(page, base) : renderContentPage(page)}
+      ${page.home ? renderHome(page, base) : page.layout === "donate" ? renderDonatePage(page, base) : renderContentPage(page)}
     </main>
     ${renderFooter(base)}
   </body>
@@ -214,6 +214,92 @@ function renderContentPage(page) {
           </div>
         </aside>
       </div>`;
+}
+
+function renderDonatePage(page, base) {
+  const details = donationDetails(page.content);
+  return `
+    <section class="donate-hero">
+      <div class="donate-hero-shell">
+        <div class="donate-hero-copy">
+          <h1>${escapeAttribute(page.heading || page.title)}</h1>
+          <p>${escapeAttribute(page.description)}</p>
+          <div class="button-row">
+            <a class="button button-primary donate-primary" href="${site.donateUrl}">Donate securely online</a>
+            <a class="button button-secondary" href="#employer-matching">Explore employer matching</a>
+          </div>
+          <p class="donate-assurance">Choose a one-time or recurring gift by card or bank account.</p>
+        </div>
+        <figure class="donate-hero-visual">
+          <img src="${base}assets/donate-science-fair.jpg" alt="Student science projects displayed in the Montlake Elementary cafeteria" width="1800" height="1012">
+          <figcaption>Community support helps students learn, create, perform, and belong.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="donate-impact" aria-labelledby="donate-impact-title">
+      <div class="donate-section-heading">
+        <h2 id="donate-impact-title">Your gift moves through the whole school day.</h2>
+        <p>PTA funding fills practical gaps and makes more of the Montlake experience possible.</p>
+      </div>
+      <div class="donate-impact-list">
+        <article>
+          <strong>75–80%</strong>
+          <div><h3>Staffing support</h3><p>The largest share of the PTA budget helps fund people and services not fully covered by the district.</p></div>
+        </article>
+        <article>
+          <strong>All year</strong>
+          <div><h3>Student experiences</h3><p>Art, music, academic support, enrichment, supplies, library books, equipment, and special projects.</p></div>
+        </article>
+        <article>
+          <strong>Every family</strong>
+          <div><h3>Access and belonging</h3><p>Scholarships, welcoming events, family support, and resources that help everyone participate.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="donate-methods" aria-labelledby="donate-methods-title">
+      <div class="donate-methods-intro">
+        <h2 id="donate-methods-title">Choose the way that works for you.</h2>
+        <p>Every method supports the same school community. Employer matching can make a gift or volunteer time go even further.</p>
+      </div>
+      <div class="donate-methods-content prose">
+        ${details}
+      </div>
+    </section>
+
+    <section class="donate-equity">
+      <div class="donate-equity-shell">
+        <div>
+          <h2>Giving is welcome. Belonging is not conditional.</h2>
+          <p>Every Montlake family is a full member of this community, regardless of whether or how much they donate. PTA support also includes scholarships and equity support for schools with fewer fundraising resources.</p>
+        </div>
+        <a class="text-link light" href="mailto:fundraising@montlakepta.org">Questions about giving or matching? <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
+    <section class="donate-close">
+      <div>
+        <p>Montlake Community School Association is an IRS-approved 501(c)(3).</p>
+        <strong>Federal Tax ID 91-1117733</strong>
+      </div>
+      <a class="button button-primary" href="${site.donateUrl}">Make a gift to Montlake</a>
+    </section>`;
+}
+
+function donationDetails(content) {
+  return content
+    .replace(/^\s*<p class="lead">[\s\S]*?<\/p>\s*/i, "")
+    .replace(/^\s*<p><a class="button button-primary"[\s\S]*?<\/a><\/p>\s*/i, "")
+    .replace(/<div class="callout">Montlake Community School Association[\s\S]*?<\/div>/i, "")
+    .replace(/<h([23])>([\s\S]*?)<\/h\1>/gi, (match, level, inner) => {
+      const label = decodeHtml(inner.replace(/<[^>]+>/g, "")).trim().toLowerCase();
+      if (level === "2" && label === "ways to give") return "";
+      if (level === "3" && label === "employer matching") {
+        return `<h3 id="employer-matching">${inner}</h3>`;
+      }
+      return match;
+    });
 }
 
 function renderFooter(base) {

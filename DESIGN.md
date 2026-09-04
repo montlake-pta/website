@@ -50,6 +50,7 @@ typography:
     display-section: "4.7rem"
     display-mission: "4.8rem"
     display-page: "5rem"
+    display-donate: "5.2rem"
     display-max: "5.9rem"
   display:
     fontFamily: "Literata, Georgia, serif"
@@ -191,6 +192,10 @@ instead of equal-weight cards.
 Content pages are Read surfaces: a clear page heading, optional “On this page”
 navigation for long documents, a `68ch` reading measure, and a single help
 aside. Mobile order always matches document and keyboard order.
+
+The Donate surface is Persuade: a student-led hero, an evidence sequence showing
+where support flows, comparable giving methods, and an equity-and-trust close.
+It remains factual and never uses artificial urgency or donation pressure.
 
 ## Elevation & Depth
 
