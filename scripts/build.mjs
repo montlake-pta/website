@@ -8,8 +8,9 @@ import { mergeNewsletterContent } from "./render-newsletters.mjs";
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
 const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
+const calendarContent = JSON.parse(await readFile(join(root, "src", "data", "calendar-events.json"), "utf8"));
 const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
-const renderedPages = mergeNewsletterContent(mergeWixContent(pages, wixContent), newsletterContent, site.newsletterUrl);
+const renderedPages = mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events), newsletterContent, site.newsletterUrl);
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });

@@ -16,6 +16,8 @@ source.
 - Wix integration settings: `src/wix.config.json`
 - Newsletter archive snapshot: `src/data/newsletters.json`
 - Newsletter archive settings: `src/newsletter.config.json`
+- Public calendar snapshot: `src/data/calendar-events.json`
+- Public calendar settings: `src/calendar.config.json`
 - Product and audience guidance: `PRODUCT.md`
 - Visual system and design rules: `DESIGN.md`
 
@@ -65,6 +67,19 @@ Then open <http://localhost:4173/>.
 The deployed site reads Blog posts, Events, Store products and categories, PTA
 board members, and CMS-managed pages from Wix during the GitHub Actions build.
 The result is static HTML, so Wix credentials are never sent to visitors.
+
+The homepage **Coming up** list combines future Wix Events with the public
+Google school calendar. Matching title/date records prefer Wix so visitors get
+the richer detail page; calendar-only records link to the full calendar.
+
+Refresh the checked-in public calendar snapshot with:
+
+```sh
+npm run sync:calendar
+```
+
+Only titles, dates, all-day state, locations, and identifiers are stored.
+Calendar descriptions and conferencing details are intentionally discarded.
 
 Create a Wix API key with read access to Blog, Events, Stores, and CMS data,
 then configure the repository:

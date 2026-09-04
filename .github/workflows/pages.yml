@@ -22,7 +22,6 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.event_name != 'schedule' || vars.WIX_SYNC_ENABLED == 'true' || vars.CONSTANT_CONTACT_ARCHIVE_ID != ''
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -43,6 +42,8 @@ jobs:
           WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
           WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
         run: npm run sync:wix
+      - name: Sync public school calendar
+        run: npm run sync:calendar
       - name: Sync public newsletter archive
         if: vars.CONSTANT_CONTACT_ARCHIVE_ID != ''
         env:

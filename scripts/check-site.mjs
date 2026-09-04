@@ -5,13 +5,15 @@ import { pages } from "../src/site.mjs";
 import { mergeWixContent } from "./render-wix-content.mjs";
 import { mergeNewsletterContent } from "./render-newsletters.mjs";
 import { createNewsletterSnapshot } from "./sync-newsletters.mjs";
+import { createCalendarSnapshot } from "./sync-calendar.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
 const failures = [];
 const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
+const calendarContent = JSON.parse(await readFile(join(root, "src", "data", "calendar-events.json"), "utf8"));
 const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
-const renderedPages = mergeNewsletterContent(mergeWixContent(pages, wixContent), newsletterContent, "https://example.com/signup");
+const renderedPages = mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events), newsletterContent, "https://example.com/signup");
 
 for (const page of renderedPages) {
   const file = join(output, page.slug, "index.html");
@@ -141,14 +143,161 @@ const freshHome = mergeWixContent(pages, {
   products: [],
   storeCollections: [],
   cms: { boardMembers: [], pages: [] },
-}).find((page) => page.home)?.homeFeed || "";
+}, [{
+  id: "google-event",
+  title: "Google calendar event",
+  startAt: "2099-01-15T08:00:00.000Z",
+  endAt: "2099-01-16T08:00:00.000Z",
+  allDay: true,
+  source: "google-calendar",
+}]).find((page) => page.home)?.homeFeed || "";
 if (!freshHome.includes("./post/current-update/")) failures.push("Fresh homepage feed omitted a current blog post");
 if (!freshHome.includes("./event-details/future-event/")) failures.push("Fresh homepage feed omitted an upcoming event");
+if (!freshHome.includes("Google calendar event") || !freshHome.includes('href="./calendar/"')) {
+  failures.push("Fresh homepage feed omitted a Google Calendar event");
+}
 if (!freshHome.includes("Feb 2, 2099") || !freshHome.includes("Feb 3, 2099")) {
   failures.push("Fresh homepage feed did not show both dates for a multi-day event");
 }
 if (freshHome.includes("./event-details/past-event/")) failures.push("Fresh homepage feed included an expired event without an end date");
 if (!freshHome.includes("home-post-no-image")) failures.push("Image-free homepage posts do not use the single-column layout");
+
+const dedupedHome = mergeWixContent(pages, {
+  schemaVersion: 1,
+  source: "test",
+  blogPosts: [],
+  events: [{
+    slug: "shared-event",
+    title: "Café Night",
+    startAt: "2099-03-01T18:00:00Z",
+    endAt: "2099-03-01T19:00:00Z",
+  }],
+  products: [],
+  storeCollections: [],
+  cms: { boardMembers: [], pages: [] },
+}, [{
+  id: "shared-google-event",
+  title: "Cafe Night",
+  startAt: "2099-03-01T20:00:00Z",
+  endAt: "2099-03-01T21:00:00Z",
+  source: "google-calendar",
+}]).find((page) => page.home)?.homeFeed || "";
+if (!dedupedHome.includes("./event-details/shared-event/")) failures.push("Mixed event deduplication did not prefer the Wix detail route");
+if ((dedupedHome.match(/Caf(?:e|é) Night/g) || []).length !== 1) failures.push("Mixed event deduplication rendered a duplicate accented title/date event");
+
+const canceledDuplicateHome = mergeWixContent(pages, {
+  schemaVersion: 1,
+  source: "test",
+  blogPosts: [],
+  events: [{
+    slug: "canceled-shared-event",
+    title: "Canceled shared event",
+    startAt: "2000-04-01T18:00:00Z",
+    endAt: "2000-04-01T19:00:00Z",
+    status: "CANCELED",
+  }],
+  products: [],
+  storeCollections: [],
+  cms: { boardMembers: [], pages: [] },
+}, [{
+  id: "canceled-google-event",
+  title: "Canceled shared event",
+  startAt: "2000-04-01T20:00:00Z",
+  endAt: "2099-04-02T21:00:00Z",
+  source: "google-calendar",
+}]).find((page) => page.home)?.homeFeed || "";
+if (canceledDuplicateHome.includes("Canceled shared event")) failures.push("A canceled Wix event did not suppress its Google Calendar duplicate");
+
+const nonLatinHome = mergeWixContent(pages, {
+  schemaVersion: 1,
+  source: "test",
+  blogPosts: [],
+  events: [],
+  products: [],
+  storeCollections: [],
+  cms: { boardMembers: [], pages: [] },
+}, [
+  { id: "japanese-event", title: "学校", startAt: "2099-05-01T18:00:00Z", source: "google-calendar" },
+  { id: "arabic-event", title: "مهرجان", startAt: "2099-05-01T20:00:00Z", source: "google-calendar" },
+]).find((page) => page.home)?.homeFeed || "";
+if (!nonLatinHome.includes("学校") || !nonLatinHome.includes("مهرجان")) {
+  failures.push("Unicode event titles collided during mixed-source deduplication");
+}
+
+const symbolHome = mergeWixContent(pages, {
+  schemaVersion: 1,
+  source: "test",
+  blogPosts: [],
+  events: [],
+  products: [],
+  storeCollections: [],
+  cms: { boardMembers: [], pages: [] },
+}, [
+  { id: "celebration-event", title: "🎉", startAt: "2099-06-01T18:00:00Z", source: "google-calendar" },
+  { id: "pumpkin-event", title: "🎃", startAt: "2099-06-01T20:00:00Z", source: "google-calendar" },
+]).find((page) => page.home)?.homeFeed || "";
+if (!symbolHome.includes("🎉") || !symbolHome.includes("🎃")) {
+  failures.push("Symbol-only event titles collided during mixed-source deduplication");
+}
+
+const calendarFixture = await createCalendarSnapshot({
+  calendarUrl: "https://calendar.google.com/calendar/ical/test/public/basic.ics",
+  now: new Date("2099-01-01T00:00:00Z"),
+  fetchImpl: async () => ({
+    ok: true,
+    text: async () => `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+UID:single
+DTSTART;VALUE=DATE:20990103
+DTEND;VALUE=DATE:20990104
+SUMMARY:Single school event
+DESCRIPTION:Private meeting details must not be stored
+LOCATION:PIN 123456 / Access-code 654321
+END:VEVENT
+BEGIN:VEVENT
+UID:weekly
+DTSTART:20990104T180000Z
+DTEND:20990104T190000Z
+RRULE:FREQ=WEEKLY;COUNT=3
+SUMMARY:Weekly school event
+LOCATION:Original room
+END:VEVENT
+BEGIN:VEVENT
+UID:weekly
+RECURRENCE-ID:20990111T180000Z
+DTSTART:20990111T180000Z
+DTEND:20990111T190000Z
+STATUS:CANCELLED
+SUMMARY:Weekly school event
+LOCATION:Canceled room
+END:VEVENT
+BEGIN:VEVENT
+UID:weekly
+RECURRENCE-ID:20990118T180000Z
+DTSTART:20990118T200000Z
+DTEND:20990118T210000Z
+STATUS:TENTATIVE
+SUMMARY:Weekly school event
+LOCATION:New room
+END:VEVENT
+END:VCALENDAR`,
+  }),
+});
+if (calendarFixture.events.length !== 3) failures.push("Google Calendar sync did not expand recurring events");
+if (JSON.stringify(calendarFixture).includes("Private meeting details")) failures.push("Google Calendar snapshot retained event descriptions");
+if (calendarFixture.syncedAt !== "2099-01-01T00:00:00.000Z") failures.push("Google Calendar snapshot timestamp is not deterministic");
+if (calendarFixture.events.find((event) => event.title === "Single school event")?.startAt !== "2099-01-03T08:00:00.000Z") {
+  failures.push("Google Calendar all-day event was not normalized to the Los Angeles date boundary");
+}
+if (JSON.stringify(calendarFixture).includes("Canceled room")) failures.push("Google Calendar snapshot retained a canceled recurrence override");
+if (!calendarFixture.events.some((event) => event.location === "New room")) failures.push("Google Calendar snapshot ignored an effective recurrence override location");
+if (!calendarFixture.events.some((event) => event.location === "New room" && event.status === "TENTATIVE")) {
+  failures.push("Google Calendar snapshot discarded an effective recurrence override status");
+}
+if (calendarFixture.events.find((event) => event.title === "Single school event")?.location) {
+  failures.push("Google Calendar snapshot retained a credential-like location");
+}
 
 const newsletterFixture = mergeNewsletterContent(pages, {
   schemaVersion: 1,

@@ -55,8 +55,10 @@ the documented `user-invocable: false` agent-profile override.
 | Dynamic page rendering and HTML sanitization | `scripts/render-wix-content.mjs` |
 | Public newsletter archive synchronization | `scripts/sync-newsletters.mjs` |
 | Newsletter latest/archive page generation | `scripts/render-newsletters.mjs` |
+| Public Google Calendar synchronization | `scripts/sync-calendar.mjs` |
 | Offline/public migration snapshot | `src/data/wix-content.json` |
 | Offline newsletter snapshot | `src/data/newsletters.json` |
+| Offline public calendar snapshot | `src/data/calendar-events.json` |
 | Deployment | `.github/workflows/pages.yml` |
 
 `dist/` is generated output. Never edit or commit it.
@@ -133,6 +135,17 @@ python3 -m http.server 4173 --directory dist
   campaigns first.
 - Keep `src/data/newsletters.json` deterministic and safe for public source
   control.
+
+### Google Calendar integration
+
+- Treat the public Google Calendar ICS feed as authoritative for school dates.
+- Store only event IDs, titles, start/end values, all-day state, location, and
+  status. Never persist descriptions, conferencing links, meeting IDs, or
+  passcodes.
+- Expand recurrences with timezone, exception-date, and override support.
+- When a Google Calendar event and Wix Event share a normalized title and local
+  start date, prefer the Wix record because it has the richer detail page.
+- Google-only homepage events link to the full calendar.
 
 ### Design and accessibility
 

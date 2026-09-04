@@ -25,6 +25,7 @@ body:
         - Wix Stores
         - Wix CMS collection
         - Constant Contact newsletter archive
+        - Google school calendar
         - GitHub Actions or repository settings
         - Unsure
     validations:

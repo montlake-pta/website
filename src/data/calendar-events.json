@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "source": "google-calendar",
+  "syncedAt": "2026-09-04T19:00:46.826Z",
+  "events": [
+    {
+      "id": "0c0dca3910f00ca1",
+      "title": "No School: Labor Day",
+      "startAt": "2026-09-07T07:00:00.000Z",
+      "endAt": "2026-09-08T07:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "9494ff65a12cfcbf",
+      "title": "Kindergarten: First Day of School (7:55a - 2:25p)",
+      "startAt": "2026-09-08T07:00:00.000Z",
+      "endAt": "2026-09-09T07:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "2440a71604f6a581",
+      "title": "Montlake @ Sounders Game",
+      "startAt": "2026-09-27T00:30:00.000Z",
+      "endAt": "2026-09-27T02:30:00.000Z",
+      "allDay": false,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "e23399d1d0710bd3",
+      "title": "No School: In-Service Day",
+      "startAt": "2026-10-09T07:00:00.000Z",
+      "endAt": "2026-10-10T07:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "3e0fd33c2546b5bc",
+      "title": "No School: Veterans Day",
+      "startAt": "2026-11-11T08:00:00.000Z",
+      "endAt": "2026-11-12T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "a35131adb2636838",
+      "title": "Family-Teacher Conferences",
+      "startAt": "2026-11-23T08:00:00.000Z",
+      "endAt": "2026-11-26T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "44169ab854ba1990",
+      "title": "No School - Thanksgiving",
+      "startAt": "2026-11-26T08:00:00.000Z",
+      "endAt": "2026-11-27T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "3a01014d8c2116cc",
+      "title": "1-Hour Early Dismissal (1:25p)",
+      "startAt": "2026-12-18T08:00:00.000Z",
+      "endAt": "2026-12-19T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "eb1fe240a7893b21",
+      "title": "No School - Winter Break",
+      "startAt": "2026-12-21T08:00:00.000Z",
+      "endAt": "2027-01-02T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "d2d7d187914910be",
+      "title": "PTA General Meeting",
+      "startAt": "2027-01-14T03:00:00.000Z",
+      "endAt": "2027-01-14T04:30:00.000Z",
+      "allDay": false,
+      "location": "Montlake Elementary Commons",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "4f089b714d245f53",
+      "title": "No School - MLK Jr. Day",
+      "startAt": "2027-01-18T08:00:00.000Z",
+      "endAt": "2027-01-19T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "b586064af18f31d9",
+      "title": "Day between semesters - No school",
+      "startAt": "2027-01-28T08:00:00.000Z",
+      "endAt": "2027-01-29T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "263528df388ef881",
+      "title": "No School - Mid-Winter Break",
+      "startAt": "2027-02-15T08:00:00.000Z",
+      "endAt": "2027-02-20T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "bd9b1da5d4c032c0",
+      "title": "No School - Spring Break",
+      "startAt": "2027-04-12T07:00:00.000Z",
+      "endAt": "2027-04-17T07:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "edae294f2ad5685e",
+      "title": "Teacher Appreciation Week",
+      "startAt": "2027-05-03T07:00:00.000Z",
+      "endAt": "2027-05-08T07:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "1b46f5a51917ac3e",
+      "title": "No School - Memorial Day",
+      "startAt": "2027-05-31T07:00:00.000Z",
+      "endAt": "2027-06-01T07:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "dfe73f2263279c7c",
+      "title": "No School - Juneteenth",
+      "startAt": "2027-06-18T07:00:00.000Z",
+      "endAt": "2027-06-19T07:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "5c768c960b084d39",
+      "title": "Last Day of School (1:25p Dismissal)",
+      "startAt": "2027-06-21T07:00:00.000Z",
+      "endAt": "2027-06-22T07:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    }
+  ]
+}

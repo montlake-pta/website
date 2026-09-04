@@ -32,7 +32,7 @@ const allowedCmsHtml = {
   },
 };
 
-export function mergeWixContent(staticPages, content) {
+export function mergeWixContent(staticPages, content, calendarEvents = []) {
   validateSnapshot(content);
 
   const pageMap = new Map(staticPages.map((page) => [page.slug, { ...page }]));
@@ -40,10 +40,11 @@ export function mergeWixContent(staticPages, content) {
   const events = content.events.filter(hasValidSlug);
   const products = content.products.filter(hasValidSlug);
   const storeCollections = content.storeCollections.filter(hasValidSlug);
+  const publicCalendarEvents = calendarEvents.filter(validCalendarEvent);
   applyCmsPages(pageMap, content.cms.pages);
   applyBudgetDonationCta(pageMap);
   applyBoardMembers(pageMap, content.cms.boardMembers);
-  applyHomeFeed(pageMap, blogPosts, events);
+  applyHomeFeed(pageMap, blogPosts, events, publicCalendarEvents);
   applyBlogIndex(pageMap, blogPosts);
   applyEventsIndex(pageMap, events);
   addStoreIndex(pageMap, products);
@@ -76,7 +77,7 @@ function applyBudgetDonationCta(pageMap) {
     </section>`;
 }
 
-function applyHomeFeed(pageMap, posts, events) {
+function applyHomeFeed(pageMap, posts, wixEvents, calendarEvents) {
   const home = pageMap.get("");
   if (!home) return;
 
@@ -84,9 +85,7 @@ function applyHomeFeed(pageMap, posts, events) {
   const latestPosts = [...posts]
     .sort((left, right) => dateValue(right.publishedAt) - dateValue(left.publishedAt))
     .slice(0, 3);
-  const upcomingEvents = [...events]
-    .filter((event) => event.startAt && !isCanceled(event) && dateValue(event.endAt || event.startAt) >= now)
-    .sort((left, right) => dateValue(left.startAt) - dateValue(right.startAt))
+  const upcomingEvents = combinedUpcomingEvents(wixEvents, calendarEvents, now)
     .slice(0, 3);
 
   home.homeFeed = `
@@ -100,7 +99,7 @@ function applyHomeFeed(pageMap, posts, events) {
           <section class="freshness-column" aria-labelledby="coming-up-title">
             <div class="freshness-column-heading">
               <h3 id="coming-up-title">Coming up</h3>
-              <a href="./event-list/">All events <span aria-hidden="true">→</span></a>
+              <a href="./calendar/">Full calendar <span aria-hidden="true">→</span></a>
             </div>
             ${upcomingEvents.length
               ? `<div class="home-event-list">${upcomingEvents.map(homeEvent).join("")}</div>`
@@ -118,6 +117,36 @@ function applyHomeFeed(pageMap, posts, events) {
         </div>
       </div>
     </section>`;
+}
+
+function combinedUpcomingEvents(wixEvents, calendarEvents, now) {
+  const google = calendarEvents
+    .filter((event) => event.startAt && !isCanceled(event) && dateValue(event.endAt || event.startAt) >= now)
+    .map((event) => ({ ...event, source: "google-calendar" }));
+  const byTitleAndDay = new Map();
+  for (const event of google) byTitleAndDay.set(homeEventKey(event), event);
+  for (const event of wixEvents) {
+    if (!event.startAt) continue;
+    const key = homeEventKey(event);
+    if (isCanceled(event)) {
+      byTitleAndDay.delete(key);
+      continue;
+    }
+    if (dateValue(event.endAt || event.startAt) < now) continue;
+    byTitleAndDay.set(key, { ...event, source: "wix" });
+  }
+  return [...byTitleAndDay.values()].sort((left, right) => dateValue(left.startAt) - dateValue(right.startAt));
+}
+
+function homeEventKey(event) {
+  const original = event.title.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
+  const alphanumeric = event.title
+    .normalize("NFKD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+  return `${alphanumeric || original}|${localDateKey(new Date(event.startAt))}`;
 }
 
 function applyCmsPages(pageMap, pages) {
@@ -277,6 +306,9 @@ function renderBoardCards(members) {
 
 function homeEvent(event) {
   const date = dateParts(event.startAt);
+  const href = event.source === "google-calendar"
+    ? "./calendar/"
+    : `./event-details/${event.slug}/`;
   return `
     <article class="home-event">
       <time datetime="${escapeAttribute(event.startAt)}">
@@ -284,8 +316,8 @@ function homeEvent(event) {
         <strong>${escapeHtml(date.day)}</strong>
       </time>
       <div>
-        <p>${escapeHtml(formatDateRange(event.startAt, event.endAt))}</p>
-        <h4><a href="./event-details/${event.slug}/">${escapeHtml(event.title)}</a></h4>
+        <p>${escapeHtml(formatDateRange(event.startAt, event.endAt, event.allDay))}</p>
+        <h4><a href="${href}">${escapeHtml(event.title)}</a></h4>
         ${event.location ? `<span>${escapeHtml(event.location)}</span>` : ""}
       </div>
     </article>`;
@@ -362,11 +394,19 @@ function dateParts(value) {
   return { month: parts.month || "", day: parts.day || "" };
 }
 
-function formatDateRange(start, end) {
+function formatDateRange(start, end, allDay = false) {
   if (!start) return "";
   const startDate = new Date(start);
   if (Number.isNaN(startDate.valueOf())) return "";
-  const date = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "America/Los_Angeles" }).format(startDate);
+  const dateFormatter = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "America/Los_Angeles" });
+  const date = dateFormatter.format(startDate);
+  if (allDay) {
+    if (!end || Number.isNaN(new Date(end).valueOf())) return date;
+    const displayEnd = new Date(new Date(end).valueOf() - 1);
+    return localDateKey(startDate) === localDateKey(displayEnd)
+      ? date
+      : `${date}–${dateFormatter.format(displayEnd)}`;
+  }
   const time = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" });
   if (!end || Number.isNaN(new Date(end).valueOf())) return `${date} · ${time.format(startDate)}`;
   const endDate = new Date(end);
@@ -419,6 +459,17 @@ function externalLinkAttributes(attributes) {
 
 function hasValidSlug(item) {
   return typeof item.slug === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.slug);
+}
+
+function validCalendarEvent(event) {
+  return Boolean(
+    event
+    && typeof event.id === "string"
+    && typeof event.title === "string"
+    && event.title.trim()
+    && typeof event.startAt === "string"
+    && !Number.isNaN(new Date(event.startAt).valueOf())
+  );
 }
 
 function isCanceled(event) {
