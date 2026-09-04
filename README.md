@@ -74,6 +74,13 @@ Create and seed both collections from the current repository content:
 node --env-file=.env scripts/setup-wix-cms.mjs
 ```
 
+Alternatively, run the manual **Set Up Wix CMS** workflow after configuring the
+repository secret:
+
+```sh
+gh workflow run setup-wix-cms.yml --repo montlake-pta/website
+```
+
 This setup command is idempotent: it creates missing collections and only adds
 seed rows when a collection is empty. Afterward, editors can maintain those
 records in Wix CMS and each site build will pull them automatically.
