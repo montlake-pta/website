@@ -41,6 +41,7 @@ export function mergeWixContent(staticPages, content) {
   const products = content.products.filter(hasValidSlug);
   const storeCollections = content.storeCollections.filter(hasValidSlug);
   applyCmsPages(pageMap, content.cms.pages);
+  applyBudgetDonationCta(pageMap);
   applyBoardMembers(pageMap, content.cms.boardMembers);
   applyHomeFeed(pageMap, blogPosts, events);
   applyBlogIndex(pageMap, blogPosts);
@@ -60,6 +61,19 @@ export function mergeWixContent(staticPages, content) {
   }
 
   return [...pageMap.values()];
+}
+
+function applyBudgetDonationCta(pageMap) {
+  const budget = pageMap.get("budget");
+  if (!budget || budget.content.includes('href="../donate/"')) return;
+  budget.content += `
+    <section class="related-action" aria-labelledby="support-budget-title">
+      <div>
+        <h2 id="support-budget-title">Help fund the work behind the budget.</h2>
+        <p>Explore one-time, recurring, employer-match, and check options for supporting Montlake students.</p>
+      </div>
+      <a class="button button-primary" href="../donate/">See ways to give</a>
+    </section>`;
 }
 
 function applyHomeFeed(pageMap, posts, events) {

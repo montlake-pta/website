@@ -1085,6 +1085,29 @@ body:has(.donate-hero) .site-footer {
   border-radius: 1rem;
 }
 
+.related-action {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: 4rem;
+  padding: 2rem;
+  gap: 2rem;
+  align-items: center;
+  background: var(--blue-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.related-action h2 {
+  margin: 0 0 0.6rem;
+  padding: 0;
+  border: 0;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.related-action p {
+  margin: 0;
+}
+
 .page-outline {
   margin: 0 0 3.5rem;
   padding: 1.25rem 0;
@@ -1606,7 +1629,8 @@ body:has(.donate-hero) .site-footer {
   }
 
   .newsletter-signup,
-  .newsletter-archive {
+  .newsletter-archive,
+  .related-action {
     grid-template-columns: 1fr;
   }
 
@@ -1615,6 +1639,10 @@ body:has(.donate-hero) .site-footer {
   }
 
   .newsletter-signup .button {
+    justify-self: start;
+  }
+
+  .related-action .button {
     justify-self: start;
   }
 

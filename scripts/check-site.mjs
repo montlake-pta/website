@@ -105,6 +105,10 @@ if (donateHtml.includes("Double your impact")) failures.push("Donation page make
 if (!donateHtml.includes("75–80%")) failures.push("Donation page is missing the staffing impact proof");
 if (!donateHtml.includes("Federal Tax ID 91-1117733")) failures.push("Donation page is missing nonprofit trust information");
 
+const budgetHtml = await readFile(join(output, "budget", "index.html"), "utf8");
+if (!budgetHtml.includes('href="../donate/"')) failures.push("Budget page does not cross-link to the Donate landing page");
+if (!budgetHtml.includes("See ways to give")) failures.push("Budget page is missing its donation call to action");
+
 const freshHome = mergeWixContent(pages, {
   schemaVersion: 1,
   source: "test",
