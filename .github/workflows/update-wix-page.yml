@@ -1,0 +1,101 @@
+name: Update One Wix Page
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Plan first; apply only after reviewing the public report
+        type: choice
+        options:
+          - plan
+          - apply
+        default: plan
+        required: true
+      slug:
+        description: Exact existing WebsitePages slug
+        type: string
+        default: enrichment
+        required: true
+      candidate_commit:
+        description: Full commit SHA from the plan (required for apply; blank plans the selected ref)
+        type: string
+      expected_fingerprint:
+        description: expected_fingerprint from the plan summary (required for apply)
+        type: string
+      expected_candidate_fingerprint:
+        description: expected_candidate_fingerprint from the plan summary (required for apply)
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wix-page-repair
+  cancel-in-progress: false
+
+jobs:
+  update-page:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Validate approval inputs
+        env:
+          MODE: ${{ inputs.mode }}
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          EXPECTED_FINGERPRINT: ${{ inputs.expected_fingerprint }}
+          EXPECTED_CANDIDATE_FINGERPRINT: ${{ inputs.expected_candidate_fingerprint }}
+        run: |
+          if [[ -n "$CANDIDATE_COMMIT" && ! "$CANDIDATE_COMMIT" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "candidate_commit must be a full lowercase commit SHA."
+            exit 1
+          fi
+          if [[ "$MODE" == "apply" ]]; then
+            if [[ ! "$CANDIDATE_COMMIT" =~ ^[a-f0-9]{40}$ ||
+                  ! "$EXPECTED_FINGERPRINT" =~ ^[a-f0-9]{64}$ ||
+                  ! "$EXPECTED_CANDIDATE_FINGERPRINT" =~ ^[a-f0-9]{64}$ ]]; then
+              echo "Apply requires all three approval values from a reviewed plan."
+              exit 1
+            fi
+          fi
+      - name: Check out selected candidate commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.candidate_commit || github.sha }}
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run focused repair tests
+        run: npm run test:wix-page
+      - name: Plan or conditionally apply one public page
+        env:
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
+          WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
+          MODE: ${{ inputs.mode }}
+          PAGE_SLUG: ${{ inputs.slug }}
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          EXPECTED_FINGERPRINT: ${{ inputs.expected_fingerprint }}
+          EXPECTED_CANDIDATE_FINGERPRINT: ${{ inputs.expected_candidate_fingerprint }}
+        run: |
+          npm run update:wix-page -- \
+            --mode "$MODE" \
+            --slug "$PAGE_SLUG" \
+            --expected-commit "$CANDIDATE_COMMIT" \
+            --expected-fingerprint "$EXPECTED_FINGERPRINT" \
+            --expected-candidate-fingerprint "$EXPECTED_CANDIDATE_FINGERPRINT" \
+            --output-dir "$RUNNER_TEMP/wix-page-repair"
+      - name: Upload only the public page report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wix-page-${{ inputs.mode }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/wix-page-repair/report.json
+            ${{ runner.temp }}/wix-page-repair/proposed-page.json
+            ${{ runner.temp }}/wix-page-repair/snapshot-page.json
+          if-no-files-found: warn
+          retention-days: 14

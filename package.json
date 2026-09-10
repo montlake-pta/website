@@ -11,7 +11,9 @@
     "sync:calendar": "node scripts/sync-calendar.mjs",
     "sync:newsletters": "node scripts/sync-newsletters.mjs",
     "sync:wix": "node scripts/sync-wix.mjs",
-    "test": "node scripts/check-site.mjs"
+    "update:wix-page": "node scripts/update-wix-page.mjs",
+    "test": "node scripts/check-site.mjs && npm run test:wix-page",
+    "test:wix-page": "node --test scripts/update-wix-page.test.mjs"
   },
   "dependencies": {
     "@wix/blog": "^1.0.647",

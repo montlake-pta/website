@@ -32,6 +32,10 @@ const allowedCmsHtml = {
   },
 };
 
+export function sanitizeCmsHtml(body) {
+  return sanitizeHtml(body, allowedCmsHtml);
+}
+
 export function mergeWixContent(staticPages, content, calendarEvents = []) {
   validateSnapshot(content);
 
@@ -165,7 +169,7 @@ function applyCmsPages(pageMap, pages) {
       kicker: cmsPage.kicker || existing?.kicker,
       description: cmsPage.description || existing?.description,
       accent: ["coral", "blue", "yellow"].includes(cmsPage.accent) ? cmsPage.accent : existing?.accent,
-      content: cmsPage.body ? sanitizeHtml(cmsPage.body, allowedCmsHtml) : existing?.content,
+      content: cmsPage.body ? sanitizeCmsHtml(cmsPage.body) : existing?.content,
     });
   }
 }
