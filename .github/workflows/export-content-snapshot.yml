@@ -7,6 +7,10 @@ on:
         description: Full reviewed commit SHA containing the public-safe normalizers
         type: string
         required: true
+      inspect_event_forms:
+        description: Log public form field names and types for upcoming events, never guest responses
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -52,6 +56,42 @@ jobs:
           WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
           WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
         run: npm run sync:wix
+      - name: Inspect public visitor form schemas
+        if: inputs.inspect_event_forms
+        env:
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
+          WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
+        run: |
+          node --input-type=module - <<'NODE'
+          import { readFile } from "node:fs/promises";
+          import { createClient, ApiKeyStrategy } from "@wix/sdk";
+          import { wixEventsV2 } from "@wix/events";
+          async function inspect() {
+            const snapshot = JSON.parse(await readFile("src/data/wix-content.json", "utf8"));
+            const client = createClient({ modules: { wixEventsV2 }, auth: ApiKeyStrategy({
+              apiKey: process.env.WIX_API_KEY, siteId: process.env.WIX_SITE_ID,
+            }) });
+            for (const selected of snapshot.events.filter(event => event.status === "UPCOMING" && Date.parse(event.endAt || event.startAt) >= Date.now())) {
+              const response = await client.wixEventsV2.getEvent(selected.id, { fields: ["REGISTRATION", "FORM"] });
+              const event = response.event || response;
+              if (event._id !== selected.id) throw new Error("Unexpected event identity");
+              console.log(JSON.stringify({
+                eventId: selected.id, slug: selected.slug,
+                responseShape: response.event ? "wrapped" : "direct",
+                registrationType: event.registration?.type,
+                initialType: event.registration?.initialType,
+                registrationStatus: event.registration?.status,
+                controls: (event.form?.controls || []).filter(control => !control.deleted).map(control => ({
+                  type: control.type,
+                  inputs: (control.inputs || []).map(input => ({
+                    name: input.name, type: input.type, mandatory: input.mandatory, array: input.array,
+                  })),
+                })),
+              }));
+            }
+          }
+          inspect().catch(() => { console.error("Public event form schema inspection failed; no raw SDK details logged."); process.exitCode = 1; });
+          NODE
       - name: Sync public calendar
         run: npm run sync:calendar
       - name: Sync public newsletter archive
