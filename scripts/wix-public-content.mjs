@@ -1,15 +1,17 @@
 import sanitizeHtml from "sanitize-html";
 import { sanitizeCmsHtml } from "./render-wix-content.mjs";
 
-const blockTags = new Set(["p", "br", "li", "h2", "h3", "h4", "blockquote", "figcaption", "div"]);
+const blockTags = new Set(["p", "br", "li", "h2", "h3", "h4", "blockquote", "figcaption", "div", "tr", "th", "td", "caption"]);
 const conferenceHosts = /(^|\.)(zoom\.(us|com)|teams\.(microsoft|live)\.com|meet\.google\.com|meet\.google|webex\.com)$/i;
 
 // Public file links may have query parameters (including SharePoint access
 // controls). Never log destinations or copy private SDK media sources.
 export function publicUrl(value, { image = false } = {}) {
-  if (typeof value !== "string" || /[\u0000-\u0020\u007f]/.test(value)) return null;
+  if (typeof value !== "string") return null;
+  const input = value.trim();
+  if (/[\u0000-\u0020\u007f]/.test(input)) return null;
   try {
-    const url = new URL(value);
+    const url = new URL(input);
     if (url.username || url.password || isConferenceUrl(url)) return null;
     const schemes = image ? ["http:", "https:"] : ["http:", "https:", "mailto:", "tel:"];
     return schemes.includes(url.protocol) ? url.href : null;
@@ -65,6 +67,8 @@ export function publicHtml(value) {
   const safe = sanitizeCmsHtml(typeof value === "string" ? value : "");
   const chunks = [];
   const tokens = [];
+  const rowStarts = [];
+  const rows = [];
   let length = 0;
   const append = (text) => { chunks.push(text); length += text.length; };
   // This pass only removes data from already allowlisted HTML. It never adds
@@ -87,8 +91,14 @@ export function publicHtml(value) {
         return { tagName, attribs };
       },
     },
-    onOpenTag: (tag) => { if (blockTags.has(tag)) append("\n"); },
-    onCloseTag: (tag) => { if (blockTags.has(tag)) append("\n"); },
+    onOpenTag: (tag) => {
+      if (tag === "tr") rowStarts.push(length);
+      if (blockTags.has(tag)) append("\n");
+    },
+    onCloseTag: (tag) => {
+      if (blockTags.has(tag)) append("\n");
+      if (tag === "tr" && rowStarts.length) rows.push({ start: rowStarts.pop(), end: length });
+    },
     textFilter: (text) => {
       tokens.push({ start: length, length: text.length });
       append(text);
@@ -96,7 +106,15 @@ export function publicHtml(value) {
     },
   };
   const filtered = sanitizeHtml(safe, options);
-  const redacted = redact(chunks.join(""));
+  const original = chunks.join("");
+  let redacted = redact(original);
+  // A table row is one logical record: credential fragments may span cells.
+  for (const { start, end } of rows) {
+    const row = original.slice(start, end).replace(/\n/g, " ");
+    if (redact(row) !== row) {
+      redacted = redacted.slice(0, start) + " ".repeat(end - start) + redacted.slice(end);
+    }
+  }
   let index = 0;
   return sanitizeCmsHtml(sanitizeHtml(filtered, {
     allowedTags: false,
@@ -129,6 +147,7 @@ const escape = (value) => String(value ?? "").replaceAll("&", "&amp;").replaceAl
 
 export function normalizeRichBody(content, { warn = console.warn } = {}) {
   const warnings = new Set();
+  const headingStack = [];
   function unsupported(type) {
     // Only enum-like types are reported. No node IDs, text, HTML, or URLs.
     const label = /^[A-Z_]{1,40}$/.test(type || "") ? type : "UNKNOWN";
@@ -171,12 +190,18 @@ export function normalizeRichBody(content, { warn = console.warn } = {}) {
       }
       case "PARAGRAPH": return `<p>${children()}</p>`;
       case "HEADING": {
-        const level = Math.max(2, Math.min(4, Math.trunc(Number(value.headingData?.level)) || 2));
+        const sourceLevel = Math.max(1, Math.min(6, Math.trunc(Number(value.headingData?.level)) || 2));
+        while (headingStack.length && headingStack.at(-1).sourceLevel >= sourceLevel) headingStack.pop();
+        const level = headingStack.length ? Math.min(4, headingStack.at(-1).level + 1) : 2;
+        headingStack.push({ sourceLevel, level });
         return `<h${level}>${children()}</h${level}>`;
       }
       case "BULLETED_LIST": return `<ul>${children()}</ul>`;
       case "ORDERED_LIST": return `<ol>${children()}</ol>`;
       case "LIST_ITEM": return `<li>${children()}</li>`;
+      case "TABLE": return `<table><tbody>${children()}</tbody></table>`;
+      case "TABLE_ROW": return `<tr>${children()}</tr>`;
+      case "TABLE_CELL": return `<td>${children()}</td>`;
       case "BLOCKQUOTE": return `<blockquote>${children()}</blockquote>`;
       case "DIVIDER": return "<hr>";
       case "CAPTION": return children();
@@ -195,6 +220,7 @@ export function normalizeRichBody(content, { warn = console.warn } = {}) {
       default: unsupported(value.type); return children();
     }
   }
-  const bodyHtml = publicHtml(nodes(content?.nodes));
-  return { bodyHtml, text: htmlText(bodyHtml) };
+  const sanitized = sanitizeCmsHtml(nodes(content?.nodes));
+  const bodyHtml = publicHtml(sanitized);
+  return { bodyHtml, text: htmlText(bodyHtml), privacyFiltered: bodyHtml !== sanitized };
 }

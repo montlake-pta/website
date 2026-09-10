@@ -1,7 +1,7 @@
 import { access, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pages } from "../src/site.mjs";
+import { pages, preserveCollectionRoutes } from "../src/site.mjs";
 import { mergeWixContent } from "./render-wix-content.mjs";
 import { mergeNewsletterContent } from "./render-newsletters.mjs";
 import { createNewsletterSnapshot } from "./sync-newsletters.mjs";
@@ -16,7 +16,7 @@ const failures = [];
 const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
 const calendarContent = JSON.parse(await readFile(join(root, "src", "data", "calendar-events.json"), "utf8"));
 const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
-const renderedPages = mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events), newsletterContent, "https://example.com/signup");
+const renderedPages = preserveCollectionRoutes(mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events), newsletterContent, "https://example.com/signup"));
 
 for (const page of renderedPages) {
   const file = join(output, page.slug, "index.html");

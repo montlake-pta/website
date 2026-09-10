@@ -202,6 +202,8 @@ Rich articles retain inline links, lists and figures. Long addresses wrap
 within the reading column; inline images keep their full aspect ratio rather
 than using hero-image cropping. Figure captions use readable supporting text,
 and data graphics retain a textual equivalent where authored.
+Article tables preserve row/cell structure, use thin dividers and wrap within
+the reading column rather than introducing horizontal page scroll.
 
 The Donate surface is Persuade: a student-led hero, an evidence sequence showing
 where support flows, comparable giving methods, and an equity-and-trust close.

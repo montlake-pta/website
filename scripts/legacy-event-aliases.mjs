@@ -49,7 +49,7 @@ export async function emitLegacyEventAliases({
 
   const files = [...targets].map(([source, target]) => ({
     path: `${source.slice(1)}/index.html`,
-    content: renderRedirect(`${basePath}${target.slice(1)}`),
+    content: renderRedirect(`${basePath}${target.slice(1)}`, basePath),
   }));
   files.push({ path: recoveryFilename, content: renderRecoveryScript(basePath, targets) });
   const plannedPaths = new Set(files.map((file) => filesystemKey(file.path)));
@@ -182,7 +182,7 @@ function renderRecoveryScript(basePath, targets) {
 `;
 }
 
-function renderRedirect(target) {
+function renderRedirect(target, basePath) {
   // target consists solely of validated basePath + ASCII canonical slug.
   return `<!doctype html>
 <html lang="en">
@@ -190,15 +190,19 @@ function renderRedirect(target) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,follow">
+    <link rel="stylesheet" href="${basePath}styles.css">
     <link rel="canonical" href="${target}">
     <meta http-equiv="refresh" content="0;url=${target}">
     <script>window.location.replace(${JSON.stringify(target)});</script>
     <title>Event details | Montlake PTA</title>
   </head>
   <body>
-    <main>
-      <h1>Event details</h1>
-      <p>This event has a new address. <a href="${target}">Continue to the event</a>.</p>
+    <main class="page-hero">
+      <div>
+        <h1>Event details</h1>
+        <p>This event has a new address.</p>
+        <p><a class="button button-primary" href="${target}">Continue to the event</a></p>
+      </div>
     </main>
   </body>
 </html>

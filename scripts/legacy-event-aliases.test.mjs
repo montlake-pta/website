@@ -115,7 +115,9 @@ for (const basePath of ["/", "/website/", "/preview/website/"]) {
           const current = `https://example.test${pathname}`;
           for (const element of selectAll("[href],[src]", doc)) {
             const href = element.attribs.href || element.attribs.src;
-            assert.equal(new URL(href, current).pathname, destination);
+            const expected = element.name === "link" && element.attribs.rel === "stylesheet"
+              ? `${basePath}styles.css` : destination;
+            assert.equal(new URL(href, current).pathname, expected);
           }
         }
       }

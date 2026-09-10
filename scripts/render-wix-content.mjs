@@ -4,6 +4,7 @@ const allowedCmsHtml = {
   allowedTags: [
     "p", "br", "strong", "em", "b", "i", "u", "s", "a", "ul", "ol", "li",
     "h2", "h3", "h4", "blockquote", "figure", "figcaption", "img", "hr", "div", "iframe",
+    "table", "thead", "tbody", "tr", "th", "td", "caption",
   ],
   allowedAttributes: {
     a: ["href", "target", "rel", "class"],

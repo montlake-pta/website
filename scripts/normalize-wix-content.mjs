@@ -29,7 +29,7 @@ export function normalizeWixContent({ blogPosts, events, products, storeCollecti
     // reason to omit the current public revision. Never export paid bodies.
     blogPosts: routed(blogPosts.filter((post) => !post.pricingPlanIds?.length && post.preview !== true).map((post) => {
       const rich = normalizeRichBody(post.richContent, { warn });
-      const text = publicText(post.contentText) || rich.text;
+      const text = rich.privacyFiltered ? rich.text : publicText(post.contentText) || rich.text;
       return {
         id: publicId(post._id), slug: normalizeSlug(post.slug), title: publicText(post.title),
         excerpt: publicText(post.excerpt) || excerpt(text), contentText: text,

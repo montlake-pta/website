@@ -18,6 +18,28 @@ export const site = {
   ],
 };
 
+const legacyCollectionSlugs = [
+  "all-products", "2025-art-walk-spring-concert", "24-25-welcome-pizza-party-raffle",
+  "25-26-welcome-party-raffle", "evergreens", "holiday-night-market",
+  "islandwood", "spring-auction-fundraiser",
+];
+
+// Preserve already-published addresses without exporting hidden Store records.
+export function preserveCollectionRoutes(contentPages) {
+  const routes = new Set(contentPages.map((page) => page.slug));
+  return [...contentPages, ...legacyCollectionSlugs
+    .map((slug) => `category/${slug}`)
+    .filter((slug) => !routes.has(slug))
+    .map((slug) => ({
+      slug,
+      title: "Seasonal collection",
+      heading: "Explore current PTA products.",
+      description: "Find public products and seasonal fundraisers in the PTA shop.",
+      accent: "yellow",
+      content: '<p>There is no public collection listing at this address right now. Visit the <a href="../../shop/">PTA shop</a> for current products and availability.</p>',
+    }))];
+}
+
 export const pages = [
   {
     slug: "",

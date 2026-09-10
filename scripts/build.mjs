@@ -1,7 +1,7 @@
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pages, site } from "../src/site.mjs";
+import { pages, preserveCollectionRoutes, site } from "../src/site.mjs";
 import { mergeWixContent } from "./render-wix-content.mjs";
 import { mergeNewsletterContent } from "./render-newsletters.mjs";
 import { emitLegacyEventAliases } from "./legacy-event-aliases.mjs";
@@ -12,7 +12,7 @@ const deploymentBase = new URL(site.previewUrl).pathname;
 const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
 const calendarContent = JSON.parse(await readFile(join(root, "src", "data", "calendar-events.json"), "utf8"));
 const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
-const renderedPages = mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events), newsletterContent, site.newsletterUrl);
+const renderedPages = preserveCollectionRoutes(mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events), newsletterContent, site.newsletterUrl));
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });

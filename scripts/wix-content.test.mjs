@@ -5,6 +5,7 @@ import { mergeWixContent, sanitizeCmsHtml } from "./render-wix-content.mjs";
 import { assertPublicSnapshot, normalizeWixContent } from "./normalize-wix-content.mjs";
 import { normalizeRichBody, publicHtml, publicText, publicUrl } from "./wix-public-content.mjs";
 import { fetchAll, readWixContent } from "./sync-wix.mjs";
+import { preserveCollectionRoutes } from "../src/site.mjs";
 
 // Ricos fixtures use the installed Blog/Events SDK Node, Decoration, V1Media,
 // FileSource, Gallery Item, and oEmbed shapes, not an invented HTML payload.
@@ -133,14 +134,15 @@ test("private/conferencing nodes and credentials split across marks or paragraph
   assert.doesNotMatch(warnings.join(" "), /https:|SYNTHETIC_|PRIVATE_/);
 });
 
-test("unsafe schemes/tags stay blocked without expanding the shared CMS allowlist", () => {
+test("unsafe schemes, attributes and embeds stay blocked around supported table markup", () => {
   const html = publicHtml('<p onclick="evil()">Read <a href="javascript:alert(1)">unsafe</a> '
     + '<a href="../calendar/">calendar</a> <a href="https://safe.example/?q=1">safe</a></p>'
     + '<script>SECRET_SCRIPT</script><iframe src="https://evil.example/"></iframe>'
     + '<iframe src="https://calendar.google.com/calendar/embed?src=public"></iframe>'
     + '<img src="data:image/svg+xml,bad" onerror="evil()" alt="Good">'
     + '<table><tr><td>Table text</td></tr></table>');
-  assert.doesNotMatch(html, /onclick|onerror|javascript:|SECRET_SCRIPT|evil\.example|data:image|<table/);
+  assert.doesNotMatch(html, /onclick|onerror|javascript:|SECRET_SCRIPT|evil\.example|data:image/);
+  assert.match(html, /<table><tr><td>Table text<\/td><\/tr><\/table>/);
   assert.match(html, /href="\.\.\/calendar\/"/);
   assert.match(html, /src="https:\/\/calendar.google.com\/calendar\/embed/);
   assert.equal(publicUrl("https://school.sharepoint.com/file?e=allowed"), "https://school.sharepoint.com/file?e=allowed");
@@ -149,8 +151,62 @@ test("unsafe schemes/tags stay blocked without expanding the shared CMS allowlis
     "https://district.zoom.us./j/1", "https://meet.google.com/abc-defg-hij", "https://aka.ms/JoinTeamsMeeting",
     "tel:+12065550100,,123456789#", "msteams://join"]) assert.equal(publicUrl(url), null);
   assert.equal(publicUrl("tel:+12065550100"), "tel:+12065550100");
+  assert.equal(publicUrl(" \nhttps://example.org/volunteer\t "), "https://example.org/volunteer");
+  assert.equal(publicUrl(" \tjavascript:alert(1) "), null);
+  assert.equal(publicUrl("https://exa\nmple.org/"), null);
   assert.doesNotMatch(publicText("Access code: SYNTHETIC\nPublic.\nzoommtg://zoom.us/join?pwd=SYNTHETIC"), /SYNTHETIC/);
   assert.equal(sanitizeCmsHtml(html), html);
+});
+
+test("authored schedule tables retain rows, cells and links without active attributes", () => {
+  const table = { type: "TABLE", nodes: [
+    { type: "TABLE_ROW", nodes: [
+      { type: "TABLE_CELL", nodes: [paragraph(text("Class"))] },
+      { type: "TABLE_CELL", nodes: [paragraph(text("End time"))] },
+    ] },
+    { type: "TABLE_ROW", nodes: [
+      { type: "TABLE_CELL", nodes: [paragraph(text("Lego club", [markedLink("https://example.org/class")]))] },
+      { type: "TABLE_CELL", nodes: [paragraph(text("4:00 PM"))] },
+    ] },
+  ] };
+  const { bodyHtml } = normalizeRichBody({ nodes: [table] }, { warn: (warning) => assert.fail(warning) });
+  assert.equal((bodyHtml.match(/<tr>/g) || []).length, 2);
+  assert.equal((bodyHtml.match(/<td>/g) || []).length, 4);
+  assert.match(bodyHtml, /href="https:\/\/example.org\/class"/);
+  const unsafe = publicHtml('<table onclick="bad()" style="background:url(javascript:bad())"><tbody><tr><td onmouseover="bad()">Public<svg onload="bad()"><script>UNSAFE_SCRIPT</script></svg><a href="javascript:bad()">Label</a></td></tr></tbody></table>');
+  assert.match(unsafe, /<table><tbody><tr><td>Public/);
+  assert.doesNotMatch(unsafe, /onclick|style=|onmouseover|onload|javascript:|<svg|UNSAFE_SCRIPT/);
+  const privateRow = publicHtml('<table><tr><td>Meeting ID: 123</td><td>456 789</td></tr><tr><td>Class</td><td>4:00 PM</td></tr></table>');
+  assert.doesNotMatch(privateRow, /123|456|789/);
+  assert.match(privateRow, /Class/);
+  assert.match(privateRow, /4:00 PM/);
+  const protectedSnapshot = normalize({ blogPosts: [{
+    slug: "private-table", contentText: "Meeting ID: 123\n456 789",
+    richContent: { nodes: [{ type: "TABLE", nodes: [{ type: "TABLE_ROW", nodes: [
+      { type: "TABLE_CELL", nodes: [paragraph(text("Meeting ID: 123"))] },
+      { type: "TABLE_CELL", nodes: [paragraph(text("456 789"))] },
+    ] }] }] },
+  }] });
+  assert.doesNotMatch(JSON.stringify(protectedSnapshot), /123|456|789/);
+});
+
+test("rich headings preserve sibling hierarchy without skipping below the page heading", () => {
+  const { bodyHtml } = normalizeRichBody({ nodes: [
+    { type: "HEADING", headingData: { level: 3 }, nodes: [text("First")] },
+    { type: "HEADING", headingData: { level: 3 }, nodes: [text("Second")] },
+    { type: "HEADING", headingData: { level: 5 }, nodes: [text("Child")] },
+    { type: "HEADING", headingData: { level: 2 }, nodes: [text("Next section")] },
+  ] });
+  assert.equal(bodyHtml, "<h2>First</h2><h2>Second</h2><h3>Child</h3><h2>Next section</h2>");
+});
+
+test("old public category addresses survive hidden collections without overriding live listings", () => {
+  const live = { slug: "category/evergreens", title: "Live collection", content: "Current products" };
+  const result = preserveCollectionRoutes([live]);
+  assert.equal(result.length, 8);
+  assert.equal(result.find((page) => page.slug === live.slug), live);
+  assert(result.find((page) => page.slug === "category/all-products").content.includes("../../shop/"));
+  assert.equal(new Set(result.map((page) => page.slug)).size, result.length);
 });
 
 test("WebsitePages and BoardMembers export only their public fields and retain existing active/published defaults", () => {
