@@ -57,7 +57,7 @@ export function mergeWixContent(staticPages, content, calendarEvents = []) {
     ...blogPosts.map(renderBlogPostPage),
     ...events.map(renderEventPage),
     ...products.map(renderProductPage),
-    ...storeCollections.map(renderCollectionPage),
+    ...storeCollections.map((collection) => renderCollectionPage(collection, products)),
   ];
 
   for (const page of dynamicPages) {
@@ -129,13 +129,12 @@ function combinedUpcomingEvents(wixEvents, calendarEvents, now) {
     .map((event) => ({ ...event, source: "google-calendar" }));
   const byTitleAndDay = new Map();
   for (const event of google) byTitleAndDay.set(homeEventKey(event), event);
+  const canceledKeys = new Set(wixEvents.filter((event) => event.startAt && isCanceled(event)).map(homeEventKey));
+  for (const key of canceledKeys) byTitleAndDay.delete(key);
   for (const event of wixEvents) {
     if (!event.startAt) continue;
     const key = homeEventKey(event);
-    if (isCanceled(event)) {
-      byTitleAndDay.delete(key);
-      continue;
-    }
+    if (isCanceled(event)) continue;
     if (dateValue(event.endAt || event.startAt) < now) continue;
     byTitleAndDay.set(key, { ...event, source: "wix" });
   }
@@ -150,7 +149,11 @@ function homeEventKey(event) {
     .toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, " ")
     .trim();
-  return `${alphanumeric || original}|${localDateKey(new Date(event.startAt))}`;
+  // Reviewed identity from the remaining-page audit. Do not fuzzy-match titles:
+  // date remains part of the key, and every other title keeps Unicode handling.
+  const title = alphanumeric === "pta welcome back party"
+    ? "montlake elementary welcome back party" : alphanumeric || original;
+  return `${title}|${localDateKey(new Date(event.startAt))}`;
 }
 
 function applyCmsPages(pageMap, pages) {
@@ -231,7 +234,7 @@ function addStoreIndex(pageMap, products) {
   if (!products.length || !pageMap.has("shop")) return;
   pageMap.get("shop").content = `
       <p class="lead">Product availability changes throughout the year. Purchases support Montlake Elementary programs and community priorities.</p>
-      <div class="content-grid">${products.map(productCard).join("")}</div>`;
+      <div class="content-grid">${products.map((product) => productCard(product)).join("")}</div>`;
 }
 
 function renderBlogPostPage(post) {
@@ -244,7 +247,7 @@ function renderBlogPostPage(post) {
     content: `
       <p class="card-meta">${formatDate(post.publishedAt)}${post.updatedAt && post.updatedAt !== post.publishedAt ? ` · Updated ${formatDate(post.updatedAt)}` : ""}</p>
       ${image(post.image, post.title, "detail-image")}
-      <div class="article-body">${textToHtml(post.contentText || post.excerpt)}</div>
+      <div class="article-body">${richBodyHtml(post.bodyHtml, post.contentText || post.excerpt)}</div>
       <p><a class="text-link" href="../../blog/">← Back to all news</a></p>`,
   };
 }
@@ -264,7 +267,7 @@ function renderEventPage(event) {
         ${date ? `<div><dt>When</dt><dd>${escapeHtml(date)}</dd></div>` : ""}
         ${event.location ? `<div><dt>Where</dt><dd>${escapeHtml(event.location)}${event.address ? `<br>${escapeHtml(event.address)}` : ""}</dd></div>` : ""}
       </dl>
-      <div class="article-body">${textToHtml(event.descriptionText || event.summary)}</div>
+      <div class="article-body">${richBodyHtml(event.bodyHtml, event.descriptionText || event.summary)}</div>
       ${event.sourceUrl ? `<p><a class="button button-primary" href="${escapeAttribute(event.sourceUrl)}">Registration and event details</a></p>` : ""}
       <p><a class="text-link" href="../../event-list/">← Back to all events</a></p>`,
   };
@@ -275,18 +278,21 @@ function renderProductPage(product) {
     slug: `product-page/${product.slug}`,
     title: product.name,
     kicker: "Montlake PTA shop",
-    description: excerpt(product.description),
+    description: excerpt(product.description) || productDescriptionAbsent(product),
     accent: "yellow",
     content: `
       ${image(product.image, product.name, "detail-image product-image")}
       ${product.price != null ? `<p class="product-price">${formatCurrency(product.price, product.currency)}</p>` : ""}
-      <div class="article-body">${textToHtml(product.description)}</div>
+      <p class="card-meta">${productAvailability(product)}</p>
+      <div class="article-body">${textToHtml(product.description || productDescriptionAbsent(product))}</div>
       ${product.sourceUrl ? `<p><a class="button button-primary" href="${escapeAttribute(product.sourceUrl)}">View availability</a></p>` : ""}
       <p><a class="text-link" href="../../shop/">← Back to the shop</a></p>`,
   };
 }
 
-function renderCollectionPage(collection) {
+function renderCollectionPage(collection, products) {
+  const members = products.filter((product) => collection.id && product.collectionIds?.includes(collection.id));
+  const membershipKnown = !products.length || products.every((product) => Array.isArray(product.collectionIds));
   return {
     slug: `category/${collection.slug}`,
     title: collection.name,
@@ -295,7 +301,10 @@ function renderCollectionPage(collection) {
     accent: "yellow",
     content: `
       ${image(collection.image, collection.name, "detail-image")}
-      <p>Products in this seasonal collection appear in the <a href="../../shop/">PTA shop</a>.</p>`,
+      ${members.length
+        ? `<div class="content-grid">${members.map((product) => productCard(product, "../../")).join("")}</div>`
+        : `<p>${membershipKnown ? "No public products are currently listed in this collection." : "A product list for this collection is not available here."}</p>`}
+      <p><a class="text-link" href="../../shop/">Browse the PTA shop</a></p>`,
   };
 }
 
@@ -353,17 +362,45 @@ function eventCard(event) {
     </article>`;
 }
 
-function productCard(product) {
+function productCard(product, prefix = "../") {
   return `
     <article class="content-card">
       ${image(product.image, product.name)}
       <div>
         <p class="card-meta">${product.price != null ? formatCurrency(product.price, product.currency) : "Seasonal item"}</p>
-        <h2><a href="../product-page/${product.slug}/">${escapeHtml(product.name)}</a></h2>
-        <p>${escapeHtml(excerpt(product.description, 150))}</p>
-        <a class="text-link" href="../product-page/${product.slug}/">View item <span aria-hidden="true">→</span></a>
+        <h2><a href="${prefix}product-page/${product.slug}/">${escapeHtml(product.name)}</a></h2>
+        <p class="card-meta">${productAvailability(product)}</p>
+        <p>${escapeHtml(excerpt(product.description, 150) || productDescriptionAbsent(product))}</p>
+        <a class="text-link" href="${prefix}product-page/${product.slug}/">View item <span aria-hidden="true">→</span></a>
       </div>
     </article>`;
+}
+
+function productAvailability(product) {
+  switch (availabilityValue(product)) {
+    case "OutOfStock": return "Out of stock";
+    case "InStock": return "In stock";
+    case "PartiallyOutOfStock": return "Some options are out of stock";
+    default: return "Availability not confirmed";
+  }
+}
+
+function availabilityValue(product) {
+  // The bootstrap snapshot used schema.org URLs; authenticated sync uses names.
+  return String(product.availability || "").replace(/^https?:\/\/schema\.org\//, "");
+}
+
+function productDescriptionAbsent(product) {
+  return availabilityValue(product) === "OutOfStock"
+    ? "This item is currently out of stock. No additional product description is available."
+    : `No additional product description is available.${product.sourceUrl ? " Check the linked shop for current options and availability." : ""}`;
+}
+
+function richBodyHtml(bodyHtml, fallback) {
+  const safe = typeof bodyHtml === "string" ? sanitizeCmsHtml(bodyHtml) : "";
+  const hasContent = /<(?:img|iframe|hr)\b/.test(safe)
+    || safe.replace(/<[^>]*>/g, "").replaceAll("&nbsp;", " ").trim();
+  return hasContent ? safe : textToHtml(fallback);
 }
 
 function image(url, alt, className = "") {

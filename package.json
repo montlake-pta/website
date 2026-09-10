@@ -12,7 +12,8 @@
     "sync:newsletters": "node scripts/sync-newsletters.mjs",
     "sync:wix": "node scripts/sync-wix.mjs",
     "update:wix-page": "node scripts/update-wix-page.mjs",
-    "test": "node scripts/check-site.mjs && npm run test:wix-page",
+    "test": "node scripts/check-site.mjs && npm run test:unit",
+    "test:unit": "node --test scripts/*.test.mjs",
     "test:wix-page": "node --test scripts/update-wix-page.test.mjs"
   },
   "dependencies": {

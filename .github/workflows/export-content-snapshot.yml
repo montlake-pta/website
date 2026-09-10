@@ -40,6 +40,8 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Require tested public-safe normalizers
+        run: node --test scripts/wix-content.test.mjs
       - name: Sync normalized public Wix content
         env:
           WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
@@ -51,8 +53,13 @@ jobs:
         env:
           CONSTANT_CONTACT_ARCHIVE_ID: ${{ vars.CONSTANT_CONTACT_ARCHIVE_ID }}
         run: npm run sync:newsletters
-      - name: Build and check the exported content
-        run: npm run build && npm test
+      - name: Validate public export format
+        run: |
+          node --input-type=module - <<'NODE'
+          import { readFile } from "node:fs/promises";
+          import { assertPublicSnapshot } from "./scripts/normalize-wix-content.mjs";
+          assertPublicSnapshot(JSON.parse(await readFile("src/data/wix-content.json", "utf8")));
+          NODE
       - name: Upload only normalized public snapshots
         uses: actions/upload-artifact@v4
         with:
@@ -63,3 +70,5 @@ jobs:
             src/data/newsletters.json
           if-no-files-found: error
           retention-days: 7
+      - name: Build and check the exported content
+        run: npm run build && npm test

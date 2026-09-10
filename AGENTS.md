@@ -50,7 +50,9 @@ the documented `user-invocable: false` agent-profile override.
 | Visual system and responsive behavior | `src/styles.css`, `DESIGN.md` |
 | Browser interactions | `src/site.js` |
 | Shared HTML templates and generated metadata | `scripts/build.mjs` |
-| Wix-to-site data normalization | `scripts/sync-wix.mjs` |
+| Wix querying and public normalization | `scripts/sync-wix.mjs`, `scripts/normalize-wix-content.mjs` |
+| Safe rich-content conversion and privacy filtering | `scripts/wix-public-content.mjs` |
+| Reviewed legacy event URL compatibility | `scripts/legacy-event-aliases.mjs`, `src/data/legacy-event-aliases.json` |
 | Wix CMS creation and seed behavior | `scripts/setup-wix-cms.mjs` |
 | Reviewed repair of an existing CMS page | `scripts/update-wix-page.mjs`, `.github/workflows/update-wix-page.yml` |
 | Dynamic page rendering and HTML sanitization | `scripts/render-wix-content.mjs` |
@@ -131,6 +133,11 @@ python3 -m http.server 4173 --directory dist
 - Sanitize CMS rich text with an explicit allowlist. Do not broaden the
   allowlist without a concrete content requirement and a security review.
 - Keep `src/data/wix-content.json` deterministic and free of credentials.
+- Preserve full plain text and supported rich links, lists and media. Never
+  diagnose live truncation solely from the offline snapshot.
+- Public exports must pass `assertPublicSnapshot`; do not upload raw SDK
+  payloads or conferencing credentials. File links retain their source access
+  controls.
 
 ### Newsletter integration
 

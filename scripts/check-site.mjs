@@ -44,11 +44,16 @@ for (const page of renderedPages) {
   }
 }
 
-for (const asset of ["styles.css", "site.js", "assets/mark.png", "assets/school.jpg", "assets/community.jpg", "assets/donate-science-fair.jpg", "sitemap.xml", "404.html"]) {
+for (const asset of ["styles.css", "site.js", "legacy-event-aliases.js", "assets/mark.png", "assets/school.jpg", "assets/community.jpg", "assets/donate-science-fair.jpg", "sitemap.xml", "404.html"]) {
   try {
     await access(join(output, asset));
   } catch {
     failures.push(`dist/${asset}: missing asset`);
+  }
+  const notFoundHtml = await readFile(join(output, "404.html"), "utf8");
+  if (!notFoundHtml.includes('src="/website/legacy-event-aliases.js"')
+    || !notFoundHtml.includes('href="/website/styles.css"')) {
+    failures.push("Deep legacy/unknown paths lack root-relative not-found recovery or styling");
   }
 }
 
@@ -201,6 +206,20 @@ if (!budgetHtml.includes('href="../donate/"')) failures.push("Budget page does n
 if (!budgetHtml.includes("See ways to give")) failures.push("Budget page is missing its donation call to action");
 if (!budgetHtml.includes('href="../post/montlake-pta-family-survey-results/"') || !budgetHtml.includes("February 2026")) {
   failures.push("Budget page dropped its dated family-survey results link");
+}
+if (!homeHtml.includes("MontlakeFriends") || !homeHtml.includes("ViewSchoolOrDistrict/101083")
+  || !homeHtml.includes("Extended Resource Special Education")) {
+  failures.push("Homepage dropped school context, alumni signup, or the school report-card resource");
+}
+for (const [slug, markers] of [
+  ["advocacy", ["5 to 10 years", "School planning updates", "closures or consolidations"]],
+  ["fall-fundraiser-2025", ["Past campaign:", "$125,000", "$1,500", "0.50 Art", "0.4 Academic", "0.2 Office", "Equity Fund", "Lowell"]],
+  ["spring-auction", ["2025–2026 spending plan", "$197,202", "$29,000", "$22,625", "$12,075", "$10,900", "$8,785", "$1,900"]],
+]) {
+  const html = await readFile(join(output, slug, "index.html"), "utf8");
+  for (const marker of markers) {
+    if (!html.includes(marker)) failures.push(`${slug} dropped restored content: ${marker}`);
+  }
 }
 
 const freshHome = mergeWixContent(pages, {
@@ -420,6 +439,16 @@ if (!newsletterLanding?.content.includes("Weekly Newsletter January 2, 2099")) f
 if (!newsletterLanding?.content.includes("Sign up for the newsletter")) failures.push("Newsletter landing page is missing its signup CTA");
 if (!newsletterFixture.some((page) => page.slug === "newsletter/weekly-newsletter-december-20-2098-older")) {
   failures.push("Newsletter archive did not generate a stable edition route");
+}
+for (const [snapshot, expected] of [
+  [{ schemaVersion: 1, source: "public-archive", archiveId: "a07test", editions: [] }, "No editions have been added"],
+  [{ schemaVersion: 1, source: "unconfigured", editions: [] }, "Past editions are not available"],
+]) {
+  const content = mergeNewsletterContent(pages, snapshot, "https://example.com/signup")
+    .find((page) => page.slug === "newsletter").content;
+  if (!content.includes(expected) || content.includes("not connected") || !content.includes("Sign up for the newsletter")) {
+    failures.push("Newsletter empty state confuses archive availability or drops signup");
+  }
 }
 
 const syncedNewsletter = await createNewsletterSnapshot({

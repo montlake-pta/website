@@ -7,7 +7,11 @@ export function mergeNewsletterContent(pages, snapshot, signupUrl) {
   const editions = snapshot.editions
     .filter(validEdition)
     .sort((left, right) => Number(left.archiveOrder || 0) - Number(right.archiveOrder || 0));
-  newsletterPage.content = renderNewsletterContent(editions[0], editions, signupUrl, "../");
+  const archiveConnected = snapshot.source === "public-archive" && Boolean(snapshot.archiveId);
+  if (!editions.length) {
+    newsletterPage.description = "Sign up for weekly school news and updates from Montlake PTA.";
+  }
+  newsletterPage.content = renderNewsletterContent(editions[0], editions, signupUrl, "../", archiveConnected);
   newsletterPage.disableOutline = true;
 
   for (const edition of editions) {
@@ -21,7 +25,7 @@ export function mergeNewsletterContent(pages, snapshot, signupUrl) {
         ? `Montlake Elementary weekly newsletter from ${formatDate(edition.publishedAt)}.`
         : "A Montlake Elementary weekly newsletter edition.",
       accent: "blue",
-      content: renderNewsletterContent(edition, editions, signupUrl, "../../"),
+      content: renderNewsletterContent(edition, editions, signupUrl, "../../", archiveConnected),
       disableOutline: true,
     });
   }
@@ -29,7 +33,7 @@ export function mergeNewsletterContent(pages, snapshot, signupUrl) {
   return [...pageMap.values()];
 }
 
-function renderNewsletterContent(current, editions, signupUrl, base) {
+function renderNewsletterContent(current, editions, signupUrl, base, archiveConnected) {
   const signup = `
     <div class="newsletter-signup">
       <div>
@@ -43,8 +47,8 @@ function renderNewsletterContent(current, editions, signupUrl, base) {
     return `
       ${signup}
       <div class="callout">
-        <strong>The online archive is not connected yet.</strong>
-        Past editions will appear here after the public newsletter archive is enabled.
+        <strong>${archiveConnected ? "No editions have been added to the public archive yet." : "Past editions are not available here yet."}</strong>
+        Sign up above to receive the weekly newsletter in your inbox.
       </div>`;
   }
 

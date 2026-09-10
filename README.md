@@ -69,6 +69,19 @@ The deployed site reads Blog posts, Events, Store products and categories, PTA
 board members, and CMS-managed pages from Wix during the GitHub Actions build.
 The result is static HTML, so Wix credentials are never sent to visitors.
 
+Supported Blog and Event rich content retains links, lists and inline images
+through the same explicit HTML allowlist used for CMS pages. Normalized
+snapshots contain public fields only, with conferencing access details
+removed. The checked-in snapshot is an offline recovery input, not evidence
+of current CMS state; use the
+[manual snapshot export](docs/content-authoring.md#refreshing-the-offline-snapshot)
+to refresh it from a reviewed source revision.
+
+Reviewed legacy `/events-1/` aliases are generated as static redirects to the
+matching event record. An exact-path recovery script runs only on the
+not-found page for host encoding differences; unrelated missing paths remain
+404s. These are not server-side HTTP 301 redirects.
+
 The homepage **Coming up** list combines future Wix Events with the public
 Google school calendar. Matching title/date records prefer Wix so visitors get
 the richer detail page; calendar-only records link to the full calendar.

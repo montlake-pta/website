@@ -4,9 +4,11 @@ import { fileURLToPath } from "node:url";
 import { pages, site } from "../src/site.mjs";
 import { mergeWixContent } from "./render-wix-content.mjs";
 import { mergeNewsletterContent } from "./render-newsletters.mjs";
+import { emitLegacyEventAliases } from "./legacy-event-aliases.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
+const deploymentBase = new URL(site.previewUrl).pathname;
 const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
 const calendarContent = JSON.parse(await readFile(join(root, "src", "data", "calendar-events.json"), "utf8"));
 const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
@@ -24,6 +26,12 @@ for (const page of renderedPages) {
   await mkdir(pageDirectory, { recursive: true });
   await writeFile(join(pageDirectory, "index.html"), renderPage(page, base));
 }
+
+await emitLegacyEventAliases({
+  outputDir: output,
+  canonicalRoutes: new Set(renderedPages.map((page) => page.slug)),
+  basePath: deploymentBase,
+});
 
 await writeFile(join(output, "404.html"), renderNotFound());
 await writeFile(join(output, "robots.txt"), "User-agent: *\nAllow: /\nSitemap: https://montlake-pta.github.io/website/sitemap.xml\n");
@@ -137,6 +145,7 @@ function renderHome(page, base) {
             <h2>More than a fundraiser. A community that <em>shows up.</em></h2>
           </div>
           <div class="mission-copy">
+            <p>${escapeAttribute(site.schoolIntroduction)}</p>
             <p>Montlake PTA is an association of parents, caregivers, community members, and school staff working together for our students.</p>
             <ul class="mission-list">
               <li><span>Voice</span> Advocate for every child</li>
@@ -144,6 +153,10 @@ function renderHome(page, base) {
               <li><span>Belonging</span> Build a welcoming community</li>
             </ul>
             <a class="text-link light" href="${base}advocacy/">How we advocate <span aria-hidden="true">→</span></a>
+            <div class="school-resource-links">
+              <a class="text-link light" href="${escapeAttribute(site.schoolReportUrl)}">Montlake school report card <span aria-hidden="true">→</span></a>
+              <a class="text-link light" href="${escapeAttribute(site.friendsUrl)}">Join the friends and alumni list <span aria-hidden="true">→</span></a>
+            </div>
           </div>
         </div>
       </section>
@@ -417,8 +430,8 @@ function renderNotFound() {
     title: "Page not found",
     heading: "We couldn’t find that page.",
     description: "The page may have moved during our website redesign.",
-    content: '<p><a class="button button-primary" href="./">Return home</a></p>',
-  }, "./");
+    content: `<p><a class="button button-primary" href="${escapeAttribute(deploymentBase)}">Return home</a></p>`,
+  }, deploymentBase).replace("</head>", `<script src="${escapeAttribute(deploymentBase)}legacy-event-aliases.js" defer></script>\n  </head>`);
 }
 
 function renderSitemap() {

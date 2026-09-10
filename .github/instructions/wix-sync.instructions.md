@@ -1,6 +1,6 @@
 ---
 description: 'Rules for Wix Headless synchronization, CMS schema, snapshots, and dynamic content rendering'
-applyTo: 'scripts/sync-wix.mjs,scripts/setup-wix-cms.mjs,scripts/update-wix-page*.mjs,scripts/bootstrap-wix-snapshot.mjs,scripts/render-wix-content.mjs,src/data/**,src/wix.config.json'
+applyTo: 'scripts/sync-wix.mjs,scripts/normalize-wix-content.mjs,scripts/wix-public-content.mjs,scripts/wix-content.test.mjs,scripts/setup-wix-cms.mjs,scripts/update-wix-page*.mjs,scripts/bootstrap-wix-snapshot.mjs,scripts/render-wix-content.mjs,src/data/**,src/wix.config.json'
 ---
 
 # Wix synchronization instructions
@@ -20,5 +20,8 @@ applyTo: 'scripts/sync-wix.mjs,scripts/setup-wix-cms.mjs,scripts/update-wix-page
   unrelated fields, and verify read-back; routine synchronization is read-only.
 - Sanitize rich HTML and allow only required tags, classes, attributes, schemes,
   and iframe hosts.
+- Preserve supported rich links, lists and inline media alongside full plain
+  text. Public exports must use allowlisted fields and pass
+  `assertPublicSnapshot`; never persist raw nodes or conferencing credentials.
 - When changing snapshot schema, version it and update build validation in the
   same change.

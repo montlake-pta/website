@@ -1,0 +1,88 @@
+[
+  {
+    "source": "/events-1/join-the-montlake-pta-at-the-seattle-sounders!",
+    "target": "/event-details/join-the-montlake-pta-at-the-seattle-sounders/"
+  },
+  {
+    "source": "/events-1/montlake-elementary-welcome-back-party!",
+    "target": "/event-details/montlake-elementary-welcome-back-party/"
+  },
+  {
+    "source": "/events-1/5th-grade-promotion!",
+    "target": "/event-details/5th-grade-promotion-2/",
+    "reviewNote": "2026-09-10: the legacy page's event image alt identifies 5th-grade-promotion-2, not the same-title active record. Preserve the canceled event's identity."
+  },
+  {
+    "source": "/events-1/montlake-kindergarten-jumpstart!",
+    "target": "/event-details/montlake-kindergarten-jumpstart/"
+  },
+  {
+    "source": "/events-1/art-walk-%26-concert-2026",
+    "target": "/event-details/art-walk-concert-2026/"
+  },
+  {
+    "source": "/events-1/montlake-elementary-spring-auction!",
+    "target": "/event-details/montlake-elementary-spring-auction/"
+  },
+  {
+    "source": "/events-1/parent's-night-out!",
+    "target": "/event-details/parents-night-out/"
+  },
+  {
+    "source": "/events-1/2026-spring-auction-party-%E2%80%93-blooming-bright",
+    "target": "/event-details/2026-spring-auction-party-blooming-bright/"
+  },
+  {
+    "source": "/events-1/current-student-families%3A-coffee-chat-with-principal-pearson-(postponed-to-feb-26)",
+    "target": "/event-details/current-student-families-coffee-chat-with-principal-pearson-postponed-to-feb-26/"
+  },
+  {
+    "source": "/events-1/montlake-elementary-meet-and-greet-on-january-28-at-8%3A00am",
+    "target": "/event-details/montlake-elementary-meet-and-greet-on-january-28-at-8-00am/"
+  },
+  {
+    "source": "/events-1/register-for-the-2026-2027-school-year-by-january-31!",
+    "target": "/event-details/register-for-the-2026-2027-school-year-by-january-31/"
+  },
+  {
+    "source": "/events-1/register-for-the-2026-2027-school-year-by-1%2F31!",
+    "target": "/event-details/register-for-the-2026-2027-school-year-by-1-31/"
+  },
+  {
+    "source": "/events-1/join-us-for-a-student-panel-on-meany-middle-school!",
+    "target": "/event-details/join-us-for-a-student-panel-on-meany-middle-school/"
+  },
+  {
+    "source": "/events-1/montlake's-first%C2%A0creative-convergence%3A%C2%A0-a-literary-celebration!%C2%A0%C2%A0",
+    "target": "/event-details/montlakes-first-creative-convergence-a-literary-celebration/"
+  },
+  {
+    "source": "/events-1/montlake-elementary-holiday-night-market-and-winter-concert",
+    "target": "/event-details/montlake-elementary-holiday-night-market-and-winter-concert/"
+  },
+  {
+    "source": "/events-1/join-us-for-uw-women's-basketball-vs-michigan-on-january-1!",
+    "target": "/event-details/join-us-for-uw-womens-basketball-vs-michigan-on-january-1/"
+  },
+  {
+    "source": "/events-1/montlake-elementary-meet-and-greet-on-january-13-at-8%3A00am",
+    "target": "/event-details/montlake-elementary-meet-and-greet-on-january-13-at-8-00am/"
+  },
+  {
+    "source": "/events-1/evergreens-sale-pick-up",
+    "target": "/event-details/evergreens-sale-pick-up/"
+  },
+  {
+    "source": "/events-1/fall-fundraiser-event-%40-flatstick-pub-",
+    "target": "/event-details/fall-fundraiser-event-flatstick-pub/"
+  },
+  {
+    "source": "/events-1/montlake-elementary-meet-%26-greet",
+    "target": "/event-details/montlake-elementary-meet-greet-2025-11-05-13-30/",
+    "reviewNote": "2026-09-10: https://www.montlakepta.org/events-1/montlake-elementary-meet-%26-greet identifies montlake-elementary-meet-greet-2025-11-05-13-30 in its event image alt and Wix SSR image properties. That legacy canonical page's Event JSON-LD confirms startDate 2025-11-05T13:30:00-08:00 and endDate 2025-11-05T14:30:00-08:00. The other same-title record starts 2025-10-30T08:00:00-07:00."
+  },
+  {
+    "source": "/events-1/annual-fund-celebration",
+    "target": "/event-details/annual-fund-celebration/"
+  }
+]

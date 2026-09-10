@@ -51,6 +51,31 @@ during a repair. A failed write or read-back can have an unknown outcome: inspec
 a fresh plan before retrying. The workflow never inserts a missing record,
 creates a collection, or automatically rolls back a completed write.
 
+## Refreshing the offline snapshot
+
+Use **Export Public Content Snapshot** after reviewing the normalizers at a
+committed revision. Supply its full commit SHA as `candidate_commit`. The manual
+workflow reads Wix, the public calendar and the public newsletter archive,
+validates and exports only their normalized JSON snapshots, then builds and
+checks the site. The artifact remains available to diagnose a later build
+failure; it is not by itself a release approval. The workflow does not write to
+Wix or deploy the site.
+
+Download the run's `public-content-RUN_ID` artifact, review the public fields and
+restored links/media, and replace the corresponding files in `src/data/`.
+Do not use raw SDK payloads or deployment logs as a snapshot. The public
+normalization layer must remove private metadata and conferencing credentials;
+fix that layer rather than hand-redacting each generated export.
+
+An offline snapshot supports local builds and recovery. Its contents do not
+prove what exists in the live CMS; compare the deployed pages or perform an
+authenticated read before diagnosing missing live records.
+
+The newsletter archive may be connected and still contain no public editions.
+An editor must publish editions in Constant Contact before the site can show
+them; this outstanding source action is tracked in
+[issue #3](https://github.com/montlake-pta/website/issues/3).
+
 ## Enrichment content handoff
 
 The restored guide preserves the public program's practical information:

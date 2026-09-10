@@ -198,6 +198,11 @@ registration and day-of contacts before the outline. The `outlineAfterIntro`
 page flag retains introductory CMS content ahead of structural-section links;
 long addresses wrap rather than widening the page on small phones.
 
+Rich articles retain inline links, lists and figures. Long addresses wrap
+within the reading column; inline images keep their full aspect ratio rather
+than using hero-image cropping. Figure captions use readable supporting text,
+and data graphics retain a textual equivalent where authored.
+
 The Donate surface is Persuade: a student-led hero, an evidence sequence showing
 where support flows, comparable giving methods, and an equity-and-trust close.
 It remains factual and never uses artificial urgency or donation pressure.
