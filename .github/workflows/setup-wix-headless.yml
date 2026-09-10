@@ -1,0 +1,50 @@
+name: Set Up Wix Headless Client
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Plan first; apply creates a missing visitor client
+        type: choice
+        options: [plan, apply]
+        default: plan
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wix-headless-client-setup
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Check scoped setup behavior
+        run: node --test scripts/setup-wix-headless.test.mjs
+      - name: Plan or create the visitor client
+        env:
+          MODE: ${{ inputs.mode }}
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
+          WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
+          WIX_ACCOUNT_ID: ${{ vars.WIX_ACCOUNT_ID }}
+        run: node scripts/setup-wix-headless.mjs --mode "$MODE" --output-dir "$RUNNER_TEMP/headless-setup"
+      - name: Upload public client configuration only
+        uses: actions/upload-artifact@v4
+        with:
+          name: headless-client-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/headless-setup/headless-setup.json
+            ${{ runner.temp }}/headless-setup/wix-client.config.json
+          if-no-files-found: error
+          retention-days: 7
