@@ -1,12 +1,23 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { setupHeadlessClient } from "./setup-wix-headless.mjs";
+import { discoverAccountId, setupHeadlessClient } from "./setup-wix-headless.mjs";
 
 const siteId = "11111111-1111-4111-8111-111111111111";
 const clientId = "22222222-2222-4222-8222-222222222222";
 const domains = ["montlake-pta.github.io", "montlakepta.org", "www.montlakepta.org"];
 const app = { id: clientId, name: "Montlake PTA Website", allowedRedirectDomains: domains };
 const ok = (body) => ({ ok: true, json: async () => body });
+
+test("account lookup uses the documented site query and only accepts the selected site's owner", async () => {
+  assert.equal(await discoverAccountId("TEST_ONLY", siteId, async (url, options) => {
+    assert.equal(url, "https://www.wixapis.com/site-list/v2/sites/query");
+    assert.equal(options.headers["wix-site-id"], undefined);
+    assert.deepEqual(JSON.parse(options.body).query.filter, { id: siteId });
+    return ok({ sites: [{ id: siteId, ownerAccountId: clientId }] });
+  }), clientId);
+  await assert.rejects(discoverAccountId("TEST_ONLY", siteId, async () => ok({ sites: [{ id: clientId, ownerAccountId: clientId }] })), /could not be verified/);
+  await assert.rejects(discoverAccountId("TEST_ONLY", siteId, async () => ({ ok: false, status: 403 })), /WIX_ACCOUNT_ID/);
+});
 
 test("plan is read-only and does not create a client", async () => {
   const calls = [];

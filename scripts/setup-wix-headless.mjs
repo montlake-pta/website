@@ -10,6 +10,31 @@ const apiRoot = "https://www.wixapis.com/oauth-app/v1/oauth-apps";
 const uuid = /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i;
 export class HeadlessSetupError extends Error {}
 
+export async function discoverAccountId(apiKey, siteId, fetchImpl = fetch) {
+  if (!apiKey || !uuid.test(siteId || "")) throw new HeadlessSetupError("A Wix API key and valid site ID are required.");
+  let response;
+  try {
+    response = await fetchImpl("https://www.wixapis.com/site-list/v2/sites/query", {
+      method: "POST",
+      headers: { Authorization: apiKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ query: { filter: { id: siteId }, cursorPaging: { limit: 2 } } }),
+      signal: AbortSignal.timeout(30000),
+    });
+  } catch {
+    throw new HeadlessSetupError("Wix account-context lookup failed; no raw network details are logged.");
+  }
+  if (!response.ok) {
+    throw new HeadlessSetupError(`Wix account-context lookup failed (HTTP ${response.status}). Configure WIX_ACCOUNT_ID or provide the public Headless client ID.`);
+  }
+  let result;
+  try { result = await response.json(); }
+  catch { throw new HeadlessSetupError("Wix account-context lookup returned invalid JSON."); }
+  if (result.sites?.length !== 1 || result.sites[0].id !== siteId || !uuid.test(result.sites[0].ownerAccountId || "")) {
+    throw new HeadlessSetupError("The selected site's owning account could not be verified.");
+  }
+  return result.sites[0].ownerAccountId;
+}
+
 export async function setupHeadlessClient({
   apiKey, siteId, accountId, baseUrl = site.previewUrl, mode = "plan", fetchImpl = fetch,
 }) {
@@ -110,9 +135,10 @@ async function main() {
   const output = resolve(values["output-dir"]);
   await mkdir(output);
   const config = JSON.parse(await readFile(join(root, "src/wix.config.json"), "utf8"));
+  const siteId = process.env.WIX_SITE_ID || config.siteId;
+  const accountId = process.env.WIX_ACCOUNT_ID || await discoverAccountId(process.env.WIX_API_KEY, siteId);
   const report = await setupHeadlessClient({
-    apiKey: process.env.WIX_API_KEY, siteId: process.env.WIX_SITE_ID || config.siteId,
-    accountId: process.env.WIX_ACCOUNT_ID, mode: values.mode,
+    apiKey: process.env.WIX_API_KEY, siteId, accountId, mode: values.mode,
   });
   await writeFile(join(output, "headless-setup.json"), JSON.stringify(report, null, 2) + "\n");
   if (report.clientId) {
