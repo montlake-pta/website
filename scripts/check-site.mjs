@@ -8,7 +8,7 @@ import { createNewsletterSnapshot } from "./sync-newsletters.mjs";
 import { createCalendarSnapshot } from "./sync-calendar.mjs";
 import { parseDocument } from "htmlparser2";
 import { selectAll, selectOne } from "css-select";
-import { textContent } from "domutils";
+import { removeElement, textContent } from "domutils";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
@@ -233,8 +233,18 @@ for (const [slug, markers] of [
   ["spring-auction", ["2025–2026 spending plan", "$197,202", "$29,000", "$22,625", "$12,075", "$10,900", "$8,785", "$1,900"]],
 ]) {
   const html = await readFile(join(output, slug, "index.html"), "utf8");
+  const fallback = pages.find((page) => page.slug === slug);
   for (const marker of markers) {
-    if (!html.includes(marker)) failures.push(`${slug} dropped restored content: ${marker}`);
+    if (!fallback.content.includes(marker)) failures.push(`${slug} fallback dropped restored content: ${marker}`);
+  }
+  const authored = wixContent.cms.pages.find((page) => page.slug === slug && page.published !== false);
+  const expected = textContent(parseDocument(sanitizeCmsHtml(authored?.body || fallback.content))).replace(/\s+/g, " ").trim();
+  const article = selectOne("article.prose", parseDocument(html));
+  if (article) {
+    for (const outline of selectAll(".page-outline", article)) removeElement(outline);
+  }
+  if (!article || textContent(article).replace(/\s+/g, " ").trim() !== expected) {
+    failures.push(`${slug} did not preserve the complete authoritative page body`);
   }
 }
 
