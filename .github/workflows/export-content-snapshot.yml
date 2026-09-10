@@ -1,0 +1,65 @@
+name: Export Public Content Snapshot
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_commit:
+        description: Full reviewed commit SHA containing the public-safe normalizers
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-content-snapshot
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Validate source revision
+        env:
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+        run: |
+          if [[ ! "$CANDIDATE_COMMIT" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "A full lowercase commit SHA is required."
+            exit 1
+          fi
+      - name: Check out reviewed source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.candidate_commit }}
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Sync normalized public Wix content
+        env:
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
+          WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
+        run: npm run sync:wix
+      - name: Sync public calendar
+        run: npm run sync:calendar
+      - name: Sync public newsletter archive
+        env:
+          CONSTANT_CONTACT_ARCHIVE_ID: ${{ vars.CONSTANT_CONTACT_ARCHIVE_ID }}
+        run: npm run sync:newsletters
+      - name: Build and check the exported content
+        run: npm run build && npm test
+      - name: Upload only normalized public snapshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-content-${{ github.run_id }}
+          path: |
+            src/data/wix-content.json
+            src/data/calendar-events.json
+            src/data/newsletters.json
+          if-no-files-found: error
+          retention-days: 7
