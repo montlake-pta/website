@@ -267,3 +267,379 @@ Use these as a checklist before marking any page migration complete:
 | `https://www.myschoolbucks.com/ver2/getmain?requestAction=home` | 200 ✓ | welcome-new-families |
 | `https://www.seattleschools.org/student-portal/technology-supports-for-families/source/` | 200 ✓ | welcome-new-families (The Source — correct link) |
 | `https://ps.seattleschools.org/` | HEAD probe: 404 | welcome-new-families (legacy "The Source" duplicate — returned 404 on HEAD; excluded from new site) |
+
+## Remaining-page audit
+
+Expanded audit date: **2026-09-09 PDT**. Source baseline: `4f28d0b`.
+This is a content and task-completion audit, not a comprehensive accessibility
+or performance score. No visitor-facing source or Wix records are changed by
+this audit.
+
+**Main result:** live editorial prose is preserved, but inline links and media
+are not. The other high-priority findings are missing legacy event aliases and
+the homepage's duplicated Welcome Back Party. There are 13 grouped findings
+(four High, nine Medium), with full route coverage below.
+
+The scope excludes the six pages already covered above: Enrichment, New
+Families, Special Education, Donate, Budget, and Board. The live new sitemap
+adds **77 remaining pages**: 14 main pages, 19 posts, 25 event details, 10
+products, and 9 categories. The legacy sitemaps also expose 23 `/events-1/`
+aliases that need a separate inbound-link comparison. Member profiles and
+authenticated account/payment transactions are outside this public-content
+migration audit.
+
+Evidence comes from full public DOM text, headings, links, images and embedded
+content, not word counts alone. Dynamic membership, calendar and program
+states were also inspected in an isolated browser. External action probes use
+GET; a bot challenge or login wall is recorded as a limitation, not a broken
+destination. An empty or partial repository snapshot is **not** evidence that
+the corresponding live CMS record is missing.
+Key action destinations were inspected, but not every historical external
+anchor was independently exercised. No checkout, form submission, authenticated
+recording, or private member content was accessed.
+
+### Community-page findings
+
+| ID | Priority | Page | Finding and effect | Recommended source-layer correction |
+|---|---|---|---|---|
+| R-HOME-1 | High | Home | The September 25 Welcome Back Party occupies two of the three Coming up slots, displacing the September 26 Sounders event. | Reconcile the Google/Wix event identity before limiting the list; retain the richer Wix detail page and cancellation behavior. |
+| R-HOME-2 | Medium | Home | The Friends/Alumni signup and OSPI school report-card link are gone. The distinct school introduction also lost its garden, art and Extended Resource program context. | Restore a concise school/resources section and a confirmed alumni signup destination; preserve the established school context rather than generic substitute copy. |
+| R-ADV-1 | Medium | Advocacy | All seven principles remain as summaries, but the explicit 5–10-year planning position and the commitment to notify families about school-consolidation proposals are omitted. | Preserve the published principles and ongoing communication commitment in `WebsitePages`; distinguish dated legislative/consolidation background from current policy. |
+| R-NEWS-1 | Medium | Newsletter | The configured archive returns zero editions, but the page says the archive is not connected. There is still no latest edition or archive to read. | Distinguish connected-but-empty from unconfigured; the editor must add editions to Constant Contact's public archive. Do not substitute private email/preference links. |
+
+**R-HOME-1 evidence.** The rendered homepage shows both "PTA Welcome Back Party"
+and "Montlake Elementary Welcome Back Party!" on September 25, 2026,
+5:30–7:30 PM, at Montlake. One links to the calendar, the other to the Wix-backed
+event detail route. The legacy homepage lists the Welcome Back Party and the
+September 26 Sounders event separately. `scripts/render-wix-content.mjs:126–153`
+deduplicates only equal normalized titles and local dates; the different
+prefixes do not match. `scripts/render-wix-content.mjs:92–93` then limits the
+result to three. Prefer an explicit shared identity or reviewed alias mapping,
+not a broad fuzzy match that could merge genuinely different events.
+
+**R-HOME-2 evidence.** The [legacy homepage](https://www.montlakepta.org/) links
+"Join Friends/Alumni List" to
+`https://lp.constantcontactpages.com/su/5wEdUw1/MontlakeFriends` and "More Data" to
+the OSPI report card. Neither destination is in the new homepage, including its
+header/footer. The OSPI link redirects successfully to the
+[Montlake school report card](https://reportcard.ospi.k12.wa.us/ReportCard/ViewSchoolOrDistrict/101083)
+and identifies the correct school. The alumni form triggers a Cloudflare
+challenge in both HTTP and browser probes, so its present signup usability is
+unverified. Do not label it broken or replace it with the different family
+newsletter list. The legacy school introduction names the garden, art and
+Extended Resource Special Education program; `scripts/build.mjs:134–163`
+substitutes general PTA mission/funding copy.
+
+**R-ADV-1 evidence.** The [legacy Advocacy page](https://www.montlakepta.org/advocacy)
+states, "We believe everyone would benefit from longer term planning spanning
+5 to 10 years into the future." It also commits to alert families by email and
+newsletter about new specific closure/consolidation proposals. Neither
+commitment appears on the new page; the summarized principles are in
+`src/site.mjs:211–220`. The six distinct external learning/action destinations
+and the advocacy contact are retained. Do not present the omitted 2024/25
+closure discussion as a current update. WSPTA's live priorities page still
+labels its five priorities **2025–2026**; any current-year local summary needs
+an explicit date and owner review.
+
+**R-NEWS-1 evidence.** The public endpoint
+`https://campaignlp.constantcontact.com/v1/archive/a07eh3xf9of0/activities?limit=100`
+returns HTTP 200 and `[]`. `src/newsletter.config.json:2` contains that archive
+ID. `scripts/render-newsletters.mjs:42–48` uses "not connected yet" whenever
+there is no edition, regardless of connection state. The old `/newsletter`
+redirects to a Constant Contact signup form rather than an edition archive.
+Both the old redirected form and the new signup destination encounter bot
+verification during this audit; the new destination matches the legacy
+homepage's family-newsletter signup. No form submission was attempted.
+
+### Community-page coverage
+
+| Route | Result |
+|---|---|
+| `/` | R-HOME-1 and R-HOME-2; current posts and event detail links otherwise remain available. |
+| `/advocacy/` | R-ADV-1; principles/topics, contact and resource destinations largely retained, but not full policy wording. |
+| `/newsletter/` | R-NEWS-1; signup retained, editions absent at the public source. |
+| `/calendar/` | Same public calendar ID, Los Angeles timezone and ICS subscription URL. Legacy wrapper iframe confirmed in browser; ICS returns a valid calendar. No content loss found. |
+| `/join/` | Annual renewal, voting, state/national affiliation, $20 single/$35 double rates, confidential free membership and contact retained. Givebacks renders both matching membership products. Checkout was not exercised. |
+| `/donation-thank-you-page/` | Replaces the legacy direct-visit placeholders ("Donor Name", "$0", "#1000") with a generic thank-you. No actual receipt data was demonstrated by the public legacy page; do not restore fictitious transaction details. |
+| `/challenges/` | Legacy widget renders "No available programs", including after JavaScript. New informational program links add useful navigation; no populated legacy program was found to migrate. |
+
+### Fundraising and commerce findings
+
+| ID | Priority | Page(s) | Finding and effect | Recommended correction |
+|---|---|---|---|---|
+| R-FALL-1 | Medium | Fall Fundraiser | The generic replacement drops the dated 2025 goal, detailed funded positions/programs, per-student support figure and named Equity Fund option. | Preserve an explicitly dated campaign record or obtain current-year figures before refreshing the live CMS page. Do not turn the old figures into current claims. |
+| R-AUCT-1 | Medium | Spring Auction | The 2025–2026 budget chart is missing; its figures are not reproduced by the broad funding prose. | Restore an accessible, explicitly dated chart/table or link to the approved budget. Resolve the historical chart's 70% staffing share versus the site's general 75–80% statement with the treasurer. |
+| R-STOCK-1 | Medium | Shop and all 10 products | Legacy product pages show Out of Stock, while new cards/details show prices without that status. A Wix availability link exists, but families must leave the new page to discover the items cannot currently be bought. | Render the normalized stock status on cards and details, retaining the external source/checkout link. |
+| R-TREE-1 | Medium | Nordmann Fir product | An empty description becomes "More information will be posted soon" for an old, out-of-stock seasonal item. | Use a truthful empty-description/seasonal state; do not promise future content without an authoring commitment. |
+| R-CAT-1 | Medium | 2026 Art Walk category | The legacy category lists nine raffle products. The replacement is a category image and generic shop link, not the promised collection listing. | Preserve category membership and list its products, including stock state; show an explicit empty state for empty collections. |
+
+**R-FALL-1 evidence.** The
+[legacy 2025 campaign](https://www.montlakepta.org/fall-fundraiser-2025)
+states a $125,000 goal and approximately $1,500 annual PTA support per student.
+Its funded-position breakdown includes 0.50 Art (PCP), 0.4 Academic Intervention
+and 0.2 Office Assistant Hourly. It names the Equity Fund and example recipients
+Lowell Elementary and the SE Seattle Schools Fundraising Alliance. The new
+page and `src/site.mjs:358–376` retain giving methods and the fundraising contact
+but not these details. The October–November 2025 campaign window and November
+2025 celebration are expired; omitting an active call to attend is appropriate.
+The missing historical information is not evidence that the live CMS record
+does not exist. No authenticated CMS inventory was performed for this audit.
+
+**R-AUCT-1 evidence.** The omitted
+[chart image](https://static.wixstatic.com/media/0834d6_dc381b37e9ab455daed371f54dd0c561~mv2.png)
+was downloaded and visually read; its content is not unknowable merely because
+the legacy alt text is poor. Its title is "Where Your PTA Dollars Go
+(2025–2026)". It labels Staffing Grant $197,202 (70%), Community Needs $29,000
+(10%), Fundraising Costs $22,625 (8%), Programs & Outreach $12,075 (4%),
+Supplies $10,900 (4%), PTA Admin $8,785 (3%), and Enrichment $1,900 (1%).
+`src/site.mjs:349–354` retains only broad categories and the dated auction goal.
+These figures belong to the labeled historical year, not an inferred 2026–27
+budget. The auction catalog is closed; the new seasonal note and Donate
+alternative are appropriate.
+
+**R-STOCK-1 / R-TREE-1 evidence.** All ten legacy product pages display Out of
+Stock during the audit. The new site preserves their names, descriptions where
+present, prices and links to the corresponding Wix product, but omits the stock
+warning. `scripts/sync-wix.mjs:118` normalizes availability;
+`scripts/render-wix-content.mjs:273–285,356–365` does not display it. The Nordmann
+Fir remains $85; the nine artwork tickets remain $25. The generic empty-body
+promise comes from `scripts/render-wix-content.mjs:374–378`, not evidence of an
+upcoming sale.
+
+**R-CAT-1 evidence.** The
+[legacy 2026 Art Walk category](https://www.montlakepta.org/category/2026-art-walk)
+contains nine artwork products; the new counterpart contains only its image and
+"Products in this seasonal collection appear in the PTA shop."
+`scripts/render-wix-content.mjs:289–299` does not receive or render category
+products. All nine items remain reachable through the all-products shop, so
+this is a lost browsing capability, not lost product routes. Do not copy the
+legacy category's apparently stale "2025 Art Walk Raffle" heading as a verified
+year for the 2026 collection.
+
+### Fundraising and commerce coverage
+
+All 24 new routes below return HTTP 200. "No live counterpart" means a direct
+legacy GET returned the Wix not-found page, not simply that its sitemap omitted
+the URL.
+
+| Route | Result |
+|---|---|
+| `/spring-auction/` | R-AUCT-1; goal, catalog and donation fallback retained; expired active-auction wording removed. |
+| `/fall-fundraiser-2025/` | R-FALL-1; giving methods and contact retained. |
+| `/appreciation/` | Volunteer URL and accolade PDF retained. Volunteer destination requires login; access beyond login is unverified. Old 2025 campaign/flyer is not a current schedule. |
+| `/evergreens/` | Contact and volunteer URL retained. Old 2025 ordering/pickup dates are not current guidance; SignUpGenius's specific signup state is unverified. Legacy category/evergreens link itself returns not found. |
+| `/shop/` | Added product hub, no live legacy /shop counterpart; R-STOCK-1. |
+| `/product-page/nordmann-fir-tree-5-6/` | Name/price/source link retained; R-STOCK-1 and R-TREE-1. |
+| `/product-page/mr-azer-artwork-raffle-ticket/` | Description/price/source link retained; R-STOCK-1. |
+| `/product-page/mr-marshall-s-class-artwork-raffle-ticket/` | Description/price/source link retained; R-STOCK-1. |
+| `/product-page/mr-b-s-class-artwork-raffle-ticket/` | Description/price/source link retained; R-STOCK-1. |
+| `/product-page/teacher-margaret-mr-strasner-s-class-artwork-raffle-ticket/` | Description/price/source link retained; R-STOCK-1. |
+| `/product-page/mrs-orse-s-class-artwork-raffle-ticket/` | Description/price/source link retained; R-STOCK-1. |
+| `/product-page/ms-stryker-s-class-artwork-raffle-ticket/` | Description/price/source link retained; R-STOCK-1. |
+| `/product-page/ms-stump-s-class-artwork-raffle-ticket/` | Description/price/source link retained; R-STOCK-1. |
+| `/product-page/ms-martison-s-class-artwork-raffle-ticket/` | Description/price/source link retained; R-STOCK-1. |
+| `/product-page/ms-podney-s-class-artwork-raffle-ticket/` | Description/price/source link retained; R-STOCK-1. |
+| `/category/2026-art-walk/` | R-CAT-1; category image retained, product list absent. |
+| `/category/all-products/` | Added route; no live legacy counterpart. |
+| `/category/2025-art-walk-spring-concert/` | Added route; no live legacy counterpart. |
+| `/category/24-25-welcome-pizza-party-raffle/` | Added route; no live legacy counterpart. |
+| `/category/25-26-welcome-party-raffle/` | Added route; no live legacy counterpart. |
+| `/category/evergreens/` | Added route; no live legacy counterpart. |
+| `/category/holiday-night-market/` | Added route; no live legacy counterpart. |
+| `/category/islandwood/` | Added route; no live legacy counterpart. |
+| `/category/spring-auction-fundraiser/` | Added route; no live legacy counterpart. |
+
+Seasonal owner follow-up: confirm current campaign dates, volunteer destinations,
+fund allocations and pickup arrangements before activating the next campaign.
+The existing preservation of closed-auction and seasonal caveats is useful;
+expired details should be archived or explicitly dated, not silently promoted
+to the new school year.
+
+### Editorial and inbound-route findings
+
+**The deployed post/event prose is not truncated.** All 19 post bodies match
+their legacy counterparts after whitespace normalization. All 23 events with
+an About section also match; the other two use their complete legacy short
+descriptions. For example, the current school checklist has 4,366 characters
+and all seven steps, the new-family post 2,290 characters, and Parents Night
+Out 1,237 characters including its fee and activities. Comparing only the old
+bootstrap snapshot would incorrectly suggest these live pages were excerpts.
+
+The actual loss is rich-content functionality: links, inline media and
+structure. Plain text equality is not full content parity.
+
+| ID | Priority | Scope | Finding and effect | Recommended correction |
+|---|---|---|---|---|
+| R-RICH-1 | High | 18 posts and 20 event bodies | 170 legacy inline anchor occurrences become non-clickable text. Forms, enrollment, merchandise, volunteer and recording actions lose their destinations. Lists also lose their semantic structure. | Normalize and sanitize the original rich-content nodes, retaining supported links and structural tags instead of converting the body to plain text. |
+| R-MEDIA-1 | High | Rich-content posts/events | Body media is not rendered. Confirmed losses include the Lands' End ordering instructions and February survey chart; a retained hero image does not replace them. | Preserve supported inline images/media and meaningful accessible descriptions; retain private recordings behind their existing access controls. |
+| R-ALIAS-1 | High | 23 legacy `/events-1/` paths | All return 404 on the new site. Twenty-one currently serve correctly named events on Wix; the other two are already broken at the legacy source. | Preserve working aliases with explicit mappings to their canonical detail routes. Exercise encoded punctuation and ambiguous event names; do not guess targets by stripping characters. |
+| R-SNAPSHOT-1 | Medium | Offline editorial snapshot | The bootstrap snapshot contains only 18 abbreviated posts and 23 summary-only events, while production has 19 full-text posts and 25 full-text events. Local/fallback output is not representative of production. | Refresh a reviewed public-safe snapshot after fixing rich-content normalization. Keep conferencing credentials and other nonpublic data out of repository artifacts. |
+
+**R-RICH-1 evidence.** Every new `.article-body` has zero `<a>` elements.
+Eighteen legacy post bodies contain 131 inline anchors; twenty event About
+sections contain 39. These are anchor occurrences, not 170 unique destinations
+or independently verified broken external services. Concrete examples:
+
+- [Current school checklist](https://montlake-pta.github.io/website/post/start-of-school-to-do-list-1/):
+  all seven steps survive, but its 25 body anchors do not. The source's forms,
+  school-account and participation links cannot be followed from the new body.
+- [School gear](https://montlake-pta.github.io/website/post/shop-montlake-elementary-gear-for-school-spirit/):
+  "Order Montlake Elementary gear through the Lands' End school store" loses
+  the link to the school-specific Lands' End store.
+- [Launch enrollment](https://montlake-pta.github.io/website/post/launch-fall-26-27-school-year-registration-opens-april-22nd-2026/):
+  the enrollment URL is visible, but no longer clickable.
+- [February meeting recording](https://montlake-pta.github.io/website/post/montlake-pta-february-general-meeting-recording-1/):
+  the video filename survives but its SharePoint link does not. This audit
+  does not reproduce access parameters or claim the recording is publicly
+  accessible without authorization.
+- [Upcoming Sounders event](https://montlake-pta.github.io/website/event-details/join-the-montlake-pta-at-the-seattle-sounders/):
+  the source's "Know Before You Go" and "Stadium Guide" links are lost. The
+  ticket URL is already plain text on the legacy page, so its lack of an
+  inline anchor is **not** a newly introduced loss. The new page's
+  "Registration and event details" link still reaches Wix.
+
+`scripts/sync-wix.mjs:25–27` requests Blog `RICH_CONTENT`, but
+`scripts/sync-wix.mjs:79–89` retains only plain `contentText` and a hero image.
+For Events, `scripts/sync-wix.mjs:139–151` extracts text leaves, not link/media
+attributes. `scripts/render-wix-content.mjs:237–268,374–378` escapes the
+result into paragraphs. Nine legacy posts and seven event bodies also contain
+semantic lists; the new bodies contain none. Preserve the existing
+`sanitizeCmsHtml()` allowlist rather than injecting raw remote HTML or broadly
+allowing arbitrary embeds. A generic auto-linker cannot recover URLs whose
+anchor labels contain no address.
+
+**R-MEDIA-1 evidence.** The legacy gear post's
+[ordering graphic](https://static.wixstatic.com/media/0834d6_8cf5fb08d7ff4caeb72470035959bcbf~mv2.png)
+was visually read: it contains online/phone ordering steps and school number
+900198474. The new page has a different hero image while still saying "Details
+on how to order below". The legacy survey post's
+[February 2026 chart](https://static.wixstatic.com/media/0834d6_8b54317b34e84f069c85cbf9435e0f2c~mv2.png)
+shows the ranked funding priorities; the new page retains its prose and hero,
+not that chart. The Nobel Prize story has seven legacy body photographs but
+only its first image as a hero on the new page. Across the inventory, 15 posts
+and four event bodies contain legacy images; some first images survive as
+heroes, so that count must not be treated as 19 completely image-free pages.
+
+**R-ALIAS-1 evidence.** All 23 literal paths in the table below were fetched on
+both hosts. For the 21 legacy successes, page titles and main headings identify
+the requested event rather than a generic homepage. Every new counterpart
+returns HTTP 404 with "Page not found". Canonical `/event-details/` routes
+remain available. The original custom-domain URLs still work on the legacy
+site today; this is a compatibility gap in the replacement and a domain-cutover
+risk, not a claim that Wix has already stopped serving them.
+
+**R-SNAPSHOT-1 evidence.** `src/data/wix-content.json` identifies itself as
+`public-bootstrap`. Its 18 post `contentText` values equal their excerpts
+(at most 500 characters), and its 23 event descriptions equal their summaries.
+That is not a limit of the deployed Wix `CONTENT_TEXT` field. The new gear
+post, Welcome Back Party and Sounders event appear in production despite their
+absence from that old offline sample. Do not "fix" nonexistent live truncation
+or overwrite full live CMS bodies with the abbreviated fallback.
+
+### Editorial route coverage
+
+All 44 canonical detail URLs return HTTP 200 on both sites. Text comparison
+ignores whitespace only; it does not certify media or interaction parity.
+Numbers below count legacy body anchors lost by the new body, including
+repeated links. The standalone Wix event CTA is retained separately.
+
+The `/blog/` index links all 19 posts. `/event-list/` exposes the two upcoming
+events and twelve recent-event detail links; it is a recent list, not an
+exhaustive archive of all 25 events. Old canceled records are visibly labeled
+as canceled. Their coexistence with active records does not justify deleting
+source records without an owner decision.
+
+| Post route suffix under `/post/` | Live body characters | Lost inline anchors | Text disposition |
+|---|---:|---:|---|
+| `shop-montlake-elementary-gear-for-school-spirit` | 300 | 1 | Preserved; ordering graphic missing |
+| `start-of-school-to-do-list-1` | 4,366 | 25 | Preserved |
+| `montlake-elementary-school-donation-options-and-matching-information` | 5,670 | 11 | Preserved |
+| `launch-fall-26-27-school-year-registration-opens-april-22nd-2026` | 98 | 1 | Preserved |
+| `montlake-pta-family-survey-results` | 1,036 | 2 | Preserved; chart missing |
+| `montlake-pta-february-general-meeting-recording-1` | 337 | 1 | Preserved; recording link missing |
+| `key-events-for-5th-grade-islandwood-parent-night-out-walk-a-thon-bake-sale-details` | 4,165 | 7 | Preserved |
+| `attention-incoming-montlake-elementary-kindergarten-families-enroll-your-student-by-1-31` | 553 | 2 | Preserved |
+| `congratulations-to-montlake-office-assistant-missy-pody-winner-of-an-sps-all-star-award` | 1,320 | 1 | Preserved |
+| `it-s-the-most-wonderful-time-of-the-year-time-for-our-holiday-evergreens-sale` | 401 | 2 | Preserved |
+| `looking-for-an-elementary-school-for-2026-you-re-invited-to-montlake-elementary-meet-greets` | 1,101 | 2 | Preserved |
+| `montlake-pta-board-meetings-and-general-meeting-dates` | 1,291 | 0 | Schedule text preserved; list structure flattened |
+| `after-school-enrichment-registration-open-sept-10-at-noon-sept-17-at-9pm-classes-begin-october-6` | 3,220 | 5 | Preserved as historical content |
+| `welcome-new-and-prospective-families-26` | 2,290 | 12 | Preserved |
+| `from-montlake-to-the-nobel-prize` | 2,984 | 5 | Preserved; additional photographs missing |
+| `after-school-enrichment-fall-session-2024-information` | 10,811 | 16 | Preserved as historical content |
+| `fall-session-activity-bus-information` | 5,058 | 10 | Preserved as historical content |
+| `after-school-enrichment-and-activity-bus-information` | 5,494 | 5 | Preserved as historical content |
+| `start-of-school-to-do-list` | 5,848 | 23 | Preserved as historical content |
+
+| Event route suffix under `/event-details/` | Live body characters | Lost inline anchors | Text disposition |
+|---|---:|---:|---|
+| `join-the-montlake-pta-at-the-seattle-sounders` | 377 | 4 | About text preserved |
+| `montlake-elementary-welcome-back-party` | 99 | 0 | About text preserved; RSVP via Wix |
+| `5th-grade-promotion-2` | 477 | 1 | About text preserved; canceled state retained |
+| `5th-grade-promotion` | 439 | 1 | About text preserved |
+| `montlake-kindergarten-jumpstart` | 842 | 1 | About text preserved |
+| `art-walk-concert-2026` | 828 | 3 | About text preserved |
+| `montlake-elementary-spring-auction` | 1,572 | 4 | About text preserved |
+| `parents-night-out` | 1,237 | 2 | Full fee/activity text preserved, not an empty placeholder |
+| `2026-spring-auction-party-blooming-bright` | 87 | 0 | Complete legacy short description; no separate About section |
+| `current-student-families-coffee-chat-with-principal-pearson-postponed-to-feb-26` | 293 | 0 | Complete legacy short description; no separate About section |
+| `montlake-elementary-meet-and-greet-on-january-28-at-8-00am` | 1,083 | 2 | About text preserved |
+| `register-for-the-2026-2027-school-year-by-january-31` | 453 | 2 | About text preserved; source uses an enrollment URL as location |
+| `register-for-the-2026-2027-school-year-by-1-31` | 453 | 2 | About text preserved; canceled state retained |
+| `mioposto-dine-out-february-3rd-2026` | 366 | 0 | About text preserved |
+| `ai-social-media-a-parents-only-forum-with-uw-professor-katie-davis` | 695 | 1 | About text preserved |
+| `join-us-for-a-student-panel-on-meany-middle-school` | 948 | 2 | About text preserved; meeting access details excluded from this report |
+| `montlakes-first-creative-convergence-a-literary-celebration` | 1,615 | 3 | About text preserved |
+| `montlake-elementary-holiday-night-market-and-winter-concert` | 492 | 1 | Full schedule text preserved |
+| `join-us-for-uw-womens-basketball-vs-michigan-on-january-1` | 417 | 1 | About text preserved |
+| `montlake-elementary-meet-and-greet-on-january-13-at-8-00am` | 1,076 | 2 | About text preserved |
+| `evergreens-sale-pick-up` | 38 | 1 | Body URL retained as text, not as a link |
+| `fall-fundraiser-event-flatstick-pub` | 752 | 0 | Full FAQ text preserved |
+| `montlake-elementary-meet-greet-2025-11-05-13-30` | 1,161 | 2 | About text preserved |
+| `montlake-elementary-meet-greet-2025-10-30-08-00` | 1,161 | 2 | About text preserved |
+| `annual-fund-celebration` | 822 | 2 | About text preserved |
+
+### Literal legacy event-alias coverage
+
+Each suffix below is appended to `/events-1/`. Percent-encoded characters are
+part of the tested URL representation. The two legacy failures should be
+investigated as source issues, not counted as newly broken migration paths.
+
+| Literal suffix | Legacy HTTP | New HTTP |
+|---|---:|---:|
+| `join-the-montlake-pta-at-the-seattle-sounders!` | 200 | 404 |
+| `montlake-elementary-welcome-back-party!` | 200 | 404 |
+| `5th-grade-promotion!` | 200 | 404 |
+| `montlake-kindergarten-jumpstart!` | 200 | 404 |
+| `art-walk-%26-concert-2026` | 200 | 404 |
+| `montlake-elementary-spring-auction!` | 200 | 404 |
+| `parent's-night-out!` | 200 | 404 |
+| `2026-spring-auction-party-%E2%80%93-blooming-bright` | 200 | 404 |
+| `current-student-families%3A-coffee-chat-with-principal-pearson-(postponed-to-feb-26)` | 200 | 404 |
+| `montlake-elementary-meet-and-greet-on-january-28-at-8%3A00am` | 200 | 404 |
+| `register-for-the-2026-2027-school-year-by-january-31!` | 200 | 404 |
+| `register-for-the-2026-2027-school-year-by-1%2F31!` | 200 | 404 |
+| `mioposto-dine-out---february-3rd%2C-2026` | 404 | 404 |
+| `ai-%26-social-media---a-parents-only-forum-with-uw-professor%2C-katie-davis` | 404 | 404 |
+| `join-us-for-a-student-panel-on-meany-middle-school!` | 200 | 404 |
+| `montlake's-first%C2%A0creative-convergence%3A%C2%A0-a-literary-celebration!%C2%A0%C2%A0` | 200 | 404 |
+| `montlake-elementary-holiday-night-market-and-winter-concert` | 200 | 404 |
+| `join-us-for-uw-women's-basketball-vs-michigan-on-january-1!` | 200 | 404 |
+| `montlake-elementary-meet-and-greet-on-january-13-at-8%3A00am` | 200 | 404 |
+| `evergreens-sale-pick-up` | 200 | 404 |
+| `fall-fundraiser-event-%40-flatstick-pub-` | 200 | 404 |
+| `montlake-elementary-meet-%26-greet` | 200 | 404 |
+| `annual-fund-celebration` | 200 | 404 |
+
+### Prioritized disposition
+
+The expanded audit records **13 grouped findings: four High and nine Medium**.
+Resolve rich-content links/media and explicit legacy aliases first, then the
+homepage duplicate. Address product availability, category browsing and the
+newsletter empty state in the next implementation pass. Refresh the safe
+offline snapshot alongside the normalization work, not before it.
+
+Published policy wording, historical fund figures and future seasonal details
+need a content-owner decision rather than invented replacements. Preserve
+historical years, source access restrictions, useful seasonal caveats, working
+membership/calendar behavior and existing RSVP/checkout handoffs.
