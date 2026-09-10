@@ -4,6 +4,9 @@ export const site = {
   newsletterUrl: "https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp",
   membershipUrl: "https://montlakepta.givebacks.com/store",
   donateUrl: "https://www.paypal.com/donate/?hosted_button_id=L86AXUQZC74VN",
+  friendsUrl: "https://lp.constantcontactpages.com/su/5wEdUw1/MontlakeFriends",
+  schoolReportUrl: "https://reportcard.ospi.k12.wa.us/ReportCard/ViewSchoolOrDistrict/101083",
+  schoolIntroduction: "Montlake Elementary is a small neighborhood school known for its garden and art programs and its Extended Resource Special Education program. Dedicated teachers and support staff help students learn and belong.",
   navigation: [
     { label: "New families", slug: "welcome-new-families" },
     { label: "Calendar", slug: "calendar" },
@@ -209,13 +212,13 @@ export const pages = [
 
       <h2>Our advocacy principles</h2>
       <ol>
-        <li>We support evidence-based solutions that provide quality education, safe environments, inclusion, and the resources every student needs to thrive.</li>
-        <li>We expect decision-makers to share specific short- and long-term plans early enough for communities to understand and help implement them.</li>
-        <li>We support research-based, neurodiversity-affirming decisions that strengthen special education, advanced learning, and multilingual opportunities.</li>
-        <li>We support comprehensive after-school care that is available to all who need it.</li>
-        <li>We seek to minimize disruption to student learning and established communities.</li>
-        <li>We support thoughtful, gradual change that advances equity and diversity across the broader community.</li>
-        <li>We advocate for responsible district finances and stronger state funding for schools.</li>
+        <li>We advocate for evidence-based solutions that enable schools and systems to provide quality education, safe environments, and other resources to enable all students to learn, feel included and thrive.</li>
+        <li>We believe decisionmakers must provide specific details and plans for both short- and long-term changes well in advance of any choice being made so that impacted communities can effectively digest the breadth of information and collaborate in the implementation of said plans. We believe everyone would benefit from longer term planning spanning 5 to 10 years into the future.</li>
+        <li>We support fact, research-based and neurodiversity-affirming decisions that enhance, grow and uplift all diverse facets of learning including special education, advanced learning and multilingual opportunities.</li>
+        <li>We support robust, comprehensive and meaningful after school care that is available to all who need it.</li>
+        <li>We support minimizing disruption to student learning and existing individual communities.</li>
+        <li>We support seeking opportunities for gradual change aimed at enhancing equity and diversity across the greater community.</li>
+        <li>We advocate for better and smarter financial responsibility at the district level as well as better and smarter financial support for schools at the state level.</li>
       </ol>
 
       <h2>Learn</h2>
@@ -232,7 +235,10 @@ export const pages = [
         <li>Review current <a href="https://www.wastatepta.org/focus-areas/advocacy/action-alerts/">WSPTA Action Alerts</a>.</li>
         <li>Learn about the <a href="https://www.billiondollarbakesalewa.com/">Billion Dollar Bake Sale</a> campaign.</li>
         <li>Email our advocacy lead for the highest-impact opportunities right now.</li>
-      </ul>`,
+      </ul>
+      <h2>School planning updates</h2>
+      <p>When Montlake PTA becomes aware of new, specific proposals for school closures or consolidations, we will alert families by email and in the newsletter. We will also share opportunities to respond.</p>
+      <p>For current proposals and action opportunities, <a href="../newsletter/">sign up for the newsletter</a> or email <a href="mailto:advocacy@montlakepta.org">advocacy@montlakepta.org</a>. Past school-year discussions are not a statement of current district plans.</p>`,
   },
   {
     slug: "join",
@@ -352,27 +358,58 @@ export const pages = [
       <h2>Where the dollars go</h2>
       <p>The 2026 goal was $125,000 through auction purchases and direct gifts. Most fundraising supports the Montlake Elementary staffing grant, including essential programs such as art and music, academic intervention, and office support.</p>
       <p>PTA funds also provide student scholarships, equity support for schools with fewer fundraising resources, and community events including the Art Walk and fall welcome.</p>
+      <h2>The 2025–2026 spending plan</h2>
+      <p>The published chart below describes the 2025–2026 plan, not a confirmed budget for the current school year. Percentages are rounded.</p>
+      <figure>
+        <img src="https://static.wixstatic.com/media/0834d6_dc381b37e9ab455daed371f54dd0c561~mv2.png" alt="2025–2026 spending chart: the staffing grant accounts for 70 percent. Full figures follow." width="649" height="411" loading="lazy">
+        <figcaption>Where Your PTA Dollars Go (2025–2026).</figcaption>
+      </figure>
+      <ul>
+        <li><strong>Staffing Grant:</strong> $197,202 (70%).</li>
+        <li><strong>Community Needs:</strong> $29,000 (10%).</li>
+        <li><strong>Fundraising Costs:</strong> $22,625 (8%).</li>
+        <li><strong>Programs &amp; Outreach:</strong> $12,075 (4%).</li>
+        <li><strong>Supplies:</strong> $10,900 (4%).</li>
+        <li><strong>PTA Admin:</strong> $8,785 (3%).</li>
+        <li><strong>Enrichment:</strong> $1,900 (1%).</li>
+      </ul>
+      <p>For the current approved budget and allocation definitions, contact <a href="mailto:treasurer@montlakepta.org">treasurer@montlakepta.org</a>. Historical shares should not be applied to a different school year.</p>
       <div class="callout">Auction links are seasonal. If the catalog is closed, <a href="../donate/">direct donations</a> continue to support the same mission.</div>`,
   },
   {
     slug: "fall-fundraiser-2025",
     title: "Fall Fundraiser",
-    heading: "Start the school year strong.",
+    heading: "The Fall 2025 fundraiser.",
     kicker: "Annual giving",
-    description: "Give online, request an employer match, use payroll deduction, or contribute by check.",
+    description: "The goals and programs behind the 2025 campaign, with ways to support Montlake today.",
     accent: "yellow",
     content: `
-      <p class="lead">The fall fundraiser gives the PTA a strong foundation for staffing support, programs, and community needs throughout the year.</p>
+      <p class="lead">The Fall 2025 campaign set a $125,000 goal to support Montlake Elementary staffing, programs, and community needs.</p>
+      <div class="callout"><strong>Past campaign: October 20–November 21, 2025.</strong> The figures and plans below describe that campaign, not a current-year budget or fundraising deadline. Visit <a href="../donate/">ways to give</a> to support Montlake today.</div>
+      <h2>What the 2025 campaign supported</h2>
+      <p>The campaign described approximately $1,500 in annual PTA support per student and identified these funded positions and programs:</p>
+      <ul>
+        <li>0.50 Art (PCP) program.</li>
+        <li>0.4 Academic Intervention.</li>
+        <li>0.2 Office Assistant Hourly.</li>
+        <li>Music.</li>
+        <li>Community events such as the Welcome Picnic and Art Walk.</li>
+        <li>Teacher appreciation and classroom supplies.</li>
+        <li>Scholarships for students in need.</li>
+      </ul>
+      <h2>The campaign’s Equity Fund option</h2>
+      <p>The 2025 campaign offered an Equity Fund option supporting schools and communities with fewer PTA fundraising resources, including Lowell Elementary and the SE Seattle Schools Fundraising Alliance.</p>
+      <p>Before designating a new gift, ask <a href="mailto:fundraising@montlakepta.org">fundraising@montlakepta.org</a> which funds and recipients are current. This historical campaign does not establish a new allocation commitment.</p>
       <p><a class="button button-primary" href="https://www.paypal.com/donate/?hosted_button_id=L86AXUQZC74VN">Give online</a></p>
       <h2>Four easy ways to help</h2>
       <ol>
         <li><strong>Online:</strong> Make a secure one-time or recurring gift.</li>
         <li><strong>Employer matching:</strong> Many employers match both cash gifts and volunteer hours through Benevity or an internal portal.</li>
         <li><strong>Payroll deduction:</strong> Some employers let you donate each pay period and apply matching funds automatically.</li>
-        <li><strong>Check:</strong> Make checks payable to Montlake PTA Fall Fundraiser and send them by backpack mail or to 2025 E Calhoun Street, Seattle, WA 98112.</li>
+        <li><strong>Check:</strong> Use the <a href="../donate/">current check and mailing instructions</a> on our Donate page.</li>
       </ol>
       <p>Questions? Email <a href="mailto:fundraising@montlakepta.org">fundraising@montlakepta.org</a>.</p>
-      <div class="callout">All gifts are tax-deductible. Montlake Community School Association is an IRS-approved 501(c)(3), Tax ID <strong>91-1117733</strong>.</div>`,
+      <div class="callout">Your donation is tax-deductible to the extent allowed by law. Montlake Community School Association is an IRS-approved 501(c)(3), Tax ID <strong>91-1117733</strong>.</div>`,
   },
   {
     slug: "appreciation",
