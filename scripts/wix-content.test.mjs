@@ -303,7 +303,7 @@ test("stock states, factual empty descriptions and collection membership render 
   assert.match(shop, /href="\.\.\/product-page\/tree\/"/);
   const tree = page(snapshot, "product-page/tree").content;
   assert.match(tree, /currently out of stock/);
-  assert.match(tree, /href="https:\/\/example.org\/product\/tree">View availability/);
+  assert.doesNotMatch(tree, /View availability|data-legacy-transaction/);
   assert.doesNotMatch(tree, /will be posted|soon/);
   const collection = page(snapshot, "category/art-walk").content;
   assert.match(collection, /href="\.\.\/\.\.\/product-page\/art\/"/);

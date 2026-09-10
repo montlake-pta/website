@@ -44,7 +44,7 @@ export async function setupHeadlessClient({
   if (frontend.protocol !== "https:" || frontend.username || frontend.password || frontend.search || frontend.hash || !frontend.pathname.endsWith("/")) {
     throw new HeadlessSetupError("The frontend URL must be an HTTPS directory URL without credentials, query or fragment.");
   }
-  const domains = [...new Set([frontend.hostname, "www.montlakepta.org", "montlakepta.org"])].sort();
+  const domains = [...new Set([frontend.hostname, "montlake-pta.github.io", "www.montlakepta.org", "montlakepta.org"])].sort();
   const matches = [];
   let offset = 0;
   while (true) {

@@ -1,7 +1,8 @@
 import { access, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pages, preserveCollectionRoutes } from "../src/site.mjs";
+import { pages, preserveCollectionRoutes, preserveRetiredProductRoutes, site, transactionPages } from "../src/site.mjs";
+import { visitorConfiguration } from "./visitor-config.mjs";
 import { mergeWixContent, sanitizeCmsHtml } from "./render-wix-content.mjs";
 import { mergeNewsletterContent } from "./render-newsletters.mjs";
 import { createNewsletterSnapshot } from "./sync-newsletters.mjs";
@@ -16,7 +17,12 @@ const failures = [];
 const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
 const calendarContent = JSON.parse(await readFile(join(root, "src", "data", "calendar-events.json"), "utf8"));
 const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
-const renderedPages = preserveCollectionRoutes(mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events), newsletterContent, "https://example.com/signup"));
+const visitor = visitorConfiguration();
+const publicBasePath = new URL(site.previewUrl).pathname;
+const renderedPages = preserveRetiredProductRoutes(preserveCollectionRoutes(mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events, {
+  transactionsEnabled: visitor.enabled,
+}), newsletterContent, "https://example.com/signup")));
+if (visitor.enabled) renderedPages.push(...transactionPages);
 
 for (const page of renderedPages) {
   const file = join(output, page.slug, "index.html");
@@ -67,8 +73,8 @@ for (const asset of ["styles.css", "site.js", "legacy-event-aliases.js", "assets
     failures.push(`dist/${asset}: missing asset`);
   }
   const notFoundHtml = await readFile(join(output, "404.html"), "utf8");
-  if (!notFoundHtml.includes('src="/website/legacy-event-aliases.js"')
-    || !notFoundHtml.includes('href="/website/styles.css"')) {
+  if (!notFoundHtml.includes(`src="${publicBasePath}legacy-event-aliases.js"`)
+    || !notFoundHtml.includes(`href="${publicBasePath}styles.css"`)) {
     failures.push("Deep legacy/unknown paths lack root-relative not-found recovery or styling");
   }
 }
@@ -130,8 +136,8 @@ const enrichmentLinks = [
   "mailto:enrichcoordinator@montlakepta.org?subject=Pickup%20changes",
   "mailto:meguerreroto@seattleschools.org?subject=Enrichment%20scholarship",
   "tel:+12064866036",
-  "https://www.montlakepta.org/_files/ugd/5a8077_0f6074eac84f4eafaf2410e6232ae73a.pdf",
-  "https://www.montlakepta.org/_files/ugd/5a8077_c8fefc14fba54696a881e0533d995dfa.pdf",
+  "../assets/documents/enrichment-positive-behavior-support-plan.pdf",
+  "../assets/documents/enrichment-pickup-map.pdf",
 ];
 for (const [label, html] of [
   ["fallback", enrichmentFallback.content],

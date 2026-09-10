@@ -1,4 +1,5 @@
 import sanitizeHtml from "sanitize-html";
+import visitorConfig from "../src/wix-client.config.json" with { type: "json" };
 
 const allowedCmsHtml = {
   allowedTags: [
@@ -37,7 +38,7 @@ export function sanitizeCmsHtml(body) {
   return sanitizeHtml(body, allowedCmsHtml);
 }
 
-export function mergeWixContent(staticPages, content, calendarEvents = []) {
+export function mergeWixContent(staticPages, content, calendarEvents = [], { transactionsEnabled = visitorConfig.enabled } = {}) {
   validateSnapshot(content);
 
   const pageMap = new Map(staticPages.map((page) => [page.slug, { ...page }]));
@@ -56,8 +57,8 @@ export function mergeWixContent(staticPages, content, calendarEvents = []) {
 
   const dynamicPages = [
     ...blogPosts.map(renderBlogPostPage),
-    ...events.map(renderEventPage),
-    ...products.map(renderProductPage),
+    ...events.map((event) => renderEventPage(event, transactionsEnabled)),
+    ...products.map((product) => renderProductPage(product, transactionsEnabled)),
     ...storeCollections.map((collection) => renderCollectionPage(collection, products)),
   ];
 
@@ -257,7 +258,7 @@ function renderBlogPostPage(post) {
   };
 }
 
-function renderEventPage(event) {
+function renderEventPage(event, transactionsEnabled) {
   const date = formatDateRange(event.startAt, event.endAt);
   return {
     slug: `event-details/${event.slug}`,
@@ -273,12 +274,12 @@ function renderEventPage(event) {
         ${event.location ? `<div><dt>Where</dt><dd>${escapeHtml(event.location)}${event.address ? `<br>${escapeHtml(event.address)}` : ""}</dd></div>` : ""}
       </dl>
       <div class="article-body">${richBodyHtml(event.bodyHtml, event.descriptionText || event.summary)}</div>
-      ${event.sourceUrl ? `<p><a class="button button-primary" href="${escapeAttribute(event.sourceUrl)}">Registration and event details</a></p>` : ""}
+      ${eventAction(event, transactionsEnabled)}
       <p><a class="text-link" href="../../event-list/">← Back to all events</a></p>`,
   };
 }
 
-function renderProductPage(product) {
+function renderProductPage(product, transactionsEnabled) {
   return {
     slug: `product-page/${product.slug}`,
     title: product.name,
@@ -287,12 +288,51 @@ function renderProductPage(product) {
     accent: "yellow",
     content: `
       ${image(product.image, product.name, "detail-image product-image")}
+      ${transactionsEnabled ? "<noscript>" : ""}
       ${product.price != null ? `<p class="product-price">${formatCurrency(product.price, product.currency)}</p>` : ""}
       <p class="card-meta">${productAvailability(product)}</p>
+      ${transactionsEnabled ? "</noscript>" : ""}
+      ${transactionsEnabled ? transactionSlot("product", product.id) : ""}
       <div class="article-body">${textToHtml(product.description || productDescriptionAbsent(product))}</div>
-      ${product.sourceUrl ? `<p><a class="button button-primary" href="${escapeAttribute(product.sourceUrl)}">View availability</a></p>` : ""}
+      ${!transactionsEnabled && availabilityValue(product) !== "OutOfStock" && product.sourceUrl
+        ? `<p><a class="button button-primary" data-legacy-transaction="true" href="${escapeAttribute(product.sourceUrl)}">View availability</a></p>` : ""}
       <p><a class="text-link" href="../../shop/">← Back to the shop</a></p>`,
   };
+}
+
+function transactionSlot(type, id) {
+  if (typeof id !== "string" || !/^[a-zA-Z0-9_-]+$/.test(id)) {
+    console.warn(`No public item identity for ${type} transaction controls.`);
+    return '<p>Online options are unavailable for this listing. Please contact the PTA for help.</p>';
+  }
+  return `<div class="transaction-panel" data-wix-${type}-id="${escapeAttribute(id)}"><p role="status">Loading current ${type === "product" ? "options and availability" : "registration options"}…</p><noscript><p>JavaScript is needed for online ${type === "product" ? "purchasing" : "registration"}. For help, email <a href="mailto:${type === "product" ? "fundraising" : "events"}@montlakepta.org">the PTA team</a>.</p></noscript></div>`;
+}
+
+function eventAction(event, transactionsEnabled) {
+  if (isCanceled(event)) return "";
+  if (event.status === "ENDED" || (event.endAt && dateValue(event.endAt) < Date.now())) {
+    return '<p class="registration-state">This event has ended; registration is closed.</p>';
+  }
+  const external = externalTicketLink([event.summary, event.descriptionText].filter(Boolean).join("\n"));
+  if (external) return `<p><a class="button button-primary" href="${escapeAttribute(external)}">Get tickets with FEVO</a></p>`;
+  if (transactionsEnabled) return transactionSlot("event", event.id);
+  return event.sourceUrl
+    ? `<p><a class="button button-primary" data-legacy-transaction="true" href="${escapeAttribute(event.sourceUrl)}">Registration and event details</a></p>`
+    : "<p>Registration details are not available for this event.</p>";
+}
+
+function externalTicketLink(text) {
+  const links = new Set();
+  for (const value of text.match(/https:\/\/[^\s<>"']+/g) || []) {
+    try {
+      const url = new URL(value.replace(/[).,;]+$/, ""));
+      if (["gofevo.com", "www.gofevo.com"].includes(url.hostname) && url.pathname.startsWith("/event/")
+        && !url.username && !url.password) links.add(url.href);
+    } catch {
+      console.warn("Ignoring an invalid external ticket URL.");
+    }
+  }
+  return links.size === 1 ? [...links][0] : null;
 }
 
 function renderCollectionPage(collection, products) {

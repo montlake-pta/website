@@ -22,6 +22,11 @@ concurrency:
 
 jobs:
   deploy:
+    env:
+      SITE_URL: ${{ vars.SITE_URL }}
+      WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
+      WIX_HEADLESS_ENABLED: ${{ vars.WIX_HEADLESS_ENABLED }}
+      WIX_HEADLESS_CLIENT_ID: ${{ vars.WIX_HEADLESS_CLIENT_ID }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -59,6 +64,9 @@ jobs:
         run: npm run build
       - name: Check generated site
         run: npm test
+      - name: Require cutover readiness when activating the new domain or transactions
+        if: env.WIX_HEADLESS_ENABLED == 'true' || env.SITE_URL != ''
+        run: npm run check:cutover
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site

@@ -17,6 +17,11 @@ concurrency:
 
 jobs:
   export:
+    env:
+      SITE_URL: ${{ vars.SITE_URL }}
+      WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
+      WIX_HEADLESS_ENABLED: ${{ vars.WIX_HEADLESS_ENABLED }}
+      WIX_HEADLESS_CLIENT_ID: ${{ vars.WIX_HEADLESS_CLIENT_ID }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

@@ -205,6 +205,12 @@ and data graphics retain a textual equivalent where authored.
 Article tables preserve row/cell structure, use thin dividers and wrap within
 the reading column rather than introducing horizontal page scroll.
 
+Visitor transaction forms are Operate surfaces within the same reading layout:
+visible labels, 48px controls, native validation, explicit loading/error states
+and restrained status messages. Checkout confirmations never infer payment
+success from a return URL alone. The catalog remains readable without
+JavaScript; live purchasing and registration are progressive enhancements.
+
 The Donate surface is Persuade: a student-led hero, an evidence sequence showing
 where support flows, comparable giving methods, and an equity-and-trust close.
 It remains factual and never uses artificial urgency or donation pressure.

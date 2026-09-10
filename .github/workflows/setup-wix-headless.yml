@@ -19,6 +19,8 @@ concurrency:
 
 jobs:
   setup:
+    env:
+      SITE_URL: ${{ vars.SITE_URL }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

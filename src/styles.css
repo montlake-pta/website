@@ -1398,6 +1398,68 @@ body:has(.donate-hero) .site-footer {
   vertical-align: top;
 }
 
+.transaction-panel {
+  margin-block: 2rem;
+}
+
+.transaction-field {
+  display: grid;
+  margin-block: 1rem;
+  gap: 0.5rem;
+}
+
+.transaction-field label,
+.transaction-panel legend {
+  font-weight: 700;
+}
+
+.transaction-panel input,
+.transaction-panel select,
+.transaction-panel textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+}
+
+.transaction-panel input[type="checkbox"],
+.transaction-panel input[type="radio"] {
+  width: 1.25rem;
+  min-height: 1.25rem;
+  margin-inline-end: 0.5rem;
+  accent-color: var(--forest);
+}
+
+.transaction-panel textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.transaction-actions {
+  display: flex;
+  flex-wrap: wrap;
+  margin-block: 1.5rem;
+  gap: 0.75rem;
+}
+
+.transaction-status:not(:empty) {
+  margin-block: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--blue-soft);
+}
+
+.transaction-panel button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .event-facts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

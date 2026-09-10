@@ -63,6 +63,42 @@ python3 -m http.server 4173 --directory dist
 
 Then open <http://localhost:4173/>.
 
+## Frontend cutover and visitor transactions
+
+Wix remains the content, media and commerce backend. Retiring the legacy
+Editor frontend is a separate step from deleting or unpublishing Wix services.
+
+The build rewrites known legacy page links to the current frontend and hosts
+the enrichment PDFs locally, including their old `_files/ugd/` paths. Missing
+legacy targets fail the build instead of becoming silent broken links.
+Historical promotion and unavailable Islandwood item routes remain useful.
+
+Visitor transactions are controlled by `src/wix-client.config.json`, or the
+public Actions variables `WIX_HEADLESS_CLIENT_ID` and `WIX_HEADLESS_ENABLED`.
+Only a public Headless client ID belongs in browser configuration; never use
+`WIX_API_KEY` there. The manual **Set Up Wix Headless Client** workflow can
+plan/create the named client when the account/API-key permissions allow it.
+
+**Activation is currently blocked by [issue #4](https://github.com/montlake-pta/website/issues/4).**
+The current key cannot query Headless clients or discover the required account
+context. Until that is resolved, activation stays off and a still-needed,
+explicitly marked registration handoff is retained rather than breaking the
+working signup path.
+
+Run `npm run build && npm test && npm run check:cutover` before retiring the
+old frontend. The strict check rejects unconfigured visitor access and
+remaining legacy handoffs. `--offline` skips live visitor probes, so an offline
+pass is not transaction approval. No tests should submit real RSVPs, reserve
+limited tickets or charge payments without explicit authorization.
+
+Set `SITE_URL` only when the target domain is ready: it controls canonicals,
+sitemap URLs, compatibility paths and transaction callbacks. The default
+remains `https://montlake-pta.github.io/website/`; the eventual custom-domain
+value is `https://www.montlakepta.org/`. Enabling transactions or setting an
+explicit `SITE_URL` activates the strict cutover gate in Pages deployment.
+Verify checkout return domains and actual visitor flows before changing DNS;
+the automation does not change DNS or unpublish the old site.
+
 ## Wix content sync
 
 The deployed site reads Blog posts, Events, Store products and categories, PTA

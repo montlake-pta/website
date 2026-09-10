@@ -1,30 +1,55 @@
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pages, preserveCollectionRoutes, site } from "../src/site.mjs";
+import { pages, preserveCollectionRoutes, preserveRetiredProductRoutes, site, transactionPages } from "../src/site.mjs";
 import { mergeWixContent } from "./render-wix-content.mjs";
 import { mergeNewsletterContent } from "./render-newsletters.mjs";
 import { emitLegacyEventAliases } from "./legacy-event-aliases.mjs";
+import { visitorConfiguration } from "./visitor-config.mjs";
+import { build as bundleJavaScript } from "esbuild";
+import { emitLegacyDocuments, rewriteCutoverLinks } from "./cutover-links.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
 const deploymentBase = new URL(site.previewUrl).pathname;
+const visitor = visitorConfiguration();
 const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
 const calendarContent = JSON.parse(await readFile(join(root, "src", "data", "calendar-events.json"), "utf8"));
 const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
-const renderedPages = preserveCollectionRoutes(mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events), newsletterContent, site.newsletterUrl));
+const renderedPages = preserveRetiredProductRoutes(preserveCollectionRoutes(mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events, {
+  transactionsEnabled: visitor.enabled,
+}), newsletterContent, site.newsletterUrl)));
+if (visitor.enabled) {
+  for (const page of transactionPages) {
+    if (renderedPages.some((existing) => existing.slug === page.slug)) throw new Error(`Reserved transaction route collision: ${page.slug}`);
+    renderedPages.push(page);
+  }
+}
+const routeInventory = new Set(renderedPages.map((page) => page.slug));
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 await cp(join(root, "src", "assets"), join(output, "assets"), { recursive: true });
+await emitLegacyDocuments(output);
 await cp(join(root, "src", "styles.css"), join(output, "styles.css"));
 await cp(join(root, "src", "site.js"), join(output, "site.js"));
+if (visitor.enabled) {
+  await bundleJavaScript({
+    entryPoints: [join(root, "src", "wix-transactions.mjs")],
+    outfile: join(output, "transactions.js"),
+    bundle: true, platform: "browser", format: "esm", target: "es2022",
+    minify: true, legalComments: "eof", charset: "utf8",
+  });
+}
 
 for (const page of renderedPages) {
   const pageDirectory = page.slug ? join(output, page.slug) : output;
   const base = page.slug ? "../".repeat(page.slug.split("/").length) : "./";
   await mkdir(pageDirectory, { recursive: true });
-  await writeFile(join(pageDirectory, "index.html"), renderPage(page, base));
+  await writeFile(join(pageDirectory, "index.html"), rewriteCutoverLinks(renderPage(page, base), {
+    slug: page.slug, routes: routeInventory, baseUrl: site.previewUrl,
+    allowLegacyTransactions: !visitor.enabled,
+  }));
 }
 
 await emitLegacyEventAliases({
@@ -33,20 +58,24 @@ await emitLegacyEventAliases({
   basePath: deploymentBase,
 });
 
-await writeFile(join(output, "404.html"), renderNotFound());
-await writeFile(join(output, "robots.txt"), "User-agent: *\nAllow: /\nSitemap: https://montlake-pta.github.io/website/sitemap.xml\n");
+await writeFile(join(output, "404.html"), rewriteCutoverLinks(renderNotFound(), {
+  slug: "", routes: routeInventory, baseUrl: site.previewUrl,
+}));
+await writeFile(join(output, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${site.previewUrl}sitemap.xml\n`);
 await writeFile(join(output, "sitemap.xml"), renderSitemap());
 
 console.log(`Built ${renderedPages.length} pages in dist/ using ${wixContent.source} content`);
 
 function renderPage(page, base) {
   const canonicalPath = page.slug ? `${page.slug}/` : "";
-  const nav = site.navigation
+  const nav = [...site.navigation, ...(visitor.enabled ? [{ label: "Cart", slug: "cart" }] : [])]
     .map(({ label, slug }) => {
       const active = slug === page.slug ? ' aria-current="page"' : "";
       return `<a href="${base}${slug ? `${slug}/` : ""}"${active}>${label}</a>`;
     })
     .join("\n              ");
+  const needsTransactions = visitor.enabled && /data-wix-(?:product-id|event-id|cart|confirmation)\b/.test(page.content || "");
+  const publicConfig = JSON.stringify(visitor).replaceAll("<", "\\u003c").replaceAll("\u2028", "\\u2028").replaceAll("\u2029", "\\u2029");
 
   return `<!doctype html>
 <html lang="en">
@@ -59,10 +88,11 @@ function renderPage(page, base) {
     <meta property="og:description" content="${escapeAttribute(page.description)}">
     <meta property="og:type" content="website">
     <meta property="og:image" content="${site.previewUrl}assets/school.jpg">
-    <link rel="canonical" href="${site.previewUrl}${canonicalPath}">
+    ${page.notFound ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${site.previewUrl}${canonicalPath}">`}
     <link rel="icon" href="${base}assets/mark.png">
     <link rel="stylesheet" href="${base}styles.css">
     <script src="${base}site.js" defer></script>
+    ${needsTransactions ? `<script id="wix-client-config" type="application/json">${publicConfig}</script><script type="module" src="${base}transactions.js"></script>` : ""}
     <title>${escapeAttribute(page.title)} | ${escapeAttribute(site.name)}</title>
   </head>
   <body>
@@ -427,6 +457,7 @@ function renderNotFound() {
     ...home,
     home: false,
     slug: "404",
+    notFound: true,
     title: "Page not found",
     heading: "We couldn’t find that page.",
     description: "The page may have moved during our website redesign.",
