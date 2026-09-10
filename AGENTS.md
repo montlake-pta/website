@@ -87,6 +87,11 @@ node .github/skills/impeccable/scripts/detect.mjs --json dist
 
 The command exits with code 2 when it finds issues. Treat verified findings as
 work to resolve, not as a reason to weaken the detector or add broad ignores.
+For the root-relative `/website/` assets on not-found and compatibility pages,
+also inspect a deployment-shaped preview root containing a `website/` copy of
+`dist/`. The static detector otherwise resolves `/website/styles.css` inside
+`dist/website/` and reports false missing-style/type findings. Keep those
+distinct from actual browser defects; do not disable the rules.
 
 For a local preview:
 

@@ -270,10 +270,55 @@ Use these as a checklist before marking any page migration complete:
 
 ## Remaining-page audit
 
+### Remediation status — September 10, 2026
+
+The code repairs are implemented against an authenticated public snapshot.
+The September 9 findings below are retained as the before-repair record, not
+the current status of the repaired pages.
+
+| Finding | Disposition |
+|---|---|
+| R-RICH-1 | Supported public links, formatting, lists and structured schedule tables restored. Rich headings are normalized under the page heading. |
+| R-MEDIA-1 | Inline media restored, including ordering instructions, survey charts and additional story photographs; source captions/alt text retained. |
+| R-ALIAS-1 | All 21 working event aliases map explicitly to their reviewed event identities. The two already-broken source aliases remain unknown paths. |
+| R-HOME-1 | Reviewed Welcome Back Party and Sounders title variants are reconciled before the three-event limit, with Wix details preferred. |
+| R-HOME-2 | School-specific introduction, OSPI report card and the original friends/alumni signup restored. The external signup's bot challenge remains an audit limitation, not evidence that the form is broken. |
+| R-ADV-1 | Full published principles, the 5–10-year planning position and family-notification commitment restored in Wix `WebsitePages` and fallback. |
+| R-FALL-1 | Goal, staffing/program details, per-student estimate and Equity Fund context restored as an explicitly dated Fall 2025 campaign. New gifts use current donation guidance. |
+| R-AUCT-1 | The 2025–2026 spending chart and a readable list of all figures restored in Wix and fallback; current-year allocations still require the treasurer. |
+| R-STOCK-1 | Shop cards and product details display known, unknown and partially unavailable stock states without guessing. |
+| R-TREE-1 | The empty product description no longer promises future information; its out-of-stock state is explicit. |
+| R-CAT-1 | Public category membership is queried and rendered; the 2026 Art Walk lists its nine products. Eight previously published category addresses retain useful shop fallbacks without exporting hidden collection records. |
+| R-NEWS-1 | Connected-but-empty and unavailable archive states are distinct; the empty-page introduction no longer promises an available edition. Constant Contact still needs an editor to archive campaigns: [#3](https://github.com/montlake-pta/website/issues/3). |
+| R-SNAPSHOT-1 | Full normalized public snapshot refreshed: 19 posts, 25 events, 10 products, one currently public collection, 13 board records and 18 CMS pages. All 83 previously published canonical routes remain available. |
+
+The public snapshot retains 23 inline post images and four inline event images.
+It preserves 167 body anchors. Of the audit's 170 legacy anchor occurrences,
+two were Wix-generated numeric ranking hashtags (`#1` and `#2`), not authored
+rich-content destinations; those ranking labels remain text. The other is a
+conferencing link intentionally excluded from public repository content.
+Approved file/recording links retain their original access controls.
+Recognized conferencing and shared-access credentials are intentionally
+excluded rather than copied from historical posts into the public snapshot.
+
+The table allowlist change is limited to non-interactive structural tags, with
+no new table attributes or iframe hosts. A narrow security review identified
+cross-cell credential continuation; whole credential rows and their plain-text
+counterparts are now redacted, with explicit regression coverage.
+
+Snapshots pass a public-field/HTML export gate before artifact upload. The
+manual export never writes Wix or deploys the site. Existing owner actions in
+[#1](https://github.com/montlake-pta/website/issues/1) and
+[#2](https://github.com/montlake-pta/website/issues/2), including current policy
+confirmation and the independent legacy Editor handoff, remain owner decisions;
+historical repairs do not imply current-year approval.
+
+### September 9 audit baseline
+
 Expanded audit date: **2026-09-09 PDT**. Source baseline: `4f28d0b`.
 This is a content and task-completion audit, not a comprehensive accessibility
-or performance score. No visitor-facing source or Wix records are changed by
-this audit.
+or performance score. The original audit did not change visitor-facing source
+or Wix records; implementation is recorded separately above.
 
 **Main result:** live editorial prose is preserved, but inline links and media
 are not. The other high-priority findings are missing legacy event aliases and

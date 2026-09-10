@@ -340,14 +340,19 @@ test("reviewed Welcome Back aliases dedupe before the three-slot limit, without 
   const calendar = [
     { id: "earlier", title: "Earlier event", startAt: "2099-09-24T20:00:00Z" },
     { id: "party", title: "PTA Welcome Back Party", startAt: start, endAt: end },
-    { id: "sounders", title: "Sounders", startAt: "2099-09-27T00:00:00Z" },
+    { id: "sounders", title: "Montlake @ Sounders Game", startAt: "2099-09-27T00:00:00Z" },
   ];
   const snapshot = normalize({});
-  snapshot.events = [wix];
+  snapshot.events = [wix, {
+    slug: "sounders", title: "Join the Montlake PTA at the Seattle Sounders!",
+    startAt: calendar[2].startAt,
+  }];
   const feed = page(snapshot, "", calendar).homeFeed;
   assert.match(feed, /Sounders/);
   assert.match(feed, /event-details\/welcome/);
+  assert.match(feed, /event-details\/sounders/);
   assert.doesNotMatch(feed, />PTA Welcome Back Party</);
+  assert.doesNotMatch(feed, />Montlake @ Sounders Game</);
   snapshot.events = [{ ...wix, status: "CANCELED" }];
   assert.doesNotMatch(page(snapshot, "", calendar).homeFeed, /Welcome Back/);
   snapshot.events = [{ ...wix, slug: "superseded-party", status: "CANCELED" }, wix];

@@ -142,6 +142,11 @@ function combinedUpcomingEvents(wixEvents, calendarEvents, now) {
   return [...byTitleAndDay.values()].sort((left, right) => dateValue(left.startAt) - dateValue(right.startAt));
 }
 
+const homeEventTitleAliases = new Map([
+  ["pta welcome back party", "montlake elementary welcome back party"],
+  ["montlake sounders game", "join the montlake pta at the seattle sounders"],
+]);
+
 function homeEventKey(event) {
   const original = event.title.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
   const alphanumeric = event.title
@@ -150,10 +155,9 @@ function homeEventKey(event) {
     .toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, " ")
     .trim();
-  // Reviewed identity from the remaining-page audit. Do not fuzzy-match titles:
+  // Reviewed identities in the public calendar and Wix feed. Do not fuzzy-match:
   // date remains part of the key, and every other title keeps Unicode handling.
-  const title = alphanumeric === "pta welcome back party"
-    ? "montlake elementary welcome back party" : alphanumeric || original;
+  const title = homeEventTitleAliases.get(alphanumeric) || alphanumeric || original;
   return `${title}|${localDateKey(new Date(event.startAt))}`;
 }
 

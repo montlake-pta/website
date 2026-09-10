@@ -2,7 +2,7 @@ import { access, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pages, preserveCollectionRoutes } from "../src/site.mjs";
-import { mergeWixContent } from "./render-wix-content.mjs";
+import { mergeWixContent, sanitizeCmsHtml } from "./render-wix-content.mjs";
 import { mergeNewsletterContent } from "./render-newsletters.mjs";
 import { createNewsletterSnapshot } from "./sync-newsletters.mjs";
 import { createCalendarSnapshot } from "./sync-calendar.mjs";
@@ -26,6 +26,22 @@ for (const page of renderedPages) {
     if (!html.includes("<h1>")) failures.push(`${file}: missing h1`);
     if (!html.includes('href="#main-content"')) failures.push(`${file}: missing skip link`);
     if (html.includes('href="undefined')) failures.push(`${file}: undefined link`);
+
+    const record = page.slug.startsWith("post/")
+      ? wixContent.blogPosts.find((post) => `post/${post.slug}` === page.slug)
+      : page.slug.startsWith("event-details/")
+        ? wixContent.events.find((event) => `event-details/${event.slug}` === page.slug) : null;
+    if (record?.bodyHtml) {
+      const expected = parseDocument(sanitizeCmsHtml(record.bodyHtml));
+      const article = selectOne(".article-body", parseDocument(html));
+      if (textContent(expected).trim() || selectAll("img,iframe,hr", expected).length) {
+        for (const selector of ["a[href]", "img[src]", "ul", "ol", "table", "tr"]) {
+          if (!article || selectAll(selector, article).length !== selectAll(selector, expected).length) {
+            failures.push(`${file}: rich content lost ${selector} structure`);
+          }
+        }
+      }
+    }
 
     for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
       if (["#", "http:", "https:", "mailto:", "tel:"].some((prefix) => href.startsWith(prefix))) continue;

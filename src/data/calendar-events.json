@@ -1,25 +1,25 @@
 {
   "schemaVersion": 1,
   "source": "google-calendar",
-  "syncedAt": "2026-09-04T19:00:46.826Z",
+  "syncedAt": "2026-09-10T14:54:02.667Z",
   "events": [
     {
-      "id": "0c0dca3910f00ca1",
-      "title": "No School: Labor Day",
-      "startAt": "2026-09-07T07:00:00.000Z",
-      "endAt": "2026-09-08T07:00:00.000Z",
+      "id": "ca4969b433de71d4",
+      "title": "Fall Session After School Enrichment (ASE) Registration Opens",
+      "startAt": "2026-09-14T07:00:00.000Z",
+      "endAt": "2026-09-19T07:00:00.000Z",
       "allDay": true,
       "location": "",
       "status": "CONFIRMED",
       "source": "google-calendar"
     },
     {
-      "id": "9494ff65a12cfcbf",
-      "title": "Kindergarten: First Day of School (7:55a - 2:25p)",
-      "startAt": "2026-09-08T07:00:00.000Z",
-      "endAt": "2026-09-09T07:00:00.000Z",
-      "allDay": true,
-      "location": "",
+      "id": "f59b4ffc0b379bfd",
+      "title": "PTA Welcome Back Party",
+      "startAt": "2026-09-26T00:30:00.000Z",
+      "endAt": "2026-09-26T02:30:00.000Z",
+      "allDay": false,
+      "location": "2025 E Calhoun St, Seattle, WA 98112, USA",
       "status": "CONFIRMED",
       "source": "google-calendar"
     },
@@ -29,6 +29,16 @@
       "startAt": "2026-09-27T00:30:00.000Z",
       "endAt": "2026-09-27T02:30:00.000Z",
       "allDay": false,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "9e53bd9918906208",
+      "title": "Enrichment: Fall Session Begins",
+      "startAt": "2026-10-07T07:00:00.000Z",
+      "endAt": "2026-10-08T07:00:00.000Z",
+      "allDay": true,
       "location": "",
       "status": "CONFIRMED",
       "source": "google-calendar"
@@ -67,7 +77,7 @@
       "id": "44169ab854ba1990",
       "title": "No School - Thanksgiving",
       "startAt": "2026-11-26T08:00:00.000Z",
-      "endAt": "2026-11-27T08:00:00.000Z",
+      "endAt": "2026-11-28T08:00:00.000Z",
       "allDay": true,
       "location": "",
       "status": "CONFIRMED",
@@ -76,6 +86,16 @@
     {
       "id": "3a01014d8c2116cc",
       "title": "1-Hour Early Dismissal (1:25p)",
+      "startAt": "2026-12-18T08:00:00.000Z",
+      "endAt": "2026-12-19T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "377ad3a98f88d608",
+      "title": "Enrichment: Fall Session Ends",
       "startAt": "2026-12-18T08:00:00.000Z",
       "endAt": "2026-12-19T08:00:00.000Z",
       "allDay": true,
@@ -108,16 +128,6 @@
       "title": "No School - MLK Jr. Day",
       "startAt": "2027-01-18T08:00:00.000Z",
       "endAt": "2027-01-19T08:00:00.000Z",
-      "allDay": true,
-      "location": "",
-      "status": "CONFIRMED",
-      "source": "google-calendar"
-    },
-    {
-      "id": "b586064af18f31d9",
-      "title": "Day between semesters - No school",
-      "startAt": "2027-01-28T08:00:00.000Z",
-      "endAt": "2027-01-29T08:00:00.000Z",
       "allDay": true,
       "location": "",
       "status": "CONFIRMED",
