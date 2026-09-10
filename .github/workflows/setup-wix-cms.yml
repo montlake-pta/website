@@ -2,6 +2,10 @@ name: Set Up Wix CMS
 
 on:
   workflow_dispatch:
+    inputs:
+      page:
+        description: Optional single static page slug to seed without touching other collections
+        type: string
 
 permissions:
   contents: read
@@ -27,4 +31,10 @@ jobs:
         env:
           WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
           WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
-        run: npm run setup:wix-cms
+          PAGE_SLUG: ${{ inputs.page }}
+        run: |
+          if [[ -n "$PAGE_SLUG" ]]; then
+            npm run setup:wix-cms -- --page "$PAGE_SLUG"
+          else
+            npm run setup:wix-cms
+          fi

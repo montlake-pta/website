@@ -1,6 +1,17 @@
+let publicSiteUrl;
+try {
+  publicSiteUrl = new URL(process.env.SITE_URL || "https://montlake-pta.github.io/website/");
+} catch {
+  throw new Error("SITE_URL must be a valid public HTTPS directory URL.");
+}
+if (publicSiteUrl.protocol !== "https:" || publicSiteUrl.username || publicSiteUrl.password
+  || publicSiteUrl.search || publicSiteUrl.hash || !publicSiteUrl.pathname.endsWith("/")) {
+  throw new Error("SITE_URL must be an HTTPS directory URL without credentials, query or fragment.");
+}
+
 export const site = {
   name: "Montlake PTA",
-  previewUrl: "https://montlake-pta.github.io/website/",
+  previewUrl: publicSiteUrl.href,
   newsletterUrl: "https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp",
   membershipUrl: "https://montlakepta.givebacks.com/store",
   donateUrl: "https://www.paypal.com/donate/?hosted_button_id=L86AXUQZC74VN",
@@ -40,12 +51,65 @@ export function preserveCollectionRoutes(contentPages) {
     }))];
 }
 
+export const transactionPages = [
+  {
+    slug: "cart",
+    title: "Your cart",
+    heading: "Your PTA shop cart.",
+    description: "Review your items and continue to secure checkout.",
+    accent: "blue",
+    content: '<div class="transaction-panel" data-wix-cart><p role="status">Loading your cart…</p><noscript><p>JavaScript is needed to manage your cart. For help, email <a href="mailto:fundraising@montlakepta.org">fundraising@montlakepta.org</a>.</p></noscript></div>',
+  },
+  {
+    slug: "checkout/complete",
+    title: "Checkout status",
+    heading: "Your checkout status.",
+    description: "Find confirmation and next steps for your checkout.",
+    accent: "blue",
+    content: '<div class="transaction-panel" data-wix-confirmation><p role="status">Checking your checkout status…</p><noscript><p>Check the confirmation email from the payment or registration provider for your completed order. This page alone is not proof of payment.</p></noscript></div>',
+  },
+];
+
+export function preserveRetiredProductRoutes(contentPages) {
+  const routes = new Set(contentPages.map((page) => page.slug));
+  return [...contentPages, ...["islandwood-donation", "islandwood-bake-sale"]
+    .map((slug) => `product-page/${slug}`)
+    .filter((slug) => !routes.has(slug))
+    .map((slug) => ({
+      slug,
+      title: "Islandwood fundraiser item",
+      heading: "This fundraiser item is no longer available.",
+      description: "Find background on the Islandwood fundraiser and contact the PTA about current opportunities.",
+      accent: "blue",
+      content: '<p>This item is not currently available in the public store. Read the <a href="../../post/key-events-for-5th-grade-islandwood-parent-night-out-walk-a-thon-bake-sale-details/">2026 Islandwood fundraising information</a> for background, or contact <a href="mailto:fundraising@montlakepta.org">fundraising@montlakepta.org</a> about current opportunities.</p><p>For other items, <a href="../../shop/">browse the PTA shop</a>. A general PTA gift is not automatically designated for Islandwood.</p>',
+    }))];
+}
+
 export const pages = [
   {
     slug: "",
     title: "Home",
     description: "Montlake PTA brings families, educators, and neighbors together to help every student learn, belong, and thrive.",
     home: true,
+  },
+  {
+    slug: "fifth-grade-promotion",
+    title: "Fifth Grade Promotion",
+    heading: "Fifth grade promotion.",
+    description: "Information about the June 16, 2026 celebration and how to contact the PTA.",
+    accent: "blue",
+    content: `
+      <p class="lead">The 2026 fifth grade promotion celebration took place on June 16 at Montlake Elementary.</p>
+      <div class="callout"><strong>Past event.</strong> These details describe the 2026 celebration, not the next school year’s promotion plans.</div>
+      <h2>The 2026 celebration</h2>
+      <ul>
+        <li><strong>Date:</strong> June 16, 2026.</li>
+        <li><strong>Time:</strong> 5:00–8:00 PM.</li>
+        <li><strong>Location:</strong> Montlake Elementary, 2025 E Calhoun St, Seattle, WA 98112.</li>
+      </ul>
+      <p><a class="button button-primary" href="../event-details/5th-grade-promotion/">Read the 2026 event details</a></p>
+      <h2>Questions for the PTA</h2>
+      <p>For questions about promotion celebrations or future plans, email <a href="mailto:events@montlakepta.org">events@montlakepta.org</a>. The PTA can help direct your question to the right person.</p>`,
   },
   {
     slug: "welcome-new-families",
@@ -181,7 +245,7 @@ export const pages = [
       <ul>
         <li>Remind your student which class they are attending each day.</li>
         <li>Review where they should go at school dismissal.</li>
-        <li>Discuss behavior expectations and the <a href="https://www.montlakepta.org/_files/ugd/5a8077_0f6074eac84f4eafaf2410e6232ae73a.pdf">Positive Behavior Support Plan (PDF)</a>.</li>
+        <li>Discuss behavior expectations and the <a href="../assets/documents/enrichment-positive-behavior-support-plan.pdf">Positive Behavior Support Plan (PDF)</a>.</li>
         <li>Pack an extra snack for the short snack break before class.</li>
       </ul>
 
@@ -196,7 +260,7 @@ export const pages = [
       <h2>Pickup</h2>
       <p>Pickup times vary by class and day. Consult your student’s schedule and confirm their dismissal plan before the first class.</p>
       <ul>
-        <li><strong>Parent or caregiver pickup:</strong> Students are dismissed from the southeast garden gate. See the <a href="https://www.montlakepta.org/_files/ugd/5a8077_c8fefc14fba54696a881e0533d995dfa.pdf">campus aerial map (PDF)</a>. Be prepared to show identification until instructors recognize you.</li>
+        <li><strong>Parent or caregiver pickup:</strong> Students are dismissed from the southeast garden gate. See the <a href="../assets/documents/enrichment-pickup-map.pdf">campus aerial map (PDF)</a>. Be prepared to show identification until instructors recognize you.</li>
         <li><strong>Independent walkers:</strong> Email written permission in advance to the coordinator. Students must leave campus immediately after enrichment.</li>
         <li><strong>Launch students:</strong> Students are escorted directly to Launch aftercare when class ends.</li>
         <li><strong>Let Grow Play Club:</strong> Students transition directly to the club after enrichment.</li>
@@ -212,7 +276,7 @@ export const pages = [
       <p>Have a backup pickup plan in case an instructor is absent and class is canceled. The Enrichment Coordinator will work with the front office to notify families promptly so they can adjust pickup plans.</p>
 
       <h2>Policies</h2>
-      <p>Students are expected to follow the same behavior standards as during the school day, respecting themselves, others, and school spaces. Review the <a href="https://www.montlakepta.org/_files/ugd/5a8077_0f6074eac84f4eafaf2410e6232ae73a.pdf">Positive Behavior Support Plan (PDF)</a> together before the first class.</p>
+      <p>Students are expected to follow the same behavior standards as during the school day, respecting themselves, others, and school spaces. Review the <a href="../assets/documents/enrichment-positive-behavior-support-plan.pdf">Positive Behavior Support Plan (PDF)</a> together before the first class.</p>
       <p>Parents and caregivers help the program run smoothly by knowing the class schedule and pickup location, arriving on time or arranging alternate pickup, communicating absences and schedule changes, and helping students arrive ready to participate.</p>
 
       <h2>Help</h2>

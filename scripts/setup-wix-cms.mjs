@@ -3,10 +3,14 @@ import { collections, items } from "@wix/data";
 import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseArgs } from "node:util";
 import { boardMembers } from "../src/data/cms-seed.mjs";
 import { pages } from "../src/site.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
+const { values } = parseArgs({ options: { page: { type: "string" } } });
+const seedPages = pages.filter((page) => !page.home && (!values.page || page.slug === values.page));
+if (values.page && seedPages.length !== 1) throw new Error("The selected --page must identify exactly one static fallback page.");
 const config = JSON.parse(await readFile(join(root, "src", "wix.config.json"), "utf8"));
 const apiKey = process.env.WIX_API_KEY;
 const siteId = process.env.WIX_SITE_ID || config.siteId;
@@ -19,7 +23,7 @@ const client = createClient({
   auth: ApiKeyStrategy({ apiKey, siteId }),
 });
 
-await ensureCollection({
+if (!values.page) await ensureCollection({
   id: config.cms.boardMembers,
   displayName: "Board Members",
   fields: [
@@ -47,8 +51,7 @@ await ensureCollection({
     field("body", "Body", "RICH_TEXT"),
     field("published", "Published", "BOOLEAN"),
   ],
-  seed: pages
-    .filter((page) => !page.home)
+  seed: seedPages
     .map(({ slug, title, heading, kicker, description, accent, content }) => ({
       slug,
       title,
@@ -67,24 +70,31 @@ async function ensureCollection(definition) {
   try {
     await client.collections.getDataCollection(definition.id);
   } catch (error) {
-    if (!isMissingCollection(error)) throw error;
+    if (!isMissingCollection(error)) throw new Error("CMS collection lookup failed; check access and configuration.");
     exists = false;
   }
 
   if (!exists) {
-    await client.collections.createDataCollection({
-      _id: definition.id,
-      displayName: definition.displayName,
-      fields: definition.fields,
-      permissions: { insert: "ADMIN", update: "ADMIN", remove: "ADMIN", read: "ANYONE" },
-    });
+    try {
+      await client.collections.createDataCollection({
+        _id: definition.id,
+        displayName: definition.displayName,
+        fields: definition.fields,
+        permissions: { insert: "ADMIN", update: "ADMIN", remove: "ADMIN", read: "ANYONE" },
+      });
+    } catch {
+      throw new Error("CMS collection creation failed; raw SDK details are not logged.");
+    }
     console.log(`Created ${definition.displayName} (${definition.id})`);
   }
 
   const existing = await fetchAll(client.items.query(definition.id).limit(1000));
   const existingKeys = new Set(existing.map(definition.keyOf));
   const missing = definition.seed.filter((item) => !existingKeys.has(definition.keyOf(item)));
-  for (const item of missing) await client.items.insert(definition.id, item);
+  for (const item of missing) {
+    try { await client.items.insert(definition.id, item); }
+    catch { throw new Error("CMS seed insertion failed; inspect the collection before retrying. Existing rows were not updated."); }
+  }
   console.log(
     missing.length
       ? `Seeded ${missing.length} missing rows in ${definition.displayName}.`
@@ -98,11 +108,16 @@ function field(key, displayName, type) {
 
 async function fetchAll(builder) {
   const allItems = [];
-  let result = await builder.find();
-  allItems.push(...(result.items || []));
+  let result;
+  try { result = await builder.find({ consistentRead: true }); }
+  catch { throw new Error("CMS seed query failed; no incomplete data will be used."); }
+  if (!Array.isArray(result.items)) throw new Error("CMS seed query returned invalid data.");
+  allItems.push(...result.items);
   while (result.hasNext()) {
-    result = await result.next();
-    allItems.push(...(result.items || []));
+    try { result = await result.next(); }
+    catch { throw new Error("CMS seed pagination failed; no incomplete data will be used."); }
+    if (!Array.isArray(result.items)) throw new Error("CMS seed query returned invalid data.");
+    allItems.push(...result.items);
   }
   return allItems;
 }
