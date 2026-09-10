@@ -193,6 +193,11 @@ Content pages are Read surfaces: a clear page heading, optional â€œOn this pageâ
 navigation for long documents, a `68ch` reading measure, and a single help
 aside. Mobile order always matches document and keyboard order.
 
+Task-oriented guides such as Enrichment use a compact page heading and put
+registration and day-of contacts before the outline. The `outlineAfterIntro`
+page flag retains introductory CMS content ahead of structural-section links;
+long addresses wrap rather than widening the page on small phones.
+
 The Donate surface is Persuade: a student-led hero, an evidence sequence showing
 where support flows, comparable giving methods, and an equity-and-trust close.
 It remains factual and never uses artificial urgency or donation pressure.

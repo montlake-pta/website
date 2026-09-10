@@ -52,6 +52,7 @@ the documented `user-invocable: false` agent-profile override.
 | Shared HTML templates and generated metadata | `scripts/build.mjs` |
 | Wix-to-site data normalization | `scripts/sync-wix.mjs` |
 | Wix CMS creation and seed behavior | `scripts/setup-wix-cms.mjs` |
+| Reviewed repair of an existing CMS page | `scripts/update-wix-page.mjs`, `.github/workflows/update-wix-page.yml` |
 | Dynamic page rendering and HTML sanitization | `scripts/render-wix-content.mjs` |
 | Public newsletter archive synchronization | `scripts/sync-newsletters.mjs` |
 | Newsletter latest/archive page generation | `scripts/render-newsletters.mjs` |
@@ -103,6 +104,14 @@ python3 -m http.server 4173 --directory dist
   collections are absent.
 - Do not expose migration notes, internal source names, secrets, or operational
   implementation details in visitor-facing copy.
+- Content parity means preserving instructions, caveats, documents, contacts,
+  and deadlines, not just creating the route or summarizing its topic.
+- Update existing public-page copy in Wix `WebsitePages`; editing fallback
+  `src/site.mjs` or rerunning the CMS seed script does not update existing CMS
+  records. A one-time repair must preserve unrelated fields and reject a
+  changed live record; subsequent routine authoring belongs in Wix.
+- Keep dated guidance distinct from current confirmed information. Do not
+  invent a new session, fee, deadline, contact assignment, or approval.
 
 ### Wix integration
 

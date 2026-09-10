@@ -1029,6 +1029,23 @@ body:has(.donate-hero) .site-footer {
   align-items: start;
 }
 
+.page-hero-guide > div {
+  padding-block: 2rem;
+}
+
+.page-hero-guide h1 {
+  font-size: clamp(2rem, 3.5vw, 3.1rem);
+}
+
+.content-layout-guide {
+  padding-top: 2rem;
+}
+
+.content-layout-guide > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .prose h2 {
   margin: 3.5rem 0 1rem;
   font-size: clamp(2rem, 3.5vw, 3.1rem);

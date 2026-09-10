@@ -125,28 +125,76 @@ export const pages = [
   {
     slug: "enrichment",
     title: "Enrichment",
-    heading: "More ways to discover and create.",
+    heading: "After-school enrichment",
     kicker: "After-school programs",
-    description: "Registration, scholarships, dismissal, and contact information for PTA after-school enrichment.",
+    description: "Register for classes, prepare for the first day, and plan a safe pickup.",
     accent: "coral",
+    outlineAfterIntro: true,
     content: `
-      <p class="lead">The PTA offers after-school classes each trimester, with options that often include art, baking, LEGO, theater, languages, and more.</p>
-      <p><a class="button button-primary" href="https://www.6crickets.com/">View classes on 6crickets</a></p>
+      <p><a class="button button-primary" href="https://www.6crickets.com/">View classes and register on 6crickets</a></p>
+      <div class="callout">
+        <p><strong>Day-of help, absences, or pickup changes:</strong> Contact the Enrichment Coordinator at <a href="mailto:enrichcoordinator@montlakepta.org">enrichcoordinator@montlakepta.org</a>, or call/text <a href="tel:+12064866036">(206) 486-6036</a> during enrichment hours.</p>
+        <p>Please do not contact the school office about enrichment arrangements; the program is managed by the Enrichment Team.</p>
+      </div>
+      <p><strong>For the current session:</strong> Check class listings and your registration confirmation for dates, no-class days, fees, and dismissal times. If the next session is not listed, contact the <a href="mailto:enrichment@montlakepta.org">Enrichment Team</a>; do not use a previous session’s dates to plan care.</p>
+      <p>Learning does not stop when the bell rings. PTA-supported enrichment sparks curiosity, builds friendships across grades, and gives students a safe, inclusive place to learn beyond the classroom.</p>
 
-      <h2>Access for every student</h2>
-      <p>Scholarships are available. Contact Montlake Elementary’s office confidentially at <a href="mailto:meguerreroto@seattleschools.org?subject=Enrichment%20scholarship">meguerreroto@seattleschools.org</a> for help.</p>
+      <h2>Register</h2>
+      <p>All enrichment registrations are managed through <a href="https://www.6crickets.com/">6crickets</a>. After registering, you will receive a confirmation email directly from 6crickets.</p>
+      <p>Before registering:</p>
+      <ul>
+        <li>Create or update your student’s profile.</li>
+        <li>Confirm their grade level and dismissal plans.</li>
+        <li>Update allergies, homeroom teacher, and any other relevant notes.</li>
+        <li>Review each class description and schedule.</li>
+      </ul>
+      <h3>Costs and financial assistance</h3>
+      <p>Class prices vary by the number of days, provider, and curriculum. Each transaction also includes management fees that help cover the onsite coordinator, financial aid, and other program costs.</p>
+      <p>We want every student to have access to enrichment. Scholarships are available. For confidential help, contact the school counselor at <a href="mailto:meguerreroto@seattleschools.org?subject=Enrichment%20scholarship">meguerreroto@seattleschools.org</a>.</p>
 
-      <h2>Dismissal options</h2>
-      <ul class="card-list">
-        <li><strong>Parent or caregiver pickup</strong><br>Students are dismissed from the southeast garden gate. Be ready to show identification until instructors recognize you.</li>
-        <li><strong>Independent walkers</strong><br>Email written permission in advance. Walkers must leave campus immediately after class.</li>
-        <li><strong>Launch students</strong><br>Students are escorted directly to Launch aftercare when enrichment ends.</li>
-        <li><strong>Let Grow Play Club</strong><br>Students transition directly to the club after enrichment.</li>
+      <h2>Before class</h2>
+      <ul>
+        <li>Remind your student which class they are attending each day.</li>
+        <li>Review where they should go at school dismissal.</li>
+        <li>Discuss behavior expectations and the <a href="https://www.montlakepta.org/_files/ugd/5a8077_0f6074eac84f4eafaf2410e6232ae73a.pdf">Positive Behavior Support Plan (PDF)</a>.</li>
+        <li>Pack an extra snack for the short snack break before class.</li>
       </ul>
 
-      <h2>Changes and absences</h2>
-      <p>Send absence notices to <a href="mailto:enrichcoordinator@montlakepta.org?subject=Enrichment%20absence">enrichcoordinator@montlakepta.org</a>. Send pickup changes in advance to the <a href="mailto:enrichcoordinator@montlakepta.org?subject=Pickup%20changes">same coordinator</a>.</p>
-      <p>Program questions: <a href="mailto:enrichment@montlakepta.org">enrichment@montlakepta.org</a><br>Day-of coordinator: <a href="tel:+12064866036">(206) 486-6036</a></p>`,
+      <h2>Getting to class</h2>
+      <p>Teachers and the Enrichment Coordinator help guide transitions. A morning reminder from you helps your student feel prepared.</p>
+      <ol>
+        <li>Go to the Commons area and line up behind the sign for the enrichment class.</li>
+        <li>Check in with the instructor, who will take attendance.</li>
+        <li>Follow the instructor to the classroom.</li>
+      </ol>
+
+      <h2>Pickup</h2>
+      <p>Pickup times vary by class and day. Consult your student’s schedule and confirm their dismissal plan before the first class.</p>
+      <ul>
+        <li><strong>Parent or caregiver pickup:</strong> Students are dismissed from the southeast garden gate. See the <a href="https://www.montlakepta.org/_files/ugd/5a8077_c8fefc14fba54696a881e0533d995dfa.pdf">campus aerial map (PDF)</a>. Be prepared to show identification until instructors recognize you.</li>
+        <li><strong>Independent walkers:</strong> Email written permission in advance to the coordinator. Students must leave campus immediately after enrichment.</li>
+        <li><strong>Launch students:</strong> Students are escorted directly to Launch aftercare when class ends.</li>
+        <li><strong>Let Grow Play Club:</strong> Students transition directly to the club after enrichment.</li>
+      </ul>
+      <h3>Late or early pickup</h3>
+      <p>Email <a href="mailto:enrichcoordinator@montlakepta.org?subject=Pickup%20changes">pickup changes to the coordinator</a> in advance, or call/text <a href="tel:+12064866036">(206) 486-6036</a> during enrichment hours. Please do not contact the school office about pickup changes.</p>
+      <p>The published pickup policy sends students who have not been picked up within 10 minutes of class dismissal to Let Grow Play Club; the standard drop-in fee may apply. It requires all students to be picked up by 5:30 PM, with late fees that may increase the longer a student remains onsite. Confirm the current cutoff and fees with the coordinator before your student’s first class.</p>
+
+      <h2>Absences and cancellations</h2>
+      <h3>If your student will miss class</h3>
+      <p><a href="mailto:enrichcoordinator@montlakepta.org?subject=Enrichment%20absence">Email the Enrichment Coordinator</a> even if your student is absent from school that day. Students may not skip enrichment unless permission has been received from a parent or caregiver.</p>
+      <h3>If a class is canceled</h3>
+      <p>Have a backup pickup plan in case an instructor is absent and class is canceled. The Enrichment Coordinator will work with the front office to notify families promptly so they can adjust pickup plans.</p>
+
+      <h2>Policies</h2>
+      <p>Students are expected to follow the same behavior standards as during the school day, respecting themselves, others, and school spaces. Review the <a href="https://www.montlakepta.org/_files/ugd/5a8077_0f6074eac84f4eafaf2410e6232ae73a.pdf">Positive Behavior Support Plan (PDF)</a> together before the first class.</p>
+      <p>Parents and caregivers help the program run smoothly by knowing the class schedule and pickup location, arriving on time or arranging alternate pickup, communicating absences and schedule changes, and helping students arrive ready to participate.</p>
+
+      <h2>Help</h2>
+      <p><strong>Program, policy, or general questions:</strong> <a href="mailto:enrichment@montlakepta.org">enrichment@montlakepta.org</a>.</p>
+      <p><strong>Absences, pickup changes, and day-of questions:</strong> The published program contact is Cindy, Enrichment Coordinator, at <a href="mailto:enrichcoordinator@montlakepta.org">enrichcoordinator@montlakepta.org</a> or <a href="tel:+12064866036">(206) 486-6036</a>.</p>
+      <p><strong>Scholarships:</strong> The published school counselor contact is Mr. Max at <a href="mailto:meguerreroto@seattleschools.org?subject=Enrichment%20scholarship">meguerreroto@seattleschools.org</a>.</p>
+      <p>Staff assignments and session arrangements can change. Use these role-based contacts to confirm current information. The school office does not manage the enrichment program.</p>`,
   },
   {
     slug: "advocacy",
@@ -225,6 +273,7 @@ export const pages = [
       <p>Checks avoid processing fees. Send a check in an envelope marked “Montlake PTA Annual Fund” through backpack mail, or mail it to:</p>
       <p><strong>Montlake PTA Annual Fund<br>520 Ravenna Blvd NE<br>Seattle, WA 98105</strong></p>
 
+      <p>Your donation is tax-deductible to the extent allowed by law.</p>
       <div class="callout">Montlake Community School Association (Montlake PTA) is an IRS-approved 501(c)(3) nonprofit. Federal Tax ID: <strong>91-1117733</strong>.</div>`,
   },
   {
@@ -240,6 +289,7 @@ export const pages = [
       <p>The school staffing grant typically represents 75–80% of the PTA budget. It helps fund positions or services not fully covered by Seattle Public Schools, such as a specialist teacher, counselor support, playground supervision, or other operational needs.</p>
       <h2>Beyond staffing</h2>
       <p>PTA funds also support student programs, community events, supplies, scholarships, and school equipment. Budget decisions are voted on by PTA members.</p>
+      <p>In February 2026, families shared their priorities for PTA funding. Read the <a href="../post/montlake-pta-family-survey-results/">family survey results</a> to see that feedback.</p>
       <div class="callout"><strong>Want a voice in the annual budget?</strong> <a href="../join/">Join the PTA</a> to become a voting member.</div>
       <p>Questions about finances can be sent to <a href="mailto:treasurer@montlakepta.org">treasurer@montlakepta.org</a>.</p>`,
   },

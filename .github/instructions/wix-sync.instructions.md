@@ -1,6 +1,6 @@
 ---
 description: 'Rules for Wix Headless synchronization, CMS schema, snapshots, and dynamic content rendering'
-applyTo: 'scripts/sync-wix.mjs,scripts/setup-wix-cms.mjs,scripts/bootstrap-wix-snapshot.mjs,scripts/render-wix-content.mjs,src/data/**,src/wix.config.json'
+applyTo: 'scripts/sync-wix.mjs,scripts/setup-wix-cms.mjs,scripts/update-wix-page*.mjs,scripts/bootstrap-wix-snapshot.mjs,scripts/render-wix-content.mjs,src/data/**,src/wix.config.json'
 ---
 
 # Wix synchronization instructions
@@ -16,6 +16,8 @@ applyTo: 'scripts/sync-wix.mjs,scripts/setup-wix-cms.mjs,scripts/bootstrap-wix-s
 - Normalize optional fields and slugs defensively. Skip records that cannot
   produce a safe stable route.
 - Keep CMS setup idempotent and resumable after partial failure.
+- Existing-page repairs must remain explicit, reject concurrent edits, preserve
+  unrelated fields, and verify read-back; routine synchronization is read-only.
 - Sanitize rich HTML and allow only required tags, classes, attributes, schemes,
   and iframe hosts.
 - When changing snapshot schema, version it and update build validation in the

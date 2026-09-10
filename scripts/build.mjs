@@ -195,17 +195,22 @@ function renderEmptyHomeFeed(base) {
 
 function renderContentPage(page) {
   const prepared = prepareContent(page.content, page.disableOutline);
+  // Task-oriented guides put registration and day-of contacts ahead of the outline.
+  const firstSection = page.outlineAfterIntro ? prepared.content.search(/<h2\b/i) : -1;
+  const introduction = firstSection >= 0 ? prepared.content.slice(0, firstSection) : "";
+  const content = firstSection >= 0 ? prepared.content.slice(firstSection) : prepared.content;
   return `
-      <section class="page-hero ${page.accent || ""}">
+      <section class="page-hero ${page.accent || ""}${page.outlineAfterIntro ? " page-hero-guide" : ""}">
         <div>
           <h1>${escapeAttribute(page.heading || page.title)}</h1>
           <p>${escapeAttribute(page.description)}</p>
         </div>
       </section>
-      <div class="content-layout">
+      <div class="content-layout${page.outlineAfterIntro ? " content-layout-guide" : ""}">
         <article class="prose">
+          ${introduction}
           ${prepared.outline}
-          ${prepared.content}
+          ${content}
         </article>
         <aside class="page-aside">
           <div class="aside-card">

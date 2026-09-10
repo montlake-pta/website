@@ -6,6 +6,9 @@ import { mergeWixContent } from "./render-wix-content.mjs";
 import { mergeNewsletterContent } from "./render-newsletters.mjs";
 import { createNewsletterSnapshot } from "./sync-newsletters.mjs";
 import { createCalendarSnapshot } from "./sync-calendar.mjs";
+import { parseDocument } from "htmlparser2";
+import { selectAll, selectOne } from "css-select";
+import { textContent } from "domutils";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
@@ -72,6 +75,91 @@ if (!sanitizedCalendar.includes('class="lead"')) failures.push("CMS sanitizer re
 if (!sanitizedCalendar.includes("<iframe")) failures.push("CMS sanitizer removed the Google Calendar embed");
 if (sanitizedCalendar.includes("<script")) failures.push("CMS sanitizer retained executable script content");
 
+const enrichmentFallback = pages.find((page) => page.slug === "enrichment");
+const enrichmentFromCms = mergeWixContent(
+  pages.map((page) => page.slug === "enrichment" ? { ...page, content: "<p>Fallback must not win.</p>" } : page),
+  {
+    schemaVersion: 1,
+    blogPosts: [],
+    events: [],
+    products: [],
+    storeCollections: [],
+    cms: {
+      boardMembers: [],
+      pages: [{
+        slug: "enrichment",
+        title: enrichmentFallback.title,
+        heading: enrichmentFallback.heading,
+        description: enrichmentFallback.description,
+        body: enrichmentFallback.content,
+        published: true,
+      }],
+    },
+  },
+).find((page) => page.slug === "enrichment");
+const enrichmentHtml = await readFile(join(output, "enrichment", "index.html"), "utf8");
+const enrichmentDocument = parseDocument(enrichmentHtml);
+const enrichmentArticle = selectOne("article.prose", enrichmentDocument);
+const enrichmentSections = ["Register", "Before class", "Getting to class", "Pickup", "Absences and cancellations", "Policies", "Help"];
+const enrichmentLinks = [
+  "https://www.6crickets.com/",
+  "mailto:enrichment@montlakepta.org",
+  "mailto:enrichcoordinator@montlakepta.org",
+  "mailto:enrichcoordinator@montlakepta.org?subject=Enrichment%20absence",
+  "mailto:enrichcoordinator@montlakepta.org?subject=Pickup%20changes",
+  "mailto:meguerreroto@seattleschools.org?subject=Enrichment%20scholarship",
+  "tel:+12064866036",
+  "https://www.montlakepta.org/_files/ugd/5a8077_0f6074eac84f4eafaf2410e6232ae73a.pdf",
+  "https://www.montlakepta.org/_files/ugd/5a8077_c8fefc14fba54696a881e0533d995dfa.pdf",
+];
+for (const [label, html] of [
+  ["fallback", enrichmentFallback.content],
+  ["CMS round-trip", enrichmentFromCms.content],
+  ["generated page", enrichmentHtml],
+]) {
+  const document = parseDocument(html);
+  const content = selectOne("article.prose", document) || document;
+  const text = textContent(content).replace(/\s+/g, " ").trim();
+  const headings = selectAll("h2", content).map((node) => textContent(node).trim());
+  if (JSON.stringify(headings) !== JSON.stringify(enrichmentSections)) {
+    failures.push(`Enrichment ${label}: required family-task sections are missing or out of order`);
+  }
+  const links = new Set(selectAll("a[href]", content).map((node) => node.attribs.href));
+  for (const href of enrichmentLinks) {
+    if (!links.has(href)) failures.push(`Enrichment ${label}: missing operational link ${href}`);
+  }
+  for (const requirement of [
+    /confirmation email/i, /grade level/i, /allergies/i, /homeroom/i,
+    /management fees/i, /onsite coordinator/i, /financial aid/i, /school counselor/i,
+    /extra snack/i, /Commons area/i, /sign for/i, /attendance/i, /instructor to the classroom/i,
+    /southeast garden gate/i, /identification/i, /written permission/i, /leave campus immediately/i,
+    /Launch aftercare/i, /Let Grow Play Club/i, /10 minutes/i, /5:30 PM/, /drop-in fee/i,
+    /confirm the current cutoff and fees/i, /even if your student is absent from school/i,
+    /may not skip/i, /backup pickup plan/i, /notify families promptly/i,
+    /same behavior standards/i, /school office does not manage/i,
+  ]) {
+    if (!requirement.test(text)) failures.push(`Enrichment ${label}: missing guidance ${requirement}`);
+  }
+  if (/Spring 2026|March 30|June 12|March 11|March 18/i.test(text)) {
+    failures.push(`Enrichment ${label}: expired spring session dates are presented as current`);
+  }
+}
+if (!enrichmentFromCms.outlineAfterIntro) failures.push("Enrichment CMS merge lost the guide layout flag");
+if (!enrichmentArticle) failures.push("Enrichment reading surface is missing");
+else {
+  const outline = selectOne(".page-outline", enrichmentArticle);
+  if (!outline) failures.push("Enrichment guide is missing its on-page outline");
+  for (const anchor of selectAll(".page-outline a", enrichmentArticle)) {
+    const id = anchor.attribs.href.slice(1);
+    if (!selectAll("[id]", enrichmentArticle).some((node) => node.attribs.id === id)) {
+      failures.push(`Enrichment guide has a broken outline anchor: ${id}`);
+    }
+  }
+  if (enrichmentHtml.indexOf("Day-of help") > enrichmentHtml.indexOf('class="page-outline"')) {
+    failures.push("Enrichment day-of contacts must precede the page outline");
+  }
+}
+
 const emptyStore = mergeWixContent(pages, {
   schemaVersion: 1,
   source: "test",
@@ -106,10 +194,14 @@ if (!donateHtml.includes("Explore employer matching")) failures.push("Donation p
 if (donateHtml.includes("Double your impact")) failures.push("Donation page makes an unsupported matching-rate claim");
 if (!donateHtml.includes("75–80%")) failures.push("Donation page is missing the staffing impact proof");
 if (!donateHtml.includes("Federal Tax ID 91-1117733")) failures.push("Donation page is missing nonprofit trust information");
+if (!donateHtml.includes("tax-deductible to the extent allowed by law")) failures.push("Donation page dropped its qualified deductibility statement");
 
 const budgetHtml = await readFile(join(output, "budget", "index.html"), "utf8");
 if (!budgetHtml.includes('href="../donate/"')) failures.push("Budget page does not cross-link to the Donate landing page");
 if (!budgetHtml.includes("See ways to give")) failures.push("Budget page is missing its donation call to action");
+if (!budgetHtml.includes('href="../post/montlake-pta-family-survey-results/"') || !budgetHtml.includes("February 2026")) {
+  failures.push("Budget page dropped its dated family-survey results link");
+}
 
 const freshHome = mergeWixContent(pages, {
   schemaVersion: 1,

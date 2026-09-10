@@ -7,7 +7,8 @@ source.
 
 ## Edit the site
 
-- Page copy, navigation, and external service URLs: `src/site.mjs`
+- Routine page copy: Wix CMS → `WebsitePages` (match by `slug`)
+- Static fallback copy, navigation, and external service URLs: `src/site.mjs`
 - Visual design and responsive styles: `src/styles.css`
 - Mobile navigation: `src/site.js`
 - Images and brand assets: `src/assets/`
@@ -125,9 +126,33 @@ repository secret:
 gh workflow run setup-wix-cms.yml --repo montlake-pta/website
 ```
 
-This setup command is idempotent: it creates missing collections and only adds
-seed rows when a collection is empty. Afterward, editors can maintain those
-records in Wix CMS and each site build will pull them automatically.
+This setup command creates missing collections and inserts missing seed rows;
+it never updates an existing record. It is not a way to publish edits to
+`src/site.mjs`. After setup, maintain existing page records in Wix CMS and each
+site build will pull them automatically.
+
+For a reviewed repair to an existing record, use the manual **Update One Wix
+Page** workflow: plan, inspect the public before/after report, then apply with
+that plan's exact commit and fingerprints. This requires Wix data-item write
+access and does not deploy automatically. See the
+[repair procedure](docs/content-authoring.md#reviewed-one-time-cms-repair).
+
+### One editing location
+
+`WebsitePages` is the authoritative editing location for migrated informational
+pages. `BoardMembers` owns the board roster; use Wix Blog, Events, and Stores for
+their respective content. Editing a regular legacy Wix Editor text block does
+not update any of these collections.
+
+Do not maintain two independent enrichment pages. In the Wix Editor, connect
+the legacy enrichment text to the same `WebsitePages` record if its elements
+support a CMS dataset. Otherwise replace the legacy body with a link to the
+new enrichment page during the agreed content handoff. Do not delete the
+legacy route or change DNS as part of that handoff.
+
+See [content authoring and handoff](docs/content-authoring.md) for the repair
+workflow, review responsibilities, and publication checklist, and
+[content parity](docs/content-parity.md) for the priority-page comparison.
 
 `npm run bootstrap:wix` refreshes the checked-in public snapshot. It is intended
 only for initial migration or disaster recovery; normal deployments use the
