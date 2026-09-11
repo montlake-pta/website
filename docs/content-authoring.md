@@ -130,6 +130,15 @@ changes only title, heading, description and body; it preserves fundraising
 fields and includes them in public read-back. Use Wix CMS for subsequent
 campaign-field edits, not the seed or migration scripts.
 
+The initial migration completed on September 11, 2026, from source commit
+`0480ef0`: [reviewed plan](https://github.com/montlake-pta/website/actions/runs/34631755802),
+[applied migration](https://github.com/montlake-pta/website/actions/runs/34631921188),
+and [public snapshot export](https://github.com/montlake-pta/website/actions/runs/34632036593).
+All 12 fields were added and all three records passed read-back comparison.
+The live publishing bridge then produced a successful
+[Wix-triggered deployment](https://github.com/montlake-pta/website/actions/runs/34631986049).
+This is a completed migration, not an outstanding setup step.
+
 ## What causes a website update
 
 - **CMS `WebsitePages` and `BoardMembers`:** adding, editing or deleting records
