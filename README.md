@@ -36,10 +36,17 @@ The harness also includes:
 - `.github/instructions/` for path-specific site, Wix, Actions, and harness rules
 - `.github/agents/` for site implementation, Wix integration, release review,
   and Impeccable's internal design subagents
+- `.github/mcp.json` for the project-scoped Wix MCP server
 - `.github/workflows/copilot-setup-steps.yml` for a deterministic Node.js 24
   cloud-agent environment
 - GitHub issue and pull request templates for agent-ready requirements and
   handoffs
+
+Copilot CLI discovers the Wix HTTP MCP endpoint at
+`https://mcp.wix.com/mcp` from the workspace configuration. Use `/mcp` to manage
+the connection and authorize your Wix account when prompted. Do not put API
+keys or OAuth tokens in the shared configuration. MCP authorization is
+separate from the website's public Headless visitor-client configuration.
 
 Validate these files with:
 
