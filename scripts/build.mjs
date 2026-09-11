@@ -8,6 +8,8 @@ import { emitLegacyEventAliases } from "./legacy-event-aliases.mjs";
 import { visitorConfiguration } from "./visitor-config.mjs";
 import { build as bundleJavaScript } from "esbuild";
 import { emitLegacyDocuments, rewriteCutoverLinks } from "./cutover-links.mjs";
+import { renderFundraisingOverview, renderFundraisingPage } from "./render-fundraising.mjs";
+import { escapeAttribute, prepareContent } from "./page-content.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
@@ -119,7 +121,7 @@ function renderPage(page, base) {
     </header>
     ${renderDailyTools(base)}
     <main id="main-content">
-      ${page.home ? renderHome(page, base) : page.layout === "donate" ? renderDonatePage(page, base) : renderContentPage(page)}
+      ${page.home ? renderHome(page, base) : page.layout === "fundraising" ? renderFundraisingPage(page, base, renderedPages) : renderContentPage(page)}
     </main>
     ${renderFooter(base)}
   </body>
@@ -191,20 +193,7 @@ function renderHome(page, base) {
         </div>
       </section>
 
-      <section class="impact-section">
-        <div class="section-heading split-heading">
-          <div>
-            <h2>Stronger school.<br>Richer experiences.</h2>
-          </div>
-          <p>PTA funding supports staffing, student programs, community events, classroom supplies, scholarships, and equipment.</p>
-        </div>
-        <div class="impact-grid">
-          <article><span>75–80%</span><h3>Staffing support</h3><p>The largest share of the annual PTA budget helps fund people and services not fully covered by the district.</p></article>
-          <article><span>All year</span><h3>Student programs</h3><p>Art, music, enrichment, supplies, equipment, and experiences that make school memorable.</p></article>
-          <article><span>Every family</span><h3>Community care</h3><p>Scholarships, welcoming events, outreach, and practical support so everyone can participate.</p></article>
-        </div>
-        <a class="button button-dark" href="${base}budget/">See how the budget works</a>
-      </section>
+      ${renderFundraisingOverview(renderedPages, base, { home: true })}
 
       <section class="join-band">
         <div>
@@ -265,92 +254,6 @@ function renderContentPage(page) {
       </div>`;
 }
 
-function renderDonatePage(page, base) {
-  const details = donationDetails(page.content);
-  return `
-    <section class="donate-hero">
-      <div class="donate-hero-shell">
-        <div class="donate-hero-copy">
-          <h1>${escapeAttribute(page.heading || page.title)}</h1>
-          <p>${escapeAttribute(page.description)}</p>
-          <div class="button-row">
-            <a class="button button-primary donate-primary" href="${site.donateUrl}">Donate securely online</a>
-            <a class="button button-secondary" href="#employer-matching">Explore employer matching</a>
-          </div>
-          <p class="donate-assurance">Choose a one-time or recurring gift by card or bank account.</p>
-        </div>
-        <figure class="donate-hero-visual">
-          <img src="${base}assets/donate-science-fair.jpg" alt="Student science projects displayed in the Montlake Elementary cafeteria" width="1800" height="1012">
-          <figcaption>Community support helps students learn, create, perform, and belong.</figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <section class="donate-impact" aria-labelledby="donate-impact-title">
-      <div class="donate-section-heading">
-        <h2 id="donate-impact-title">Your gift moves through the whole school day.</h2>
-        <p>PTA funding fills practical gaps and makes more of the Montlake experience possible.</p>
-      </div>
-      <div class="donate-impact-list">
-        <article>
-          <strong>75–80%</strong>
-          <div><h3>Staffing support</h3><p>The largest share of the PTA budget helps fund people and services not fully covered by the district.</p></div>
-        </article>
-        <article>
-          <strong>All year</strong>
-          <div><h3>Student experiences</h3><p>Art, music, academic support, enrichment, supplies, library books, equipment, and special projects.</p></div>
-        </article>
-        <article>
-          <strong>Every family</strong>
-          <div><h3>Access and belonging</h3><p>Scholarships, welcoming events, family support, and resources that help everyone participate.</p></div>
-        </article>
-      </div>
-    </section>
-
-    <section class="donate-methods" aria-labelledby="donate-methods-title">
-      <div class="donate-methods-intro">
-        <h2 id="donate-methods-title">Choose the way that works for you.</h2>
-        <p>Every method supports the same school community. Employer matching can make a gift or volunteer time go even further.</p>
-      </div>
-      <div class="donate-methods-content prose">
-        ${details}
-      </div>
-    </section>
-
-    <section class="donate-equity">
-      <div class="donate-equity-shell">
-        <div>
-          <h2>Giving is welcome. Belonging is not conditional.</h2>
-          <p>Every Montlake family is a full member of this community, regardless of whether or how much they donate. PTA support also includes scholarships and equity support for schools with fewer fundraising resources.</p>
-        </div>
-        <a class="text-link light" href="mailto:fundraising@montlakepta.org">Questions about giving or matching? <span aria-hidden="true">→</span></a>
-      </div>
-    </section>
-
-    <section class="donate-close">
-      <div>
-        <p>Montlake Community School Association is an IRS-approved 501(c)(3).</p>
-        <strong>Federal Tax ID 91-1117733</strong>
-      </div>
-      <a class="button button-primary" href="${site.donateUrl}">Make a gift to Montlake</a>
-    </section>`;
-}
-
-function donationDetails(content) {
-  return content
-    .replace(/^\s*<p class="lead">[\s\S]*?<\/p>\s*/i, "")
-    .replace(/^\s*<p><a class="button button-primary"[\s\S]*?<\/a><\/p>\s*/i, "")
-    .replace(/<div class="callout">Montlake Community School Association[\s\S]*?<\/div>/i, "")
-    .replace(/<h([23])>([\s\S]*?)<\/h\1>/gi, (match, level, inner) => {
-      const label = decodeHtml(inner.replace(/<[^>]+>/g, "")).trim().toLowerCase();
-      if (level === "2" && label === "ways to give") return "";
-      if (level === "3" && label === "employer matching") {
-        return `<h3 id="employer-matching">${inner}</h3>`;
-      }
-      return match;
-    });
-}
-
 function renderFooter(base) {
   return `
     <footer class="site-footer">
@@ -401,28 +304,6 @@ function renderDailyTools(base) {
     </nav>`;
 }
 
-function prepareContent(content, disableOutline = false) {
-  if (disableOutline || content.includes('class="content-grid"')) return { content, outline: "" };
-
-  const headings = [];
-  const headingCounts = new Map();
-  const preparedContent = content.replace(/<h2>([\s\S]*?)<\/h2>/g, (_match, heading) => {
-    const label = decodeHtml(heading.replace(/<[^>]+>/g, "").trim());
-    const baseId = slugify(label);
-    const count = (headingCounts.get(baseId) || 0) + 1;
-    headingCounts.set(baseId, count);
-    const id = count === 1 ? baseId : `${baseId}-${count}`;
-    headings.push({ id, label });
-    return `<h2 id="${id}">${heading}</h2>`;
-  });
-  if (headings.length < 3) return { content: preparedContent, outline: "" };
-  const links = headings.map(({ id, label }) => `<a href="#${id}">${escapeAttribute(label)}</a>`).join("");
-  return {
-    content: preparedContent,
-    outline: `<nav class="page-outline" aria-label="On this page"><strong>On this page</strong><div>${links}</div></nav>`,
-  };
-}
-
 function icon(name) {
   const paths = {
     calendar: '<rect x="3.5" y="5.5" width="17" height="15" rx="2"/><path d="M7 3.5v4M17 3.5v4M3.5 10h17"/><path d="M8 14h2M14 14h2M8 17h2M14 17h2"/>',
@@ -431,24 +312,6 @@ function icon(name) {
     check: '<path d="M5 4h14v17H5z"/><path d="M9 4V2.5h6V4M8.5 12l2.2 2.2 4.8-5"/>',
   };
   return `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${paths[name]}</svg>`;
-}
-
-function slugify(value) {
-  return value
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
-function decodeHtml(value) {
-  return value
-    .replaceAll("&amp;", "&")
-    .replaceAll("&quot;", '"')
-    .replaceAll("&#39;", "'")
-    .replaceAll("&lt;", "<")
-    .replaceAll("&gt;", ">");
 }
 
 function renderNotFound() {
@@ -470,8 +333,4 @@ function renderSitemap() {
     .map((page) => `  <url><loc>${site.previewUrl}${page.slug ? `${page.slug}/` : ""}</loc></url>`)
     .join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
-}
-
-function escapeAttribute(value) {
-  return value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }

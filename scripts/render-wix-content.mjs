@@ -1,5 +1,6 @@
 import sanitizeHtml from "sanitize-html";
 import visitorConfig from "../src/wix-client.config.json" with { type: "json" };
+import { emptyFundraisingFields, fundraisingFieldNames, normalizeFundraisingFields } from "./fundraising-fields.mjs";
 
 const allowedCmsHtml = {
   allowedTags: [
@@ -164,8 +165,11 @@ function homeEventKey(event) {
 
 function applyCmsPages(pageMap, pages) {
   for (const cmsPage of pages) {
-    if (cmsPage.published === false || !hasValidSlug(cmsPage)) continue;
+    if (cmsPage.published === false || typeof cmsPage.slug !== "string"
+      || !cmsPage.slug.split("/").every(slug => hasValidSlug({ slug }))) continue;
     const existing = pageMap.get(cmsPage.slug);
+    const fundraising = Boolean(cmsPage.campaignStatus)
+      || (existing?.layout === "fundraising" && fundraisingFieldNames.some(key => Object.hasOwn(cmsPage, key)));
     if (!existing && (!cmsPage.title || !cmsPage.description || !cmsPage.body)) {
       console.warn(`Ignoring incomplete CMS page ${cmsPage.slug}.`);
       continue;
@@ -176,9 +180,15 @@ function applyCmsPages(pageMap, pages) {
       title: cmsPage.title || existing?.title,
       heading: cmsPage.heading || cmsPage.title || existing?.heading,
       kicker: cmsPage.kicker || existing?.kicker,
-      description: cmsPage.description || existing?.description,
+      description: fundraising ? cmsPage.description || "" : cmsPage.description || existing?.description,
       accent: ["coral", "blue", "yellow"].includes(cmsPage.accent) ? cmsPage.accent : existing?.accent,
-      content: cmsPage.body ? sanitizeCmsHtml(cmsPage.body) : existing?.content,
+      content: fundraising ? sanitizeCmsHtml(cmsPage.body || "") : cmsPage.body ? sanitizeCmsHtml(cmsPage.body) : existing?.content,
+      ...(fundraising ? emptyFundraisingFields : {}),
+      ...normalizeFundraisingFields(cmsPage, {
+        html: sanitizeCmsHtml,
+        image: (value) => value,
+      }),
+      ...(fundraising ? { layout: "fundraising" } : {}),
     });
   }
 }
@@ -576,7 +586,7 @@ function escapeAttribute(value) {
 }
 
 function validateSnapshot(content) {
-  if (!content || content.schemaVersion !== 1) throw new Error("Unsupported Wix content snapshot schema.");
+  if (!content || ![1, 2].includes(content.schemaVersion)) throw new Error("Unsupported Wix content snapshot schema.");
   for (const key of ["blogPosts", "events", "products", "storeCollections"]) {
     if (!Array.isArray(content[key])) throw new Error(`Wix content snapshot is missing ${key}.`);
   }

@@ -211,9 +211,21 @@ and restrained status messages. Checkout confirmations never infer payment
 success from a return URL alone. The catalog remains readable without
 JavaScript; live purchasing and registration are progressive enhancements.
 
-The Donate surface is Persuade: a student-led hero, an evidence sequence showing
-where support flows, comparable giving methods, and an equity-and-trust close.
-It remains factual and never uses artificial urgency or donation pressure.
+Fundraising surfaces are Persuade within the Field Guide: an optional
+student-led hero, open campaign links, a readable body, and optional impact,
+equity and trust sections. Donate is the year-round hub; Annual Fund and Spring
+Auction reuse the same layout. Their CMS-authored summaries appear in open,
+divided rows on the hub and homepage, not additional cards.
+
+Campaign status and school year follow the introduction as useful operational
+information, never an eyebrow. Optional goals and deadlines use compact,
+tabular-number facts rather than oversized statistics or invented progress.
+Closed and upcoming campaigns retain their information and offer a year-round
+giving route instead of a live campaign action. Long bodies retain an on-page
+outline. Optional images can be removed without leaving an empty grid column.
+All fundraising claims, image descriptions, body sections and primary actions
+are authored in the CMS; typography, spacing and generic interface labels are
+code-owned. Never use artificial urgency or donation pressure.
 
 ## Elevation & Depth
 

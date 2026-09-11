@@ -8,6 +8,8 @@ import { parseArgs } from "node:util";
 import { createClient, ApiKeyStrategy } from "@wix/sdk";
 import { items } from "@wix/data";
 import { sanitizeCmsHtml } from "./render-wix-content.mjs";
+import { normalizeFundraisingFields } from "./fundraising-fields.mjs";
+import { publicHtml, publicText, wixMediaUrl } from "./wix-public-content.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const managedFields = ["title", "heading", "description", "body"];
@@ -72,6 +74,7 @@ export function publicPage(item) {
     accent: text("accent"),
     body: sanitizeBody(item.body),
     published: item.published === true,
+    ...normalizeFundraisingFields(item, { html: publicHtml, text: publicText, image: wixMediaUrl }),
   };
 }
 

@@ -10,6 +10,7 @@ import { createCalendarSnapshot } from "./sync-calendar.mjs";
 import { parseDocument } from "htmlparser2";
 import { selectAll, selectOne } from "css-select";
 import { removeElement, textContent } from "domutils";
+import { renderFundraisingPage } from "./render-fundraising.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
@@ -216,12 +217,23 @@ if (!homeHtml.includes('href="./event-list/"')) failures.push("Homepage is missi
 
 const donateHtml = await readFile(join(output, "donate", "index.html"), "utf8");
 if (!donateHtml.includes('class="donate-hero"')) failures.push("Donation page is missing its landing-page hero");
-if (!donateHtml.includes('id="employer-matching"')) failures.push("Donation page is missing the employer-matching destination");
-if (!donateHtml.includes("Explore employer matching")) failures.push("Donation page is missing its employer-matching action");
 if (donateHtml.includes("Double your impact")) failures.push("Donation page makes an unsupported matching-rate claim");
-if (!donateHtml.includes("75–80%")) failures.push("Donation page is missing the staffing impact proof");
-if (!donateHtml.includes("Federal Tax ID 91-1117733")) failures.push("Donation page is missing nonprofit trust information");
-if (!donateHtml.includes("tax-deductible to the extent allowed by law")) failures.push("Donation page dropped its qualified deductibility statement");
+for (const slug of ["donate", "annual-fund", "spring-auction"]) {
+  const model = renderedPages.find(page => page.slug === slug);
+  const html = await readFile(join(output, slug, "index.html"), "utf8");
+  const document = parseDocument(html);
+  const expected = parseDocument(renderFundraisingPage(model, "../", renderedPages));
+  if (textContent(selectOne("main", document)).replace(/\s+/g, " ").trim() !== textContent(expected).replace(/\s+/g, " ").trim()) {
+    failures.push(`${slug}: generated fundraising copy differs from the current CMS-backed model`);
+  }
+  const ids = selectAll("[id]", document).map(node => node.attribs.id);
+  if (new Set(ids).size !== ids.length) failures.push(`${slug}: duplicate section anchors`);
+  for (const anchor of selectAll(".page-outline a", document)) {
+    if (!ids.includes(anchor.attribs.href.slice(1))) failures.push(`${slug}: broken fundraising outline`);
+  }
+  if (!homeHtml.includes(`href="./${slug}/"`)) failures.push(`Homepage is missing the ${slug} fundraising destination`);
+  if (slug !== "donate" && !donateHtml.includes(`href="../${slug}/"`)) failures.push(`Donate hub is missing ${slug}`);
+}
 
 const budgetHtml = await readFile(join(output, "budget", "index.html"), "utf8");
 if (!budgetHtml.includes('href="../donate/"')) failures.push("Budget page does not cross-link to the Donate landing page");
@@ -243,8 +255,8 @@ for (const [slug, markers] of [
   for (const marker of markers) {
     if (!fallback.content.includes(marker)) failures.push(`${slug} fallback dropped restored content: ${marker}`);
   }
-  const authored = wixContent.cms.pages.find((page) => page.slug === slug && page.published !== false);
-  const expected = textContent(parseDocument(sanitizeCmsHtml(authored?.body || fallback.content))).replace(/\s+/g, " ").trim();
+  const current = renderedPages.find(page => page.slug === slug);
+  const expected = textContent(parseDocument(sanitizeCmsHtml(current.content))).replace(/\s+/g, " ").trim();
   const article = selectOne("article.prose", parseDocument(html));
   if (article) {
     for (const outline of selectAll(".page-outline", article)) removeElement(outline);

@@ -348,13 +348,38 @@ export const pages = [
     kicker: "Give to Montlake",
     description: "Make a one-time or recurring gift, request an employer match, or donate by check.",
     accent: "coral",
-    layout: "donate",
+    layout: "fundraising",
     disableOutline: true,
+    campaignStatus: "evergreen",
+    schoolYear: "",
+    goalAmount: null,
+    deadline: "",
+    primaryCtaLabel: "Donate securely online",
+    primaryCtaUrl: "https://www.paypal.com/donate/?hosted_button_id=L86AXUQZC74VN",
+    heroImage: "https://montlake-pta.github.io/website/assets/donate-science-fair.jpg",
+    heroAlt: "Student science projects displayed in the Montlake Elementary cafeteria",
+    heroCaption: "Community support helps students learn, create, perform, and belong.",
+    impactBody: `
+      <h2>Your gift moves through the whole school day.</h2>
+      <p>PTA funding fills practical gaps and makes more of the Montlake experience possible.</p>
+      <ul>
+        <li><strong>75–80%</strong><div><h3>Staffing support</h3><p>The largest share of the PTA budget helps fund people and services not fully covered by the district.</p></div></li>
+        <li><strong>All year</strong><div><h3>Student experiences</h3><p>Art, music, academic support, enrichment, supplies, library books, equipment, and special projects.</p></div></li>
+        <li><strong>Every family</strong><div><h3>Access and belonging</h3><p>Scholarships, welcoming events, family support, and resources that help everyone participate.</p></div></li>
+      </ul>
+      <p><a href="../budget/">See how the budget works</a></p>`,
+    equityBody: `
+      <h2>Giving is welcome. Belonging is not conditional.</h2>
+      <p>Every Montlake family is a full member of this community, regardless of whether or how much they donate. PTA support also includes scholarships and equity support for schools with fewer fundraising resources.</p>
+      <p><a href="mailto:fundraising@montlakepta.org">Questions about giving or matching?</a></p>`,
+    trustBody: `
+      <p>Montlake Community School Association (Montlake PTA) is an IRS-approved 501(c)(3) nonprofit.</p>
+      <p><strong>Federal Tax ID 91-1117733</strong></p>
+      <p>Your donation is tax-deductible to the extent allowed by law.</p>`,
     content: `
       <p class="lead">Your gift helps fund staffing, student programs, classroom needs, community events, scholarships, and equipment.</p>
-      <p><a class="button button-primary" href="https://www.paypal.com/donate/?hosted_button_id=L86AXUQZC74VN">Donate securely online</a></p>
-
       <h2>Ways to give</h2>
+      <p>Every method supports the same school community. Employer matching can make a gift or volunteer time go even further.</p>
       <h3>Recurring or one-time online gifts</h3>
       <p>Choose a one-time gift or smaller automatic monthly gifts by credit card or bank account. Recurring contributions help the PTA plan reliably throughout the school year.</p>
 
@@ -363,10 +388,39 @@ export const pages = [
 
       <h3>Check</h3>
       <p>Checks avoid processing fees. Send a check in an envelope marked “Montlake PTA Annual Fund” through backpack mail, or mail it to:</p>
-      <p><strong>Montlake PTA Annual Fund<br>520 Ravenna Blvd NE<br>Seattle, WA 98105</strong></p>
-
-      <p>Your donation is tax-deductible to the extent allowed by law.</p>
-      <div class="callout">Montlake Community School Association (Montlake PTA) is an IRS-approved 501(c)(3) nonprofit. Federal Tax ID: <strong>91-1117733</strong>.</div>`,
+      <p><strong>Montlake PTA Annual Fund<br>520 Ravenna Blvd NE<br>Seattle, WA 98105</strong></p>`,
+  },
+  {
+    slug: "annual-fund",
+    title: "Annual Fund",
+    heading: "A strong start. Support that lasts all year.",
+    kicker: "Annual giving",
+    description: "Our fall giving campaign brings families and neighbors together to support Montlake students.",
+    accent: "coral",
+    layout: "fundraising",
+    campaignStatus: "upcoming",
+    schoolYear: "",
+    goalAmount: null,
+    deadline: "",
+    primaryCtaLabel: "",
+    primaryCtaUrl: "",
+    heroImage: "",
+    heroAlt: "",
+    heroCaption: "",
+    impactBody: "",
+    equityBody: "",
+    trustBody: "",
+    content: `
+      <p class="lead">The Annual Fund is Montlake PTA’s fall giving campaign. Families, friends, and neighbors help support the school day through direct gifts and employer matching.</p>
+      <p>Dates, a goal, and giving instructions for the next campaign have not been announced here. You can still support Montlake through our <a href="../donate/">year-round giving options</a>.</p>
+      <h2>What your support makes possible</h2>
+      <p>PTA fundraising supports staffing, student programs, classroom needs, scholarships, and community events. Read <a href="../budget/">how the PTA budget works</a> for funding context and budget contacts.</p>
+      <h2>Choose the way that works for your family</h2>
+      <p>One-time and recurring gifts, employer matching, and checks are welcome. Find current payment and mailing instructions on our <a href="../donate/">Donate page</a>. Ask your employer whether it matches donations or volunteer hours.</p>
+      <p>Every family belongs, whether or not they make a financial gift. Questions about giving or a fund designation? Email <a href="mailto:fundraising@montlakepta.org">fundraising@montlakepta.org</a>.</p>
+      <h2>Past campaigns and spring giving</h2>
+      <p>The <a href="../fall-fundraiser-2025/">Fall 2025 campaign archive</a> preserves that campaign’s dates, goals, and funded programs. Those figures are historical, not an announcement for the next campaign.</p>
+      <p>The <a href="../spring-auction/">Spring Auction</a> is another way our community supports the school.</p>`,
   },
   {
     slug: "budget",
@@ -438,6 +492,19 @@ export const pages = [
     kicker: "Annual fundraiser",
     description: "The spring auction supports essential staffing, student programs, scholarships, and community-building events.",
     accent: "coral",
+    layout: "fundraising",
+    campaignStatus: "closed",
+    schoolYear: "2025–2026",
+    goalAmount: 125000,
+    deadline: "",
+    primaryCtaLabel: "",
+    primaryCtaUrl: "",
+    heroImage: "",
+    heroAlt: "",
+    heroCaption: "",
+    impactBody: "",
+    equityBody: "",
+    trustBody: "",
     content: `
       <p class="lead">Our spring auction brings the community together around experiences, local businesses, and a shared goal: strong support for Montlake students.</p>
       <p><a class="button button-primary" href="https://montlakepta.schoolauction.net/2026auction/catalog">Browse the 2026 auction catalog</a></p>

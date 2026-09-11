@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { boardMembers } from "../src/data/cms-seed.mjs";
 import { pages } from "../src/site.mjs";
+import { fundraisingFieldDefinitions, normalizeFundraisingFields } from "./fundraising-fields.mjs";
+import { publicHtml, publicText, wixMediaUrl } from "./wix-public-content.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const { values } = parseArgs({ options: { page: { type: "string" } } });
@@ -50,17 +52,19 @@ await ensureCollection({
     field("accent", "Accent", "TEXT"),
     field("body", "Body", "RICH_TEXT"),
     field("published", "Published", "BOOLEAN"),
+    ...fundraisingFieldDefinitions,
   ],
   seed: seedPages
-    .map(({ slug, title, heading, kicker, description, accent, content }) => ({
-      slug,
-      title,
-      heading: heading || title,
-      kicker: kicker || "Montlake PTA",
-      description,
-      accent: accent || "",
-      body: content,
+    .map((page) => ({
+      slug: page.slug,
+      title: page.title,
+      heading: page.heading || page.title,
+      kicker: page.kicker || "Montlake PTA",
+      description: page.description,
+      accent: page.accent || "",
+      body: page.content,
       published: true,
+      ...normalizeFundraisingFields(page, { html: publicHtml, text: publicText, image: wixMediaUrl }),
     })),
   keyOf: (item) => item.slug,
 });

@@ -793,13 +793,6 @@ h2 em {
   font-size: 1.2rem;
 }
 
-.donate-assurance {
-  max-width: 32rem;
-  margin: 1rem 0 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
 .donate-hero-visual {
   position: relative;
   margin: 0;
@@ -835,99 +828,140 @@ h2 em {
 }
 
 .donate-impact,
-.donate-methods,
+.fundraising-overview,
+.fundraising-outline,
 .donate-close {
   width: min(calc(100% - 2rem), var(--max));
   margin-inline: auto;
 }
 
 .donate-impact {
-  padding-block: clamp(5rem, 9vw, 8rem);
+  padding-block: clamp(3rem, 6vw, 5rem);
 }
 
-.donate-section-heading {
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  margin-bottom: 3rem;
-  gap: 3rem;
-  align-items: end;
+.fundraising-text-hero {
+  grid-template-columns: 1fr;
+  padding-block: clamp(2rem, 5vw, 4rem);
 }
 
-.donate-section-heading h2,
-.donate-methods-intro h2,
-.donate-equity h2 {
-  margin: 0;
-  font-size: clamp(2.6rem, 5vw, 4.7rem);
+.fundraising-text-hero h1 {
+  max-width: 20ch;
+  font-size: clamp(2.8rem, 5vw, 4.7rem);
 }
 
-.donate-section-heading > p,
-.donate-methods-intro > p {
-  max-width: 34rem;
-  margin-bottom: 0.6rem;
+.fundraising-text-hero .donate-hero-copy > p:first-of-type {
+  max-width: 56ch;
+}
+
+.campaign-status {
+  margin: 0 0 1.25rem;
   color: var(--muted);
-  font-size: 1.05rem;
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
-.donate-impact-list article {
+.campaign-facts {
+  display: flex;
+  margin: 0 0 2rem;
+  gap: 1rem 3rem;
+  flex-wrap: wrap;
+}
+
+.campaign-facts dt {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.campaign-facts dd {
+  margin: 0.25rem 0 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fundraising-overview {
+  padding-block: clamp(3rem, 6vw, 5rem);
+}
+
+.fundraising-overview > h2,
+.fundraising-impact > h2,
+.donate-equity h2 {
+  max-width: 24ch;
+  margin: 0 0 1.5rem;
+  font-size: clamp(2.4rem, 4vw, 4rem);
+}
+
+.fundraising-list {
+  border-bottom: 1px solid var(--line);
+}
+
+.fundraising-item {
+  padding-block: 1.75rem;
+}
+
+.fundraising-item p {
+  max-width: 68ch;
+}
+
+.fundraising-item .campaign-status {
+  margin-block: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.fundraising-outline {
+  padding-top: 2rem;
+}
+
+.fundraising-outline .page-outline {
+  margin-bottom: 0;
+}
+
+.donate-impact.fundraising-impact > ul {
+  max-width: none;
+  padding: 0;
+  list-style: none;
+}
+
+.fundraising-impact > ul > li:has(> strong):has(> div) {
   display: grid;
-  grid-template-columns: minmax(8rem, 0.35fr) 1fr;
-  min-height: 146px;
-  padding-block: 2rem;
+  grid-template-columns: minmax(8rem, 0.35fr) minmax(0, 1fr);
+  padding: 2rem 0;
   gap: 2rem;
   border-top: 1px solid var(--line);
   align-items: start;
 }
 
-.donate-impact-list article > strong {
+.fundraising-impact > ul > li > strong {
   color: var(--coral);
   font-family: "Literata", Georgia, serif;
   font-size: 2.5rem;
   line-height: 1;
 }
 
-.donate-impact-list h3 {
+.fundraising-impact.prose h3 {
   margin: 0 0 0.5rem;
   font-family: "Literata", Georgia, serif;
   font-size: 1.55rem;
 }
 
-.donate-impact-list p {
+.fundraising-impact li p {
   max-width: 46rem;
   margin: 0;
   color: var(--muted);
 }
 
-.donate-methods {
-  display: grid;
-  grid-template-columns: 0.72fr 1.28fr;
-  padding-block: clamp(5rem, 9vw, 8rem);
-  gap: clamp(3rem, 8vw, 7rem);
+.fundraising-body {
+  width: min(calc(100% - 2rem), 68ch);
+  margin-inline: auto;
+  padding-block: clamp(3rem, 6vw, 5rem);
 }
 
-.donate-methods-intro {
-  position: sticky;
-  top: 2rem;
-  align-self: start;
-}
-
-.donate-methods-intro > p {
-  margin-top: 1.25rem;
-}
-
-.donate-methods-content h3 {
-  margin: 0;
-  padding: 2rem 0 0.65rem;
-  border-top: 1px solid var(--line);
-  scroll-margin-top: 2rem;
-}
-
-.donate-methods-content h3:first-child {
-  padding-top: 0;
-  border-top: 0;
-}
-
-.donate-methods-content p + h3 {
-  margin-top: 2rem;
+.fundraising-body,
+.fundraising-impact,
+.fundraising-overview,
+.donate-hero-copy {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .donate-equity {
@@ -936,20 +970,16 @@ h2 em {
 }
 
 .donate-equity-shell {
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
   width: min(100%, var(--max));
   margin: auto;
   padding: 5rem;
   color: white;
   background: var(--forest);
   border-radius: var(--radius);
-  gap: clamp(3rem, 8vw, 7rem);
-  align-items: end;
 }
 
 .donate-equity h2 {
-  max-width: 13ch;
+  max-width: 22ch;
 }
 
 .donate-equity p {
@@ -959,9 +989,8 @@ h2 em {
   font-size: 1.1rem;
 }
 
-.donate-equity-shell > .text-link {
-  justify-self: end;
-  margin-bottom: 0.4rem;
+.donate-equity .fundraising-equity a:not(.button) {
+  color: var(--blue);
 }
 
 .donate-close {
@@ -1662,10 +1691,7 @@ body:has(.donate-hero) .site-footer {
 @media (max-width: 900px) {
   .hero,
   .mission-shell,
-  .join-band,
-  .donate-section-heading,
-  .donate-methods,
-  .donate-equity-shell {
+  .join-band {
     grid-template-columns: 1fr;
   }
 
@@ -1758,14 +1784,6 @@ body:has(.donate-hero) .site-footer {
 
   .donate-hero-visual {
     order: 1;
-  }
-
-  .donate-methods-intro {
-    position: static;
-  }
-
-  .donate-equity-shell > .text-link {
-    justify-self: start;
   }
 
   .donate-equity-shell {
@@ -1865,7 +1883,7 @@ body:has(.donate-hero) .site-footer {
     border-radius: 0;
   }
 
-  .donate-impact-list article {
+  .fundraising-impact > ul > li:has(> strong):has(> div) {
     grid-template-columns: 1fr;
     gap: 1rem;
   }

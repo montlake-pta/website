@@ -1,4 +1,5 @@
 import { htmlText, normalizeRichBody, publicHtml, publicText, publicUrl, wixMediaUrl } from "./wix-public-content.mjs";
+import { fundraisingFieldNames, normalizeFundraisingFields } from "./fundraising-fields.mjs";
 
 // Only messages constructed locally may be printed by the authenticated CLI.
 export class WixContentError extends Error {}
@@ -7,7 +8,7 @@ export function normalizeWixContent({ blogPosts, events, products, storeCollecti
   syncedAt = new Date().toISOString(), warn = console.warn,
 } = {}) {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     source: "wix-headless",
     syncedAt,
     cms: {
@@ -23,6 +24,7 @@ export function normalizeWixContent({ blogPosts, events, products, storeCollecti
         kicker: publicText(item.kicker), description: publicText(item.description),
         accent: ["coral", "blue", "yellow"].includes(item.accent) ? item.accent : "",
         body: publicHtml(item.body), published: true,
+        ...normalizeFundraisingFields(item, { html: publicHtml, text: publicText, image: wixMediaUrl }),
       })), "CMS page", warn),
     },
     // queryPosts returns published revisions; hasUnpublishedChanges is NOT a
@@ -111,10 +113,11 @@ export function assertPublicSnapshot(snapshot) {
     && Object.keys(value).every((key) => allowed.includes(key));
   const fail = () => { throw new WixContentError("Snapshot is not in the normalized public export format."); };
   if (!keys(snapshot, ["schemaVersion", "source", "syncedAt", "cms", "blogPosts", "events", "products", "storeCollections"])
-    || snapshot.schemaVersion !== 1 || snapshot.source !== "wix-headless"
+    || ![1, 2].includes(snapshot.schemaVersion) || snapshot.source !== "wix-headless"
     || !keys(snapshot.cms, ["pages", "boardMembers"])) fail();
   const groups = [
-    [snapshot.cms.pages, ["slug", "title", "heading", "kicker", "description", "accent", "body", "published"]],
+    [snapshot.cms.pages, ["slug", "title", "heading", "kicker", "description", "accent", "body", "published",
+      ...(snapshot.schemaVersion === 2 ? fundraisingFieldNames : [])]],
     [snapshot.cms.boardMembers, ["schoolYear", "role", "names", "email", "displayOrder", "active"]],
     [snapshot.blogPosts, ["id", "slug", "title", "excerpt", "contentText", "bodyHtml", "publishedAt", "updatedAt", "image", "sourceUrl"]],
     [snapshot.events, ["id", "slug", "title", "summary", "descriptionText", "bodyHtml", "startAt", "endAt", "location", "address", "image", "status", "sourceUrl"]],
@@ -128,12 +131,16 @@ export function assertPublicSnapshot(snapshot) {
       for (const [key, value] of Object.entries(record)) {
         if (value !== null && typeof value === "object"
           && (key !== "collectionIds" || !Array.isArray(value))) fail();
-        if (["body", "bodyHtml"].includes(key)) {
+        if (["body", "bodyHtml", "impactBody", "equityBody", "trustBody"].includes(key)) {
           if (typeof value !== "string" || publicHtml(value) !== value) fail();
         } else if (["image", "sourceUrl"].includes(key)) {
           if (value !== null && publicUrl(value, { image: key === "image" }) !== value) fail();
         } else if (typeof value === "string" && publicText(value) !== value) fail();
       }
+    }
+    for (const page of snapshot.cms.pages) {
+      const fields = normalizeFundraisingFields(page, { html: publicHtml, text: publicText, image: wixMediaUrl });
+      for (const [key, value] of Object.entries(fields)) if (value !== page[key]) fail();
     }
   }
   if (snapshot.cms.pages.some((page) => page.published !== true)
