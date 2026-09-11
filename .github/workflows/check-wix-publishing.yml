@@ -2,6 +2,11 @@ name: Verify Wix Publish Notifications
 
 on:
   workflow_dispatch:
+    inputs:
+      include_store:
+        description: Also exercise a temporary hidden product and its collection membership
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -27,4 +32,10 @@ jobs:
         env:
           WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
           WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
-        run: node scripts/check-wix-publishing.mjs
+          INCLUDE_STORE: ${{ inputs.include_store }}
+        run: |
+          if [[ "$INCLUDE_STORE" == "true" ]]; then
+            node scripts/check-wix-publishing.mjs --include-store
+          else
+            node scripts/check-wix-publishing.mjs
+          fi

@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { createClient, ApiKeyStrategy } from "@wix/sdk";
 import { items } from "@wix/data";
+import { products } from "@wix/stores";
+import { parseArgs } from "node:util";
 import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -26,11 +28,33 @@ export async function probeCollection(api, collectionId, fields, { id = randomUU
   }
 }
 
+export async function probeStore(api, collectionId, { name = `publishing-probe-${randomUUID()}`, report = console.log } = {}) {
+  let id;
+  try {
+    const created = await api.createProduct({ name, productType: "physical", visible: false, priceData: { price: 1 } });
+    id = created.product?._id;
+    if (!id || created.product.visible !== false) throw new Error("Store probe was not confirmed hidden.");
+    report(JSON.stringify({ resource: "Stores", operation: "create-hidden-product", at: new Date().toISOString() }));
+    await api.updateProduct(id, { name: `${name} updated`, visible: false });
+    report(JSON.stringify({ resource: "Stores", operation: "update-hidden-product", at: new Date().toISOString() }));
+    await api.addProductsToCollection(collectionId, [id]);
+    report(JSON.stringify({ resource: "Stores", operation: "add-hidden-product-to-collection", at: new Date().toISOString() }));
+    await api.removeProductsFromCollection(collectionId, [id]);
+    report(JSON.stringify({ resource: "Stores", operation: "remove-hidden-product-from-collection", at: new Date().toISOString() }));
+  } finally {
+    if (id) {
+      await api.deleteProduct(id);
+      report(JSON.stringify({ resource: "Stores", operation: "delete-hidden-product", at: new Date().toISOString() }));
+    }
+  }
+}
+
 async function main() {
+  const { values } = parseArgs({ options: { "include-store": { type: "boolean", default: false } } });
   if (!process.env.WIX_API_KEY) throw new Error("WIX_API_KEY is required for the manual publishing probe.");
   const config = JSON.parse(await readFile(join(root, "src/wix.config.json"), "utf8"));
   const client = createClient({
-    modules: { items },
+    modules: { items, products },
     auth: ApiKeyStrategy({ apiKey: process.env.WIX_API_KEY, siteId: process.env.WIX_SITE_ID || config.siteId }),
   });
   const marker = `publishing-probe-${randomUUID()}`;
@@ -41,7 +65,13 @@ async function main() {
   await probeCollection(client.items, config.cms.boardMembers, {
     role: marker, names: "Inactive publishing probe", active: false, displayOrder: 9999,
   });
-  console.log("Both temporary probes were removed. Inspect Wix notifications and GitHub runs to establish end-to-end delivery.");
+  if (values["include-store"]) {
+    const snapshot = JSON.parse(await readFile(join(root, "src/data/wix-content.json"), "utf8"));
+    const collection = snapshot.storeCollections.find(item => item.slug === "2026-art-walk");
+    if (!collection?.id) throw new Error("The reviewed public collection is unavailable for the hidden-product probe.");
+    await probeStore(client.products, collection.id);
+  }
+  console.log("Temporary probes were removed. Inspect Wix notifications and GitHub runs to establish end-to-end delivery.");
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

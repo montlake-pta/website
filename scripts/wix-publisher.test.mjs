@@ -4,7 +4,7 @@ import test from "node:test";
 import { readFile } from "node:fs/promises";
 import { runInNewContext } from "node:vm";
 import { createPublisher, publisherConfig } from "../wix/backend/github-publish-core.js";
-import { probeCollection } from "./check-wix-publishing.mjs";
+import { probeCollection, probeStore } from "./check-wix-publishing.mjs";
 
 const { privateKey, publicKey } = generateKeyPairSync("rsa", {
   modulusLength: 2048,
@@ -176,6 +176,21 @@ test("Velo action unwraps the v2 secret response and satisfies the empty output 
       return { accepted: true, runId: 123, runUrl: receipt.html_url };
     },
     console: { info: (...args) => messages.push(args) },
+  });
+
+  test("Store probe stays hidden and removes its own product even if membership update fails", async () => {
+    const calls = [];
+    const api = {
+      createProduct: async product => {
+        assert.equal(product.visible, false);
+        return { product: { ...product, _id: "hidden-probe" } };
+      },
+      updateProduct: async (id, patch) => { assert.equal(patch.visible, false); calls.push(["update", id]); },
+      addProductsToCollection: async (id, members) => { calls.push(["membership", id, members]); throw new Error("Membership failed"); },
+      deleteProduct: async id => calls.push(["delete", id]),
+    };
+    await assert.rejects(probeStore(api, "reviewed-collection", { name: "probe", report: () => {} }), /Membership failed/);
+    assert.deepEqual(calls, [["update", "hidden-probe"], ["membership", "reviewed-collection", ["hidden-probe"]], ["delete", "hidden-probe"]]);
   });
   assert.equal(JSON.stringify(await invoke({ payload: { privateData: "NEVER_LOG" } })), "{}");
   assert.deepEqual(messages, [["GitHub website publish requested", 123]]);
