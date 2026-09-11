@@ -1,5 +1,10 @@
 # Content parity review
 
+For present-day operation and unresolved configuration work, start with
+[operations.md](operations.md). The dated findings below remain as evidence;
+read their later remediation/cutover dispositions before treating them as
+current defects.
+
 Audited: **2026-09-09**  
 Scope: five public page pairs — legacy Wix site (`https://www.montlakepta.org/{slug}`) vs. new GitHub Pages site (`https://montlake-pta.github.io/website/{slug}/`)  
 At the initial audit, the local offline snapshot contained no page records, while authenticated production builds pulled live Wix CMS records. The local snapshot could not prove live CMS state. This review compared the deployed public pages directly; character counts and source quotations below record that pre-repair baseline.  

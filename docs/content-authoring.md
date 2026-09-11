@@ -4,7 +4,7 @@
 
 | Content | Editing location | Website behavior |
 |---|---|---|
-| Enrichment, New Families, Special Education, Budget, Donate page body | Wix CMS `WebsitePages`, selected by `slug` | Read during the next Pages build |
+| Informational page bodies, including Enrichment, Advocacy, Budget, Donate and dated campaign pages | Wix CMS `WebsitePages`, selected by `slug` | Read during the next Pages build |
 | Board roster | Wix CMS `BoardMembers` | Replaces the roster section of the board page |
 | Posts, event details, products | Wix Blog, Events, Stores | Generated indexes and individual routes |
 | Newsletter editions | Constant Contact public Email Archive | Public newsletter permalink embedded on the site |
@@ -16,12 +16,56 @@ text block, a generated HTML file, or the seed script. The seed script only
 inserts missing rows. A successful sync cannot recover details that were never
 put in the CMS.
 
+### Source precedence and fallback behavior
+
+The generator begins with `src/site.mjs`, overlays valid published
+`WebsitePages` records, then applies specialized renderers. The board roster,
+Blog/Events/Shop indexes and newsletter content have their own data sources;
+editing an index's CMS body is not a reliable way to change generated cards or
+newsletter editions. Layout and surrounding template copy remain in source.
+
+For a static route that exists in `src/site.mjs`, deleting/unpublishing its CMS
+record or leaving its body empty can expose the fallback again; it does **not**
+necessarily remove the public page. Likewise, if there are no usable active
+board records, the board page retains its CMS/static fallback. A deliberate
+page withdrawal or roster-hiding requirement needs a coordinated source change,
+not an assumption that an empty collection hides everything.
+
+## What causes a website update
+
+- **CMS `WebsitePages` and `BoardMembers`:** adding, editing or deleting records
+  requests a rebuild.
+- **Blog:** publishing, updating or deleting a published post requests a
+  rebuild; saving a draft alone has no dedicated trigger.
+- **Events:** creating, editing, canceling or deleting an event requests a
+  rebuild.
+- **Store products:** product edits, variants and stock changes request a
+  rebuild; collection lifecycle changes are also connected.
+
+Changes appear after deployment finishes. Rapid edits can be combined into a
+newer queued build. Some imports, reference-only changes and deliberately
+suppressed hooks may wait for hourly recovery. Newsletter editions and Google
+Calendar changes are picked up on the next rebuild or hourly refresh, not by
+the Wix mutation sender.
+
+Edit page copy in `WebsitePages`, not independent legacy Editor text blocks.
+For a saved edit that is not appearing, follow
+[publishing diagnosis](operations.md#diagnose-publishing-before-changing-content)
+instead of repeatedly changing the content.
+
 ## Reviewed one-time CMS repair
 
 The manual **Update One Wix Page** workflow is for a deliberate migration
 repair, not routine authoring. It uses the repository's Actions secret; do not
 extract or print that secret. Its key needs Wix data-item read/write access.
 GitHub permissions remain `contents: read`.
+
+**Publication side effect:** a successful apply or CMS seed insertion can now
+trigger the Wix-to-GitHub bridge immediately. That builds the repository's
+current `main`, not the candidate branch used to author the repair. Before a
+write, make sure production code can render the proposed content. Deploy
+compatible presentation code first when needed; do not assume a feature-branch
+plan isolates live CMS changes.
 
 1. Commit and push the reviewed `src/site.mjs` candidate. Run a plan on that
    branch, for example:
@@ -43,8 +87,10 @@ GitHub permissions remain `contents: read`.
 4. Require `applied` or `already-current` status and a verified
    `snapshot-page.json`. Merge only that page into the offline snapshot's
    `cms.pages`; retain unrelated pages, posts, events, products, and metadata.
-5. Build and inspect the CMS-backed output, then publish through `pages.yml`.
-   The repair workflow neither commits source nor deploys the site.
+5. Build and inspect the CMS-backed output and inspect the resulting `pages.yml`
+   run. The repair workflow does not directly commit or deploy source, but the
+   publishing bridge can already have requested a `main` deployment. Manually
+   run Pages only when recovery is needed.
 
 Run a separate plan/apply pair for each page. Avoid simultaneous CMS authoring
 during a repair. A failed write or read-back can have an unknown outcome: inspect
@@ -60,6 +106,18 @@ validates and exports only their normalized JSON snapshots, then builds and
 checks the site. The artifact remains available to diagnose a later build
 failure; it is not by itself a release approval. The workflow does not write to
 Wix or deploy the site.
+
+```sh
+gh workflow run export-content-snapshot.yml --repo montlake-pta/website \
+  --ref YOUR_BRANCH -f candidate_commit=FULL_REVIEWED_COMMIT_SHA
+gh run download RUN_ID --repo montlake-pta/website \
+  --name public-content-RUN_ID --dir NEW_REVIEW_DIRECTORY
+```
+
+The three exported JSON files are already normalized; review them before
+copying them into `src/data/` and committing. The optional
+`inspect_event_forms=true` input logs public form field names/types only.
+It does not exercise visitor RSVP permissions.
 
 Download the run's `public-content-RUN_ID` artifact, review the public fields and
 restored links/media, and replace the corresponding files in `src/data/`.
@@ -161,6 +219,9 @@ or the public client ID are supplied, activation stays off. Working active
 registration handoffs are explicitly marked as unresolved dependencies rather
 than removed prematurely. Closed events and unavailable products do not need
 legacy handoffs, and external ticket providers can be linked directly.
+See [operations.md](operations.md#finish-cutover-without-breaking-checkout)
+for the exact Headless role requirement, checkout-domain limitation and what
+the readiness commands do and do not prove.
 
 The old frontend must remain available until visitor registration/checkout is
 verified, the strict cutover gate passes and the owner approves the domain
@@ -184,5 +245,6 @@ switch. Wix CMS, commerce services and media hosting remain in use afterward.
 - Keep `src/site.mjs` fallback and `src/data/wix-content.json` offline CMS copy
   current after an approved repair. Do not publish repository copies back to
   Wix during routine scheduled builds.
-- Use the existing hourly deployment or manually run `pages.yml` to publish
-  confirmed CMS edits.
+- Confirm the mutation-triggered deployment for CMS edits. Use the hourly
+  deployment or a manual `pages.yml` run as recovery, not as a required step
+  for every ordinary edit.

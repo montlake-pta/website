@@ -5,6 +5,11 @@ source.
 
 **Preview:** <https://montlake-pta.github.io/website/>
 
+**Start a fresh session:** read [AGENTS.md](AGENTS.md), then
+[operations and current blockers](docs/operations.md). Content editors should
+use [content authoring](docs/content-authoring.md); the
+[parity report](docs/content-parity.md) records historical findings and repairs.
+
 ## Edit the site
 
 - Routine page copy: Wix CMS → `WebsitePages` (match by `slug`)
@@ -88,9 +93,13 @@ plan/create the named client when the account/API-key permissions allow it.
 
 **Activation is currently blocked by [issue #4](https://github.com/montlake-pta/website/issues/4).**
 The current key cannot query Headless clients or discover the required account
-context. Until that is resolved, activation stays off and a still-needed,
-explicitly marked registration handoff is retained rather than breaking the
-working signup path.
+context, and authenticated dashboard access also lacked the custom
+**Manage headless settings** permission. Standard collaborator roles do not
+include it. See [the precise permission handoff](docs/operations.md#the-precise-headless-permission-blocker).
+Until resolved, activation stays off and a still-needed, explicitly marked
+registration handoff is retained rather than breaking the working signup path.
+Wix-to-GitHub content publishing is already live and is independent of this
+visitor-client blocker.
 
 Run `npm run build && npm test && npm run check:cutover` before retiring the
 old frontend. The strict check rejects unconfigured visitor access and
@@ -106,12 +115,12 @@ explicit `SITE_URL` activates the strict cutover gate in Pages deployment.
 Verify checkout return domains and actual visitor flows before changing DNS;
 the automation does not change DNS or unpublish the old site.
 
-After visitor flows are verified, the owner can configure GitHub Pages'
-custom domain as `www.montlakepta.org`, point that host's DNS CNAME at
-`montlake-pta.github.io`, and set `SITE_URL=https://www.montlakepta.org/`.
-Preserve mail-related MX/TXT records and configure the apex-domain redirect
-deliberately. Do not delete Wix CMS, Events, Stores or media when retiring the
-old public navigation.
+The final domain switch needs a coordinated plan for GitHub Pages **and**
+Wix's primary domain, Wix-hosted checkout domain, frontend link and callback
+settings; changing a CNAME alone is insufficient. A dedicated checkout
+subdomain is not yet allowed by the current redirect validator. Follow
+[the cutover sequence and remaining implementation checks](docs/operations.md#finish-cutover-without-breaking-checkout)
+before activating it. Preserve mail records and the Wix backend.
 
 ## Wix content sync
 
@@ -166,14 +175,15 @@ authoritative content changes. This uses a dedicated GitHub App with
 **Actions write and Metadata read**, installed only on `montlake-pta/website`;
 it does not reuse a personal token or require Contents write.
 
-| Source | Published trigger coverage |
-|---|---|
-| `WebsitePages`, `BoardMembers` | Velo `afterInsert`, `afterUpdate`, `afterRemove` hooks |
-| Blog posts | Post created, updated and deleted backend events |
-| Wix Events | Event created, updated, canceled and deleted backend events |
-| Store products | Product created, updated and deleted; variants updated |
-| Store inventory | Inventory variant and inventory item updated |
-| Store collections | Collection created, updated and deleted |
+- **CMS `WebsitePages` and `BoardMembers`:** add, edit or delete a record.
+- **Blog:** publish, update or delete a published post; draft-only edits have
+  no dedicated handler.
+- **Events:** create, edit, cancel or delete an event.
+- **Store products:** add, edit or delete products; change variants or stock.
+- **Store collections:** create, edit or delete collections.
+
+Changes appear after the rebuild finishes, not instantly on Save. Legacy
+Editor text/layout changes do not update the new site's page copy.
 
 An additional active automation, **GitHub publish - WebsitePages updated**,
 listens to the Website Pages collection's Item updated trigger and calls the
@@ -243,6 +253,11 @@ They produced app-origin deployment runs, including the successful
 [resulting Pages deployment](https://github.com/montlake-pta/website/actions/runs/34569653752).
 The temporary records were removed. These are end-to-end examples, not a
 guarantee that suppressed hooks or every import mechanism emits a signal.
+See [publishing diagnosis](docs/operations.md#diagnose-publishing-before-changing-content)
+for failure handling, action return-schema details and safe recovery. Do not
+run mutation probes merely to validate documentation.
+
+### Local authenticated sync
 
 For local authenticated sync:
 
@@ -283,7 +298,9 @@ site build will pull them automatically.
 For a reviewed repair to an existing record, use the manual **Update One Wix
 Page** workflow: plan, inspect the public before/after report, then apply with
 that plan's exact commit and fingerprints. This requires Wix data-item write
-access and does not deploy automatically. See the
+access. The repair workflow does not itself deploy, but **its live CMS write
+can trigger the publishing bridge to build current `main` automatically**.
+The candidate branch is not promoted by that signal. See the
 [repair procedure](docs/content-authoring.md#reviewed-one-time-cms-repair).
 
 ### One editing location
@@ -303,9 +320,12 @@ See [content authoring and handoff](docs/content-authoring.md) for the repair
 workflow, review responsibilities, and publication checklist, and
 [content parity](docs/content-parity.md) for the priority-page comparison.
 
-`npm run bootstrap:wix` refreshes the checked-in public snapshot. It is intended
-only for initial migration or disaster recovery; normal deployments use the
-authenticated SDK sync.
+`npm run bootstrap:wix` is a limited legacy-site extraction, not a normal
+snapshot refresh. It overwrites `wix-content.json`, leaves CMS arrays empty,
+and uses descriptions rather than full rich bodies. Prefer the
+[authenticated public export](docs/content-authoring.md#refreshing-the-offline-snapshot)
+or the existing reviewed snapshot; do not discard the latter because a local
+API key is unavailable.
 
 ## Newsletter archive
 
@@ -344,6 +364,7 @@ The redesign keeps the PTA's current operational tools in place:
 - 6crickets for enrichment registration
 - SchoolAuction.net for the seasonal auction
 
-The existing site remains at `montlakepta.org` during the preview period. Do not
-add a `CNAME` file or change DNS until authenticated synchronization is enabled
-and the desired domain cutover date is confirmed.
+The existing site remains at `montlakepta.org` during the preview period.
+Authenticated synchronization alone is not cutover approval. Do not change
+DNS or add a `CNAME` file until visitor flows, the strict cutover gate and the
+coordinated Wix/GitHub domain plan are ready and the owner approves the launch.

@@ -18,6 +18,11 @@ promotional, specific to Montlake, and easy to scan on a phone.
 - `PRODUCT.md`: audience, purpose, constraints, and durable product truth.
 - `DESIGN.md`: visual tokens, component rules, accessibility, and anti-patterns.
 - `README.md`: local commands, Wix setup, and deployment behavior.
+- `docs/operations.md`: fresh-session handoff, authentication boundaries,
+  publishing diagnosis, and unresolved visitor/domain cutover requirements.
+- `docs/content-authoring.md`: content ownership, guarded CMS repairs, and
+  snapshot refresh procedures. `docs/content-parity.md` is historical evidence;
+  read later dispositions before treating old findings as current defects.
 - `.github/copilot-instructions.md`: concise repository-wide Copilot rules.
 
 For visual work, also read `.github/skills/impeccable/SKILL.md` and follow the
@@ -66,6 +71,8 @@ the documented `user-invocable: false` agent-profile override.
 | Offline public calendar snapshot | `src/data/calendar-events.json` |
 | Deployment | `.github/workflows/pages.yml` |
 | Wix mutation-to-GitHub publishing | `wix/backend/`, `.github/workflows/check-wix-publishing.yml` |
+| Headless client provisioning | `scripts/setup-wix-headless.mjs`, `.github/workflows/setup-wix-headless.yml` |
+| Operational handoff and recovery | `docs/operations.md`, `docs/content-authoring.md` |
 
 `dist/` is generated output. Never edit or commit it.
 
@@ -122,6 +129,9 @@ python3 -m http.server 4173 --directory dist
   changed live record; subsequent routine authoring belongs in Wix.
 - Keep dated guidance distinct from current confirmed information. Do not
   invent a new session, fee, deadline, contact assignment, or approval.
+- CMS repairs and seed insertions can trigger the live publishing bridge.
+  That builds current `main`, not the repair's candidate branch; ensure
+  production presentation is compatible before mutating live content.
 
 ### Wix integration
 
@@ -157,6 +167,12 @@ python3 -m http.server 4173 --directory dist
   real RSVPs, reserve scarce tickets or charge payments merely to test code.
 - `SITE_URL` controls public paths and callbacks. Do not change DNS or unpublish
   Wix services as an implicit side effect of preparing the cutover.
+- Successful CMS/MCP access does not prove permission to manage Headless
+  Settings. Standard collaborator roles exclude **Manage headless settings**;
+  use the owner handoff in `docs/operations.md`, not repeated 403 retries.
+- A custom Wix checkout subdomain requires coordinated Wix primary/pages-domain
+  settings and a reviewed redirect-validator change; it is not currently
+  accepted merely because `SITE_URL` points to the new frontend.
 
 ### Newsletter integration
 
@@ -220,6 +236,8 @@ python3 -m http.server 4173 --directory dist
 | Wix normalization or CMS schema | Build, test, snapshot behavior, authenticated sync when credentials are available |
 | GitHub Actions | Parse YAML, inspect permissions/conditions, run the affected workflow when possible |
 | Agent instructions or custom agents | `npm run check:agents` |
+| Wix publisher backend | `node --test scripts/wix-publisher.test.mjs`; deploy intended Wix code changes separately and verify delivery safely |
+| Documentation only | Verify referenced files, commands and links; run `npm run check:agents` when changing agent guidance. Do not run live mutation probes merely for docs. |
 
 ## GitHub and Pull Requests
 
