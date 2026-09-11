@@ -275,7 +275,8 @@ integration uses two CMS collections instead:
 
 - `BoardMembers`: school year, role, names, email, display order, and active
 - `WebsitePages`: slug, title, heading, kicker, description, accent, body, and
-  published
+  published, plus optional fundraising campaign, action, image and rich-content
+  fields described in the [fundraising authoring guide](docs/content-authoring.md#fundraising-pages).
 
 Create and seed both collections from the current repository content:
 
@@ -291,8 +292,10 @@ gh workflow run setup-wix-cms.yml --repo montlake-pta/website
 ```
 
 This setup command creates missing collections and inserts missing seed rows;
-it never updates an existing record. It is not a way to publish edits to
-`src/site.mjs`. After setup, maintain existing page records in Wix CMS and each
+it never updates an existing record or upgrades an existing collection schema.
+Use the reviewed **Migrate Fundraising Pages** workflow for the additive
+fundraising schema/content migration on an existing site. Rerunning setup does
+not publish edits to `src/site.mjs`. After setup, maintain existing page records in Wix CMS and each
 site build will pull them automatically.
 
 For a reviewed repair to an existing record, use the manual **Update One Wix

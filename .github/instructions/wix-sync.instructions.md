@@ -1,6 +1,6 @@
 ---
 description: 'Rules for Wix Headless synchronization, CMS schema, snapshots, and dynamic content rendering'
-applyTo: 'scripts/sync-wix.mjs,scripts/normalize-wix-content.mjs,scripts/wix-public-content.mjs,scripts/wix-content.test.mjs,scripts/setup-wix-cms.mjs,scripts/update-wix-page*.mjs,scripts/bootstrap-wix-snapshot.mjs,scripts/render-wix-content.mjs,src/data/**,src/wix.config.json'
+applyTo: 'scripts/sync-wix.mjs,scripts/normalize-wix-content.mjs,scripts/wix-public-content.mjs,scripts/wix-content.test.mjs,scripts/setup-wix-cms.mjs,scripts/update-wix-page*.mjs,scripts/migrate-fundraising*.mjs,scripts/fundraising*.mjs,scripts/bootstrap-wix-snapshot.mjs,scripts/render-wix-content.mjs,scripts/render-fundraising.mjs,src/data/**,src/wix.config.json'
 ---
 
 # Wix synchronization instructions

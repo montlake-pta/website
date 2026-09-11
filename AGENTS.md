@@ -62,6 +62,7 @@ the documented `user-invocable: false` agent-profile override.
 | Internal-link and document cutover | `scripts/cutover-links.mjs`, `scripts/check-cutover.mjs` |
 | Wix CMS creation and seed behavior | `scripts/setup-wix-cms.mjs` |
 | Reviewed repair of an existing CMS page | `scripts/update-wix-page.mjs`, `.github/workflows/update-wix-page.yml` |
+| CMS fundraising fields, rendering and one-time migration | `scripts/fundraising-fields.mjs`, `scripts/render-fundraising.mjs`, `scripts/migrate-fundraising.mjs` |
 | Dynamic page rendering and HTML sanitization | `scripts/render-wix-content.mjs` |
 | Public newsletter archive synchronization | `scripts/sync-newsletters.mjs` |
 | Newsletter latest/archive page generation | `scripts/render-newsletters.mjs` |
@@ -132,6 +133,10 @@ python3 -m http.server 4173 --directory dist
 - CMS repairs and seed insertions can trigger the live publishing bridge.
   That builds current `main`, not the repair's candidate branch; ensure
   production presentation is compatible before mutating live content.
+- Donate, Annual Fund and Spring Auction use CMS fundraising fields as well as
+  `body`; edit those records for campaign facts, hero copy and primary actions.
+  Keep `campaignStatus` set and clear optional fields to remove old values.
+  See `docs/content-authoring.md` before rolling over a campaign.
 
 ### Wix integration
 

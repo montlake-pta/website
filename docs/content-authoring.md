@@ -5,6 +5,7 @@
 | Content | Editing location | Website behavior |
 |---|---|---|
 | Informational page bodies, including Enrichment, Advocacy, Budget, Donate and dated campaign pages | Wix CMS `WebsitePages`, selected by `slug` | Read during the next Pages build |
+| Fundraising headings, summaries, campaign facts, primary actions, hero image and impact/equity/trust sections | Wix CMS `WebsitePages` | Shared fundraising layout; summaries also appear on Donate and the homepage |
 | Board roster | Wix CMS `BoardMembers` | Replaces the roster section of the board page |
 | Posts, event details, products | Wix Blog, Events, Stores | Generated indexes and individual routes |
 | Newsletter editions | Constant Contact public Email Archive | Public newsletter permalink embedded on the site |
@@ -22,7 +23,8 @@ The generator begins with `src/site.mjs`, overlays valid published
 `WebsitePages` records, then applies specialized renderers. The board roster,
 Blog/Events/Shop indexes and newsletter content have their own data sources;
 editing an index's CMS body is not a reliable way to change generated cards or
-newsletter editions. Layout and surrounding template copy remain in source.
+newsletter editions. Layout, navigation and generic interface labels remain in
+source. Fundraising campaign copy and facts do not live in those templates.
 
 For a static route that exists in `src/site.mjs`, deleting/unpublishing its CMS
 record or leaving its body empty can expose the fallback again; it does **not**
@@ -30,6 +32,103 @@ necessarily remove the public page. Likewise, if there are no usable active
 board records, the board page retains its CMS/static fallback. A deliberate
 page withdrawal or roster-hiding requirement needs a coordinated source change,
 not an assumption that an empty collection hides everything.
+
+## Fundraising pages
+
+Use the existing `WebsitePages` records with these stable slugs:
+
+- `donate`: evergreen giving hub, payment/matching/check instructions, impact,
+  participation and nonprofit information.
+- `annual-fund`: the fall campaign destination. It starts with useful evergreen
+  guidance and an `upcoming` status, not an invented year, goal or deadline.
+- `spring-auction`: the spring campaign destination. The initial migrated
+  content describes the closed 2026 campaign and its 2025–2026 spending plan.
+- `fall-fundraiser-2025`: the existing historical archive. Do not overwrite it
+  with the next campaign.
+
+The homepage reads the Donate heading/description and all three current pages'
+titles, descriptions, school years and statuses. Donate also links to Annual
+Fund and Spring Auction using their current CMS summaries. Navigation points
+to the giving hub; it never bypasses it for a hardcoded payment provider.
+
+### Editing fields
+
+The existing `title`, `heading`, `description` and rich-text `body` remain the
+main content. Use `body` for instructions, FAQs, budget context, contact links
+and any dated caveats. The additional fields are:
+
+| Field | Format and behavior |
+|---|---|
+| `campaignStatus` | Keep set to `evergreen`, `upcoming`, `active`, `closed` or `archived`. Use `evergreen` for Donate. |
+| `schoolYear` | Optional descriptive year, such as `2026–2027`, only when confirmed. Shown with the status on the page and summaries. |
+| `goalAmount` | Optional positive number in US dollars, without `$` or commas. This is a goal, not an amount raised. |
+| `deadline` | Optional calendar date in `YYYY-MM-DD` format. Giving remains open through that entire date in Seattle time. |
+| `primaryCtaLabel`, `primaryCtaUrl` | Button wording and approved Montlake destination. Both are needed to show the primary action. URLs may be HTTPS, `mailto:`, or a local root-relative route such as `/donate/`; do not include `/website/`. |
+| `heroImage`, `heroAlt`, `heroCaption` | Optional image, required description when an image is set, and optional caption. Wix Media Manager images and HTTPS images are supported. |
+| `impactBody` | Optional rich-text funding-impact section before the main body. This owns Donate's prominent funding claims. |
+| `equityBody` | Optional rich-text participation/equity section, presented on navy. |
+| `trustBody` | Optional rich-text nonprofit, tax and donor information, followed by the same current primary action. |
+
+Use ordinary paragraphs, headings and lists in the rich fields; the shared
+sanitizer is unchanged. The Donate impact list uses a leading bold phrase and
+a following text group for its open, divided rows. No arbitrary HTML, scripts
+or additional styling classes are needed.
+
+Keep `campaignStatus` populated. On a configured fundraising record, clearing
+or removing an optional field removes it from the page rather than resurrecting
+repository fallback text. This also applies to blank `body` and `description`.
+Records with no fundraising fields retain legacy fallback behavior so an old
+snapshot still builds; deleting all fields or unpublishing the entire record
+is not a reliable way to hide a fallback route.
+
+Only `active` and `evergreen` show the configured primary action. Upcoming,
+closed and archived campaigns instead point visitors to year-round giving.
+After an active campaign's deadline, the next build renders it closed; this
+does not change the stored status in Wix and is not a live midnight timer.
+Historical links in `body` remain visible, so label catalog/archive links
+accurately and remove obsolete donation asks there as well.
+
+### Rolling over a campaign
+
+1. Set the current campaign to `upcoming` while preparing new copy. Preserve
+   the old facts in a dated CMS archive record before replacing them; for
+   example, a new `spring-auction-2026` record can use `archived` status and the
+   same fundraising fields without a new template.
+2. Update the heading, summary and full body, including FAQs, historical
+   references and links. Clear old goals, school years, deadlines and images
+   that no longer apply. Do not carry forward staffing percentages or
+   allocation commitments without confirmation.
+3. Enter the confirmed year, goal, deadline and Montlake-owned payment
+   destination. Existing PayPal and SchoolAuction services remain supported;
+   a new provider must belong to Montlake, not the example school.
+4. Set `active` only when the campaign and destination are ready. After the
+   automatic deployment, inspect the campaign page, Donate hub and homepage.
+   Updating one field does not rewrite historical prose in other CMS records.
+
+### Initial fundraising migration
+
+The manual **Migrate Fundraising Pages** workflow is a one-time, reviewed
+schema/content migration, not routine authoring. It adds only missing field
+definitions, updates the existing Donate and Spring Auction candidates and
+inserts Annual Fund if absent. It preserves unrelated fields, collection
+permissions and other records.
+
+Deploy compatible source to `main` first: live writes can immediately request
+a build of `main`. Run a plan, review the sanitized before/proposed content
+and schema changes, then use the exact commit and both fingerprints in the
+report's `applyInputs` for apply. Reconcile newer live copy before approving;
+the repository fallback is not automatically more current than Wix.
+
+Apply rechecks live state and verifies read-back. Schema and item writes are
+not one atomic transaction; after a partial failure, inspect a new plan rather
+than blindly retrying. There is no destructive rollback. Refresh the complete
+public offline snapshot after successful migration.
+
+Snapshot schema 2 carries the allowlisted fundraising fields. Version 1
+snapshots remain readable. The older **Update One Wix Page** workflow still
+changes only title, heading, description and body; it preserves fundraising
+fields and includes them in public read-back. Use Wix CMS for subsequent
+campaign-field edits, not the seed or migration scripts.
 
 ## What causes a website update
 

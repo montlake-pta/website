@@ -1,0 +1,95 @@
+name: Migrate Fundraising Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Plan first; deploy compatible main before applying reviewed CMS changes
+        type: choice
+        options:
+          - plan
+          - apply
+        default: plan
+        required: true
+      candidate_commit:
+        description: Full commit SHA from the plan (required for apply; blank plans selected ref)
+        type: string
+      expected_fingerprint:
+        description: Live schema/records fingerprint from the reviewed plan (required for apply)
+        type: string
+      expected_candidate_fingerprint:
+        description: Candidate fingerprint from the reviewed plan (required for apply)
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wix-page-repair
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Validate approval inputs
+        env:
+          MODE: ${{ inputs.mode }}
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          EXPECTED_FINGERPRINT: ${{ inputs.expected_fingerprint }}
+          EXPECTED_CANDIDATE_FINGERPRINT: ${{ inputs.expected_candidate_fingerprint }}
+        run: |
+          if [[ "$MODE" != "plan" && "$MODE" != "apply" ]]; then
+            echo "Mode must be plan or apply."
+            exit 1
+          fi
+          if [[ -n "$CANDIDATE_COMMIT" && ! "$CANDIDATE_COMMIT" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "candidate_commit must be a full lowercase commit SHA."
+            exit 1
+          fi
+          if [[ "$MODE" == "apply" ]]; then
+            if [[ ! "$CANDIDATE_COMMIT" =~ ^[a-f0-9]{40}$ ||
+                  ! "$EXPECTED_FINGERPRINT" =~ ^[a-f0-9]{64}$ ||
+                  ! "$EXPECTED_CANDIDATE_FINGERPRINT" =~ ^[a-f0-9]{64}$ ]]; then
+              echo "Apply requires all three approval values from a reviewed plan."
+              exit 1
+            fi
+          fi
+      - name: Check out the exact candidate commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.candidate_commit || github.sha }}
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run focused migration tests
+        run: node --test scripts/migrate-fundraising.test.mjs
+      - name: Plan or guardedly apply the three fundraising pages
+        env:
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
+          WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
+          MODE: ${{ inputs.mode }}
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          EXPECTED_FINGERPRINT: ${{ inputs.expected_fingerprint }}
+          EXPECTED_CANDIDATE_FINGERPRINT: ${{ inputs.expected_candidate_fingerprint }}
+        run: |
+          node scripts/migrate-fundraising.mjs \
+            --mode "$MODE" \
+            --expected-commit "$CANDIDATE_COMMIT" \
+            --expected-fingerprint "$EXPECTED_FINGERPRINT" \
+            --expected-candidate-fingerprint "$EXPECTED_CANDIDATE_FINGERPRINT" \
+            --output-dir "$RUNNER_TEMP/wix-fundraising"
+      - name: Upload only the safe public migration report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wix-fundraising-${{ inputs.mode }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/wix-fundraising/report.json
+          if-no-files-found: warn
+          retention-days: 14

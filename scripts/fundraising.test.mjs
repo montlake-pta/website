@@ -6,6 +6,7 @@ import { mergeWixContent } from "./render-wix-content.mjs";
 import { emptyFundraisingFields, effectiveCampaignStatus, normalizeFundraisingFields } from "./fundraising-fields.mjs";
 import { renderFundraisingOverview, renderFundraisingPage } from "./render-fundraising.mjs";
 import { publicHtml, publicText, wixMediaUrl } from "./wix-public-content.mjs";
+import { publicPage } from "./update-wix-page.mjs";
 
 const options = { html: publicHtml, text: publicText, image: wixMediaUrl };
 const now = new Date("2030-10-15T20:00:00Z");
@@ -136,4 +137,15 @@ test("blank fundraising columns do not turn ordinary CMS pages into campaign lay
   const calendar = mergeWixContent(pages, data).find(page => page.slug === "calendar");
   assert.notEqual(calendar.layout, "fundraising");
   assert.match(calendar.content, /Calendar content/);
+});
+
+test("ordinary page repairs preserve fundraising fields in the public read-back export", () => {
+  const record = { ...candidate("donate"), _owner: "PRIVATE_OWNER", internalNotes: "PRIVATE_NOTES" };
+  const exported = publicPage(record);
+  assert.equal(exported.primaryCtaUrl, record.primaryCtaUrl);
+  assert.equal(exported.impactBody, record.impactBody);
+  assert.doesNotMatch(JSON.stringify(exported), /PRIVATE_/);
+  const data = snapshot([]);
+  data.cms.pages.push(exported);
+  assertPublicSnapshot(data);
 });
