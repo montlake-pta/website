@@ -41,6 +41,9 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Allow Wix changes to become visible to read APIs
+        if: github.event_name == 'workflow_dispatch' && github.actor == 'montlake-pta-publish-bridge[bot]'
+        run: sleep 15
       - name: Sync content from Wix
         if: vars.WIX_SYNC_ENABLED == 'true'
         env:

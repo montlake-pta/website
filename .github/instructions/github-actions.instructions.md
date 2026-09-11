@@ -16,3 +16,7 @@ applyTo: '.github/workflows/**/*.yml,.github/workflows/**/*.yaml'
 - Workflows that modify Wix data must remain manual unless an explicit safe,
   reviewable trigger is requested.
 - Preserve manual dispatch for recovery and diagnosis.
+- Wix-triggered publishing uses the repository-limited GitHub App and
+  `workflow_dispatch`; do not replace it with a broadly scoped personal token.
+- Publishing verification must stay manual, use only non-public temporary
+  records, and clean up its own probes without touching real content.

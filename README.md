@@ -154,9 +154,95 @@ gh variable set WIX_SITE_ID --body f17e8f26-4d30-4997-bca1-82f1599221bb --repo m
 gh variable set WIX_SYNC_ENABLED --body true --repo montlake-pta/website
 ```
 
-The workflow synchronizes on pushes, on manual runs, every hour, and when it
-receives a `wix-content-updated` repository dispatch. A failed authenticated
-sync stops deployment rather than publishing stale content.
+The workflow synchronizes on pushes, manual runs, every hour, and when Wix
+requests a deployment. The older `wix-content-updated` repository-dispatch
+trigger remains supported. A failed authenticated sync stops deployment rather
+than publishing stale content.
+
+### On-demand publishing from Wix
+
+The live Wix backend calls GitHub's **workflow dispatch** endpoint when
+authoritative content changes. This uses a dedicated GitHub App with
+**Actions write and Metadata read**, installed only on `montlake-pta/website`;
+it does not reuse a personal token or require Contents write.
+
+| Source | Published trigger coverage |
+|---|---|
+| `WebsitePages`, `BoardMembers` | Velo `afterInsert`, `afterUpdate`, `afterRemove` hooks |
+| Blog posts | Post created, updated and deleted backend events |
+| Wix Events | Event created, updated, canceled and deleted backend events |
+| Store products | Product created, updated and deleted; variants updated |
+| Store inventory | Inventory variant and inventory item updated |
+| Store collections | Collection created, updated and deleted |
+
+An additional active automation, **GitHub publish - WebsitePages updated**,
+listens to the Website Pages collection's Item updated trigger and calls the
+same tested server action. It is intentionally redundant with the data hook.
+Overlapping notifications and bulk changes can create several dispatches:
+GitHub's existing concurrency group keeps the running deployment and coalesces
+pending runs. Pending runs marked canceled are expected; the newest pending
+run refreshes the complete site. Wix-origin runs allow 15 seconds for source
+changes to become visible before querying the APIs.
+
+The signing key is stored only in Wix Secrets Manager as
+`github-publish-bridge-private-key`. The sender creates short-lived,
+repository-limited installation tokens and posts only `{"ref":"main"}`.
+No CMS records, event guests, product payloads or credentials are sent to
+GitHub in the dispatch body. Transient GitHub status failures receive bounded
+retries; notification failures are logged explicitly. CMS hooks preserve the
+author's successful write even if notification fails.
+
+**Recovery and scope:** keep the hourly sync. Explicitly suppressed data hooks,
+reference-only writes and CSV import paths are not guaranteed immediate
+notifications by this integration. Nor do Constant Contact or Google Calendar
+changes originate in Wix; those feeds still refresh during deployments and
+the hourly run. Velo hook/event delivery is not claimed to have the
+acknowledgment/retry guarantees of an external Wix App webhook subscription.
+
+#### Maintaining the Wix sender
+
+The source-controlled files in `wix/backend/` correspond to these live files:
+
+- `events.js` and `data.js`: the reserved Velo backend event and data-hook files.
+- `github-publish.js` and `github-publish-core.js`: bundle into the existing
+  **github-publish** automation Velo action. This action lives at
+  `backend/___spi___/automations-velo-action-provider/github-publish/github-publish.js`.
+
+Prepare the standalone action without embedding credentials:
+
+```sh
+npm run build:wix-publisher -- --outfile=/tmp/montlake-github-publish.js
+```
+
+Update the existing action rather than creating a differently named one;
+backend handlers import its established path. Save the action and publish
+changed backend files in Wix. A GitHub push does not deploy these Wix files.
+Keep unrelated Wix page/code changes intact.
+
+Public integration identifiers: GitHub App **4906160**
+(`montlake-pta-publish-bridge`), installation **160793888**, repository
+**1356687632**, and Wix automation
+**ea50b8de-0b25-446e-a80f-70765e472cef**. These are not credentials.
+To rotate the signing key, generate a key for that same GitHub App, replace
+the Wix secret, confirm a successful dispatch, then revoke the superseded key.
+
+The manual **Verify Wix Publish Notifications** workflow creates, updates and
+removes temporary **unpublished/inactive** CMS records. Its optional Store
+probe does the same with a **hidden** product and adds/removes only that
+product's collection membership; it never purchases anything.
+
+```sh
+gh workflow run check-wix-publishing.yml --repo montlake-pta/website \
+  -f include_store=true
+```
+
+Successful live probes included
+[CMS notifications](https://github.com/montlake-pta/website/actions/runs/34569314086)
+and [Store/membership notifications](https://github.com/montlake-pta/website/actions/runs/34569616637).
+They produced app-origin deployment runs, including the successful
+[resulting Pages deployment](https://github.com/montlake-pta/website/actions/runs/34569653752).
+The temporary records were removed. These are end-to-end examples, not a
+guarantee that suppressed hooks or every import mechanism emits a signal.
 
 For local authenticated sync:
 

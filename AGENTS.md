@@ -65,6 +65,7 @@ the documented `user-invocable: false` agent-profile override.
 | Offline newsletter snapshot | `src/data/newsletters.json` |
 | Offline public calendar snapshot | `src/data/calendar-events.json` |
 | Deployment | `.github/workflows/pages.yml` |
+| Wix mutation-to-GitHub publishing | `wix/backend/`, `.github/workflows/check-wix-publishing.yml` |
 
 `dist/` is generated output. Never edit or commit it.
 
@@ -202,6 +203,11 @@ python3 -m http.server 4173 --directory dist
 - Never echo secrets or write them into artifacts.
 - Keep Pages deployment reproducible with `npm ci`, `npm run build`, and
   `npm test`.
+- Keep the Wix publishing bridge server-only. Its GitHub App signing key
+  belongs in Wix Secrets Manager; short-lived installation tokens must remain
+  limited to this repository with Actions write, not Contents write.
+- Changes to `wix/backend/` require deployment to the corresponding Wix backend
+  files/action; a GitHub commit alone does not update the Wix sender.
 - The Copilot setup workflow must contain exactly one job named
   `copilot-setup-steps`.
 

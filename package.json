@@ -6,6 +6,7 @@
   "scripts": {
     "bootstrap:wix": "node scripts/bootstrap-wix-snapshot.mjs",
     "build": "node scripts/build.mjs",
+    "build:wix-publisher": "esbuild wix/backend/github-publish.js --bundle --platform=node --format=esm --target=node18 --external:crypto --external:wix-*",
     "check:agents": "node scripts/check-agent-harness.mjs",
     "check:cutover": "node scripts/check-cutover.mjs",
     "setup:wix-cms": "node scripts/setup-wix-cms.mjs",

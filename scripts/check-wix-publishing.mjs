@@ -10,6 +10,9 @@ import { fileURLToPath } from "node:url";
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
 export async function probeCollection(api, collectionId, fields, { id = randomUUID(), report = console.log } = {}) {
+  if ((fields.published !== false && fields.active !== false) || Object.hasOwn(fields, "_id")) {
+    throw new Error("Publishing probes must be explicitly non-public and use their own generated identity.");
+  }
   const probe = { _id: id, ...fields };
   let inserted = false;
   try {
@@ -76,7 +79,7 @@ async function main() {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   main().catch(() => {
-    console.error("Publishing probe failed. Inspect the two CMS collections for temporary publishing-probe records before retrying; no raw SDK error is logged.");
+    console.error("Publishing probe failed. Inspect the CMS collections and hidden Store products for temporary publishing-probe records before retrying; no raw SDK error is logged.");
     process.exitCode = 1;
   });
 }
