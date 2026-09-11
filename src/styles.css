@@ -1430,9 +1430,19 @@ body:has(.donate-hero) .site-footer {
 .transaction-panel input[type="checkbox"],
 .transaction-panel input[type="radio"] {
   width: 1.25rem;
+  height: 1.25rem;
   min-height: 1.25rem;
+  padding: 0;
+  flex-shrink: 0;
   margin-inline-end: 0.5rem;
   accent-color: var(--forest);
+}
+
+.transaction-field label:has(input[type="checkbox"]),
+.transaction-field label:has(input[type="radio"]) {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
 }
 
 .transaction-panel textarea {
@@ -1458,6 +1468,20 @@ body:has(.donate-hero) .site-footer {
 .transaction-panel button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.transaction-panel button {
+  max-width: 100%;
+  white-space: normal;
+}
+
+.transaction-item {
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.transaction-item h3 {
+  margin-top: 0;
 }
 
 .event-facts {

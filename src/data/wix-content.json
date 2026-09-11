@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "source": "wix-headless",
-  "syncedAt": "2026-09-10T14:54:02.305Z",
+  "syncedAt": "2026-09-10T22:14:24.996Z",
   "cms": {
     "boardMembers": [
       {
@@ -228,6 +228,16 @@
         "description": "The goals and programs behind the 2025 campaign, with ways to support Montlake today.",
         "accent": "yellow",
         "body": "\n      <p class=\"lead\">The Fall 2025 campaign set a $125,000 goal to support Montlake Elementary staffing, programs, and community needs.</p>\n      <div class=\"callout\"><strong>Past campaign: October 20–November 21, 2025.</strong> The figures and plans below describe that campaign, not a current-year budget or fundraising deadline. Visit <a href=\"../donate/\">ways to give</a> to support Montlake today.</div>\n      <h2>What the 2025 campaign supported</h2>\n      <p>The campaign described approximately $1,500 in annual PTA support per student and identified these funded positions and programs:</p>\n      <ul>\n        <li>0.50 Art (PCP) program.</li>\n        <li>0.4 Academic Intervention.</li>\n        <li>0.2 Office Assistant Hourly.</li>\n        <li>Music.</li>\n        <li>Community events such as the Welcome Picnic and Art Walk.</li>\n        <li>Teacher appreciation and classroom supplies.</li>\n        <li>Scholarships for students in need.</li>\n      </ul>\n      <h2>The campaign’s Equity Fund option</h2>\n      <p>The 2025 campaign offered an Equity Fund option supporting schools and communities with fewer PTA fundraising resources, including Lowell Elementary and the SE Seattle Schools Fundraising Alliance.</p>\n      <p>Before designating a new gift, ask <a href=\"mailto:fundraising@montlakepta.org\">fundraising@montlakepta.org</a> which funds and recipients are current. This historical campaign does not establish a new allocation commitment.</p>\n      <p><a class=\"button button-primary\" href=\"https://www.paypal.com/donate/?hosted_button_id=L86AXUQZC74VN\">Give online</a></p>\n      <h2>Four easy ways to help</h2>\n      <ol>\n        <li><strong>Online:</strong> Make a secure one-time or recurring gift.</li>\n        <li><strong>Employer matching:</strong> Many employers match both cash gifts and volunteer hours through Benevity or an internal portal.</li>\n        <li><strong>Payroll deduction:</strong> Some employers let you donate each pay period and apply matching funds automatically.</li>\n        <li><strong>Check:</strong> Use the <a href=\"../donate/\">current check and mailing instructions</a> on our Donate page.</li>\n      </ol>\n      <p>Questions? Email <a href=\"mailto:fundraising@montlakepta.org\">fundraising@montlakepta.org</a>.</p>\n      <div class=\"callout\">Your donation is tax-deductible to the extent allowed by law. Montlake Community School Association is an IRS-approved 501(c)(3), Tax ID <strong>91-1117733</strong>.</div>",
+        "published": true
+      },
+      {
+        "slug": "fifth-grade-promotion",
+        "title": "Fifth Grade Promotion",
+        "heading": "Fifth grade promotion.",
+        "kicker": "Montlake PTA",
+        "description": "Information about the June 16, 2026 celebration and how to contact the PTA.",
+        "accent": "blue",
+        "body": "\n      <p class=\"lead\">The 2026 fifth grade promotion celebration took place on June 16 at Montlake Elementary.</p>\n      <div class=\"callout\"><strong>Past event.</strong> These details describe the 2026 celebration, not the next school year’s promotion plans.</div>\n      <h2>The 2026 celebration</h2>\n      <ul>\n        <li><strong>Date:</strong> June 16, 2026.</li>\n        <li><strong>Time:</strong> 5:00–8:00 PM.</li>\n        <li><strong>Location:</strong> Montlake Elementary, 2025 E Calhoun St, Seattle, WA 98112.</li>\n      </ul>\n      <p><a class=\"button button-primary\" href=\"../event-details/5th-grade-promotion/\">Read the 2026 event details</a></p>\n      <h2>Questions for the PTA</h2>\n      <p>For questions about promotion celebrations or future plans, email <a href=\"mailto:events@montlakepta.org\">events@montlakepta.org</a>. The PTA can help direct your question to the right person.</p>",
         "published": true
       },
       {

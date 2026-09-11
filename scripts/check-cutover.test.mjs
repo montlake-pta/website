@@ -1,6 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { cutoverLinkProblems } from "./check-cutover.mjs";
+import { cutoverLinkProblems, cutoverRequested } from "./check-cutover.mjs";
+
+test("configuration-file activation and the final domain cannot bypass the deployment gate", () => {
+  const config = { enabled: false, baseUrl: "https://montlake-pta.github.io/website/" };
+  assert.equal(cutoverRequested(config, {}), false);
+  assert.equal(cutoverRequested({ ...config, enabled: true }, {}), true);
+  assert.equal(cutoverRequested({ ...config, baseUrl: "https://www.montlakepta.org/" }, {}), true);
+  assert.equal(cutoverRequested(config, { SITE_URL: config.baseUrl }), true);
+});
 
 test("cutover checks reject old content/assets and explicitly marked transaction fallbacks", () => {
   const base = "https://montlake-pta.github.io/website/";

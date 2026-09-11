@@ -12,6 +12,10 @@ import { visitorConfiguration } from "./visitor-config.mjs";
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const retiredHosts = new Set(["www.montlakepta.org", "montlakepta.org"]);
 
+export function cutoverRequested(config, env = process.env) {
+  return Boolean(config.enabled || env.SITE_URL || retiredHosts.has(new URL(config.baseUrl).hostname));
+}
+
 export function cutoverLinkProblems(html, pageUrl, baseUrl) {
   const doc = parseDocument(html);
   const ownOrigin = new URL(baseUrl).origin;
@@ -52,8 +56,15 @@ export async function verifyVisitorAccess(config, snapshot) {
 }
 
 async function main() {
-  const { values } = parseArgs({ options: { offline: { type: "boolean", default: false } } });
+  const { values } = parseArgs({ options: {
+    offline: { type: "boolean", default: false },
+    "if-enabled": { type: "boolean", default: false },
+  } });
   const config = visitorConfiguration();
+  if (values["if-enabled"] && !cutoverRequested(config)) {
+    console.log("Visitor cutover is not activated. The strict readiness check remains pending; legacy transaction fallbacks are not retirement approval.");
+    return;
+  }
   const failures = [];
   if (!config.enabled) failures.push("Wix visitor transactions are not enabled; issue #4 must be resolved before retiring the old frontend.");
   if (!config.clientId) failures.push("A public Wix Headless client ID is not configured.");

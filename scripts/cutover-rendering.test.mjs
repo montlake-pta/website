@@ -50,6 +50,8 @@ test("visitor configuration cannot activate without a real-shaped public client 
   const missing = { enabled: false, clientId: "" };
   assert.equal(visitorConfiguration({}, missing).enabled, false);
   assert.throws(() => visitorConfiguration({ WIX_HEADLESS_ENABLED: "true" }, missing), /public Wix Headless client ID/);
+  assert.throws(() => visitorConfiguration({}, { enabled: false, clientId: "not-a-public-client-id" }), /public Wix Headless client ID/);
+  assert.equal(visitorConfiguration({}, { enabled: true, clientId: id }).enabled, true);
   assert.throws(() => visitorConfiguration({ WIX_HEADLESS_ENABLED: "yes" }), /true or false/);
   const config = visitorConfiguration({ WIX_HEADLESS_ENABLED: "true", WIX_HEADLESS_CLIENT_ID: id, WIX_API_KEY: "NEVER_EXPORT" });
   assert.equal(config.enabled, true);

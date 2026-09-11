@@ -99,6 +99,13 @@ explicit `SITE_URL` activates the strict cutover gate in Pages deployment.
 Verify checkout return domains and actual visitor flows before changing DNS;
 the automation does not change DNS or unpublish the old site.
 
+After visitor flows are verified, the owner can configure GitHub Pages'
+custom domain as `www.montlakepta.org`, point that host's DNS CNAME at
+`montlake-pta.github.io`, and set `SITE_URL=https://www.montlakepta.org/`.
+Preserve mail-related MX/TXT records and configure the apex-domain redirect
+deliberately. Do not delete Wix CMS, Events, Stores or media when retiring the
+old public navigation.
+
 ## Wix content sync
 
 The deployed site reads Blog posts, Events, Store products and categories, PTA

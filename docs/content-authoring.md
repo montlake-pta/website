@@ -133,6 +133,39 @@ Until that Editor handoff is completed, tell content editors to use the CMS
 for the new site and avoid making independent legacy-only updates. This is an
 outstanding site-owner action, not a change the repository can make by itself.
 
+## Retiring the legacy frontend
+
+Known internal links are rewritten at generation time using the actual route
+inventory. The two enrichment PDFs are repository assets; their original
+`_files/ugd/` paths are also served byte-for-byte for old inbound links.
+Unknown legacy destinations are errors, not silently retained dependencies.
+Do not replace an event's registration button with a link to its own new
+detail page.
+
+The Fifth Grade Promotion page is a dated 2026 archive. Its old generic contact
+form is replaced with the existing PTA events email; the old Wix corporate
+social links and hidden submission-success text are not PTA functionality.
+Its new CMS record can be seeded without affecting other collections:
+
+```sh
+npm run setup:wix-cms -- --page fifth-grade-promotion
+```
+
+The corresponding manual workflow accepts an optional `page` input. This
+inserts only a missing record; it still never overwrites existing authored
+content.
+
+Wix visitor transactions require the public Headless client configuration in
+[issue #4](https://github.com/montlake-pta/website/issues/4). Until permissions
+or the public client ID are supplied, activation stays off. Working active
+registration handoffs are explicitly marked as unresolved dependencies rather
+than removed prematurely. Closed events and unavailable products do not need
+legacy handoffs, and external ticket providers can be linked directly.
+
+The old frontend must remain available until visitor registration/checkout is
+verified, the strict cutover gate passes and the owner approves the domain
+switch. Wix CMS, commerce services and media hosting remain in use afterward.
+
 ## Publication and completeness
 
 - Compare the whole legacy page, including documents and expanded sections;

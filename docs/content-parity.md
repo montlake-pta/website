@@ -688,3 +688,41 @@ Published policy wording, historical fund figures and future seasonal details
 need a content-owner decision rather than invented replacements. Preserve
 historical years, source access restrictions, useful seasonal caveats, working
 membership/calendar behavior and existing RSVP/checkout handoffs.
+
+## Frontend cutover follow-up — September 10, 2026
+
+**The legacy frontend is not yet safe to retire.** Content dependencies have
+been migrated, but activation of the visitor SDK remains blocked by
+[#4](https://github.com/montlake-pta/website/issues/4). The existing Actions key
+receives HTTP 403 from Headless OAuth-app setup and the documented account
+context lookup. A connectivity retry produced the same authorization failure.
+
+| Area | Disposition |
+|---|---|
+| Ordinary legacy links and visible URLs | Rewritten using the actual new route inventory. Unknown targets fail rather than remain hidden dependencies. |
+| Enrichment documents | Both PDFs are local assets, with verified compatibility copies at their original `_files/ugd/` paths. |
+| Fifth Grade Promotion | Historical event information is in a new Wix CMS record and fallback. The generic old contact form is replaced by the existing PTA events email, not a fabricated submission. |
+| Unavailable Islandwood items | Both old product addresses now explain their unavailable state and provide background/contact links. Restricted gifts are not silently redirected into a general fund. |
+| Closed events and sold-out products | Unnecessary legacy transaction handoffs removed. |
+| Sounders tickets | Link directly to the FEVO destination in the Wix-authored summary. `registration.type = NONE` does not mean tickets are unnecessary. |
+| Active Welcome Back RSVP | Working legacy handoff deliberately retained and marked until the Headless visitor client is configured and the replacement is verified. |
+| Visitor SDK | Product selection, cart, RSVP v2, ticket checkout and neutral confirmation handling are implemented behind a disabled activation flag. No browser API key or deprecated RSVP v1 fallback. |
+| Final-domain support | Canonicals, sitemap, callbacks and compatibility paths use `SITE_URL`. Changing the domain or activating transactions invokes the strict cutover gate. DNS and Wix publication settings were not changed. |
+
+The actual upcoming RSVP form was read with the authorized server-side key.
+Its NAME inputs are `firstName` and `lastName`; INPUT `email` is mandatory;
+GUEST_CONTROL contains mandatory numeric `additionalGuests` and optional array
+`guestNames`. This validates the request mapping, **not** anonymous creation
+permissions. No real RSVP, ticket reservation, order or payment was submitted.
+
+The transaction UI was exercised using isolated, no-network fixtures. Live
+visitor authorization and hosted checkout behavior remain unverified without
+a public Headless client ID. Member-only registration, structured ADDRESS
+controls and assigned-seat selection are not silently bypassed; event types
+requiring those capabilities need a supported flow before activation.
+
+The ordinary site build can publish the staged content improvements while
+preserving the marked RSVP handoff. `npm run check:cutover` still fails in that
+state. An offline check does not certify live transactions, and a synthetic
+client ID used in a local domain-layout fixture is never production
+configuration.

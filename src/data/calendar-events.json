@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "source": "google-calendar",
-  "syncedAt": "2026-09-10T14:54:02.667Z",
+  "syncedAt": "2026-09-10T22:14:25.344Z",
   "events": [
     {
       "id": "ca4969b433de71d4",
@@ -84,8 +84,8 @@
       "source": "google-calendar"
     },
     {
-      "id": "3a01014d8c2116cc",
-      "title": "1-Hour Early Dismissal (1:25p)",
+      "id": "377ad3a98f88d608",
+      "title": "Enrichment: Fall Session Ends",
       "startAt": "2026-12-18T08:00:00.000Z",
       "endAt": "2026-12-19T08:00:00.000Z",
       "allDay": true,
@@ -94,8 +94,8 @@
       "source": "google-calendar"
     },
     {
-      "id": "377ad3a98f88d608",
-      "title": "Enrichment: Fall Session Ends",
+      "id": "3a01014d8c2116cc",
+      "title": "1-Hour Early Dismissal (1:25p)",
       "startAt": "2026-12-18T08:00:00.000Z",
       "endAt": "2026-12-19T08:00:00.000Z",
       "allDay": true,

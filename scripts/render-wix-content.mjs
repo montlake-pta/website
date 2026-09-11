@@ -305,7 +305,7 @@ function transactionSlot(type, id) {
     console.warn(`No public item identity for ${type} transaction controls.`);
     return '<p>Online options are unavailable for this listing. Please contact the PTA for help.</p>';
   }
-  return `<div class="transaction-panel" data-wix-${type}-id="${escapeAttribute(id)}"><p role="status">Loading current ${type === "product" ? "options and availability" : "registration options"}…</p><noscript><p>JavaScript is needed for online ${type === "product" ? "purchasing" : "registration"}. For help, email <a href="mailto:${type === "product" ? "fundraising" : "events"}@montlakepta.org">the PTA team</a>.</p></noscript></div>`;
+  return `<div class="transaction-panel" data-wix-${type}-id="${escapeAttribute(id)}"><p role="status" data-transaction-loading>Loading current ${type === "product" ? "options and availability" : "registration options"}…</p><noscript><p>JavaScript is needed for online ${type === "product" ? "purchasing" : "registration"}. For help, email <a href="mailto:${type === "product" ? "fundraising" : "events"}@montlakepta.org">the PTA team</a>.</p></noscript></div>`;
 }
 
 function eventAction(event, transactionsEnabled) {

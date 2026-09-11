@@ -48,11 +48,13 @@ the documented `user-invocable: false` agent-profile override.
 |---|---|
 | Static pages, navigation, external service URLs | `src/site.mjs` |
 | Visual system and responsive behavior | `src/styles.css`, `DESIGN.md` |
-| Browser interactions | `src/site.js` |
+| Browser navigation and visitor transactions | `src/site.js`, `src/wix-transactions.mjs`, `src/wix-visitor-api.mjs` |
+| Public visitor client configuration and activation | `src/wix-client.config.json`, `scripts/visitor-config.mjs` |
 | Shared HTML templates and generated metadata | `scripts/build.mjs` |
 | Wix querying and public normalization | `scripts/sync-wix.mjs`, `scripts/normalize-wix-content.mjs` |
 | Safe rich-content conversion and privacy filtering | `scripts/wix-public-content.mjs` |
 | Reviewed legacy event URL compatibility | `scripts/legacy-event-aliases.mjs`, `src/data/legacy-event-aliases.json` |
+| Internal-link and document cutover | `scripts/cutover-links.mjs`, `scripts/check-cutover.mjs` |
 | Wix CMS creation and seed behavior | `scripts/setup-wix-cms.mjs` |
 | Reviewed repair of an existing CMS page | `scripts/update-wix-page.mjs`, `.github/workflows/update-wix-page.yml` |
 | Dynamic page rendering and HTML sanitization | `scripts/render-wix-content.mjs` |
@@ -143,6 +145,17 @@ python3 -m http.server 4173 --directory dist
 - Public exports must pass `assertPublicSnapshot`; do not upload raw SDK
   payloads or conferencing credentials. File links retain their source access
   controls.
+- Visitor SDK calls use a public Headless client ID and visitor/member OAuth,
+  never an API key. Keep admin credentials in Actions or an approved backend.
+- Do not enable unconfigured visitor flows or replace working registration
+  with a fake success/unavailable widget just to eliminate legacy-link counts.
+  Transitional handoffs must be explicitly marked and rejected by the strict
+  cutover check.
+- A domain/frontend cutover requires `npm run check:cutover` and actual visitor
+  flow verification. An offline pass is not checkout approval. Never create
+  real RSVPs, reserve scarce tickets or charge payments merely to test code.
+- `SITE_URL` controls public paths and callbacks. Do not change DNS or unpublish
+  Wix services as an implicit side effect of preparing the cutover.
 
 ### Newsletter integration
 

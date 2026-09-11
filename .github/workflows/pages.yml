@@ -65,8 +65,7 @@ jobs:
       - name: Check generated site
         run: npm test
       - name: Require cutover readiness when activating the new domain or transactions
-        if: env.WIX_HEADLESS_ENABLED == 'true' || env.SITE_URL != ''
-        run: npm run check:cutover
+        run: npm run check:cutover -- --if-enabled
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site

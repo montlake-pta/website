@@ -58,7 +58,7 @@ export const transactionPages = [
     heading: "Your PTA shop cart.",
     description: "Review your items and continue to secure checkout.",
     accent: "blue",
-    content: '<div class="transaction-panel" data-wix-cart><p role="status">Loading your cart…</p><noscript><p>JavaScript is needed to manage your cart. For help, email <a href="mailto:fundraising@montlakepta.org">fundraising@montlakepta.org</a>.</p></noscript></div>',
+    content: '<div class="transaction-panel" data-wix-cart><p role="status" data-transaction-loading>Loading your cart…</p><noscript><p>JavaScript is needed to manage your cart. For help, email <a href="mailto:fundraising@montlakepta.org">fundraising@montlakepta.org</a>.</p></noscript></div>',
   },
   {
     slug: "checkout/complete",
@@ -66,7 +66,7 @@ export const transactionPages = [
     heading: "Your checkout status.",
     description: "Find confirmation and next steps for your checkout.",
     accent: "blue",
-    content: '<div class="transaction-panel" data-wix-confirmation><p role="status">Checking your checkout status…</p><noscript><p>Check the confirmation email from the payment or registration provider for your completed order. This page alone is not proof of payment.</p></noscript></div>',
+    content: '<div class="transaction-panel" data-wix-confirmation><p role="status" data-transaction-loading>Checking your checkout status…</p><noscript><p>Check the confirmation email from the payment or registration provider for your completed order. This page alone is not proof of payment.</p></noscript></div>',
   },
 ];
 
