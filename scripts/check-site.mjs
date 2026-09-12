@@ -20,6 +20,7 @@ const calendarContent = JSON.parse(await readFile(join(root, "src", "data", "cal
 const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
 const visitor = visitorConfiguration();
 const publicBasePath = new URL(site.previewUrl).pathname;
+const enrichmentRegistrationUrl = "https://www.6crickets.com/schools/US/WA/Seattle/Montlake-Elementary-School/147";
 const renderedPages = preserveRetiredProductRoutes(preserveCollectionRoutes(mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events, {
   transactionsEnabled: visitor.enabled, readOnly: visitor.readOnly,
 }), newsletterContent, "https://example.com/signup")));
@@ -62,6 +63,10 @@ for (const page of renderedPages) {
     }
 
     for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
+      if (/^(?:https?:)?\/\/(?:www\.)?6crickets\.com(?:[/?#]|$)/i.test(href)
+        && href !== enrichmentRegistrationUrl) {
+        failures.push(`${file}: 6crickets link must point to Montlake's school page: ${href}`);
+      }
       if (["#", "http:", "https:", "mailto:", "tel:"].some((prefix) => href.startsWith(prefix))) continue;
       const path = href.split(/[?#]/)[0];
       const target = path.endsWith("/")
@@ -152,7 +157,7 @@ const enrichmentDocument = parseDocument(enrichmentHtml);
 const enrichmentArticle = selectOne("article.prose", enrichmentDocument);
 const enrichmentSections = ["Register", "Before class", "Getting to class", "Pickup", "Absences and cancellations", "Policies", "Help"];
 const enrichmentLinks = [
-  "https://www.6crickets.com/",
+  enrichmentRegistrationUrl,
   "mailto:enrichment@montlakepta.org",
   "mailto:enrichcoordinator@montlakepta.org",
   "mailto:enrichcoordinator@montlakepta.org?subject=Enrichment%20absence",
@@ -177,6 +182,12 @@ for (const [label, html] of [
   const links = new Set(selectAll("a[href]", content).map((node) => node.attribs.href));
   for (const href of enrichmentLinks) {
     if (!links.has(href)) failures.push(`Enrichment ${label}: missing operational link ${href}`);
+  }
+  const registrationLinks = selectAll("a[href]", content)
+    .filter((node) => /6crickets/i.test(textContent(node)));
+  if (registrationLinks.length !== 2
+    || registrationLinks.some((node) => node.attribs.href !== enrichmentRegistrationUrl)) {
+    failures.push(`Enrichment ${label}: both 6crickets registration links must point to Montlake's school page`);
   }
   for (const requirement of [
     /confirmation email/i, /grade level/i, /allergies/i, /homeroom/i,

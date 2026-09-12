@@ -220,7 +220,7 @@ export const pages = [
     accent: "coral",
     outlineAfterIntro: true,
     content: `
-      <p><a class="button button-primary" href="https://www.6crickets.com/">View classes and register on 6crickets</a></p>
+      <p><a class="button button-primary" href="https://www.6crickets.com/schools/US/WA/Seattle/Montlake-Elementary-School/147">View classes and register on 6crickets</a></p>
       <div class="callout">
         <p><strong>Day-of help, absences, or pickup changes:</strong> Contact the Enrichment Coordinator at <a href="mailto:enrichcoordinator@montlakepta.org">enrichcoordinator@montlakepta.org</a>, or call/text <a href="tel:+12064866036">(206) 486-6036</a> during enrichment hours.</p>
         <p>Please do not contact the school office about enrichment arrangements; the program is managed by the Enrichment Team.</p>
@@ -229,7 +229,7 @@ export const pages = [
       <p>Learning does not stop when the bell rings. PTA-supported enrichment sparks curiosity, builds friendships across grades, and gives students a safe, inclusive place to learn beyond the classroom.</p>
 
       <h2>Register</h2>
-      <p>All enrichment registrations are managed through <a href="https://www.6crickets.com/">6crickets</a>. After registering, you will receive a confirmation email directly from 6crickets.</p>
+      <p>All enrichment registrations are managed through <a href="https://www.6crickets.com/schools/US/WA/Seattle/Montlake-Elementary-School/147">6crickets</a>. After registering, you will receive a confirmation email directly from 6crickets.</p>
       <p>Before registering:</p>
       <ul>
         <li>Create or update your student’s profile.</li>
