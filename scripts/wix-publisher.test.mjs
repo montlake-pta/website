@@ -5,6 +5,8 @@ import { readFile } from "node:fs/promises";
 import { runInNewContext } from "node:vm";
 import { createPublisher, publisherConfig } from "../wix/backend/github-publish-core.js";
 import { probeCollection, probeStore } from "./check-wix-publishing.mjs";
+import { pagePublishingAutomations, publisherActionMapping } from "../wix/page-publishing.mjs";
+import { pageCollectionDefinitions } from "./page-collections.mjs";
 
 const { privateKey, publicKey } = generateKeyPairSync("rsa", {
   modulusLength: 2048,
@@ -20,6 +22,29 @@ const tokenBody = () => ({
 });
 const response = (status, body) => ({ ok: status >= 200 && status < 300, status, json: async () => body });
 const receipt = { workflow_run_id: 123, html_url: "https://github.com/montlake-pta/website/actions/runs/123" };
+
+test("native page automations cover each collection and lifecycle operation with one safe publishing action", () => {
+  const action = {
+    id: "24c5330f-804a-4ca5-a33c-aab30d27012c", type: "APP_DEFINED", namespace: "wix_automations-velo_action-2",
+    appDefinedInfo: { appId: "139ef4fa-c108-8f9a-c7be-d5f492a2c939", actionKey: "wix_automations-velo_action",
+      inputMapping: publisherActionMapping, skipConditionOrExpressionGroups: [], postActionIds: [] },
+  };
+  const definitions = pagePublishingAutomations(action);
+  assert.equal(definitions.length, 9);
+  for (const { id } of pageCollectionDefinitions) {
+    for (const event of ["created", "updated", "deleted"]) {
+      const automation = definitions.find(a => a.name === `GitHub publish - ${id} ${event}`);
+      assert(automation);
+      assert.deepEqual(automation.configuration.rootActionIds, [action.id]);
+      const filter = automation.configuration.trigger.filters[0];
+      assert.equal(filter.fieldKey, event === "deleted" ? "deletedEntity.dataCollectionId" : "dataCollectionId");
+      assert.equal(filter.filterExpression, `{{contains(["${id}"];var("${filter.fieldKey}"))}}`);
+      assert.deepEqual(automation.configuration.actions[action.id].appDefinedInfo.inputMapping, publisherActionMapping);
+    }
+  }
+  assert.throws(() => pagePublishingAutomations({ ...action, appDefinedInfo: { ...action.appDefinedInfo, postActionIds: ["other"] } }), /only the existing/);
+  assert.throws(() => pagePublishingAutomations({ ...action, appDefinedInfo: { ...action.appDefinedInfo, inputMapping: { ...publisherActionMapping, body: "PRIVATE_PAYLOAD" } } }), /only the existing/);
+});
 
 test("publisher signs a short-lived app JWT and dispatches only main without event payloads", async () => {
   const calls = [];
@@ -129,14 +154,15 @@ test("all business mutation handlers await the same publisher without forwarding
   await assert.rejects(failed.wixBlog_onPostUpdated, /dispatch failed/);
 });
 
-test("six CMS hooks preserve successful writes and report notification failures without payloads", async () => {
+test("legacy page and board CMS hooks preserve successful writes without forwarding payloads", async () => {
   let calls = 0;
   const messages = [];
   const item = { _id: "record", privateData: "PRIVATE_CONTENT" };
   const handlers = await loadVeloHandlers("data.js", async (...args) => {
     assert.equal(args.length, 0); calls++;
   }, { error: message => messages.push(message) });
-  assert.equal(Object.keys(handlers).length, 6);
+  assert.deepEqual(Object.keys(handlers).sort(), ["WebsitePages", "BoardMembers"]
+    .flatMap(collection => ["Insert", "Update", "Remove"].map(operation => `${collection}_after${operation}`)).sort());
   for (const handler of Object.values(handlers)) assert.equal(await handler(item, { token: "PRIVATE_TOKEN" }), item);
   assert.equal(calls, 6);
   const failed = await loadVeloHandlers("data.js", async () => { throw new Error("PRIVATE_CREDENTIAL"); }, { error: message => messages.push(message) });

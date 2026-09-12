@@ -380,6 +380,8 @@ async function main() {
   try {
     requireCondition(process.env.WIX_API_KEY, "WIX_API_KEY is required. Use the manual Actions workflow when unavailable locally.");
     const config = JSON.parse(await readFile(join(root, "src/wix.config.json"), "utf8"));
+    requireCondition(config.cms.pageSource !== "typed",
+      "The WebsitePages fundraising migration is retired. Author current campaigns in FundraisingPages.");
     const git = args => execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
     const sourceCommit = git(["rev-parse", "--verify", "HEAD^{commit}"]);
     requireCondition(!git(["status", "--porcelain", "--untracked-files=normal", "--",

@@ -6,6 +6,7 @@ import { parseArgs } from "node:util";
 import { readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { pageCollectionDefinitions } from "./page-collections.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
@@ -53,7 +54,10 @@ export async function probeStore(api, collectionId, { name = `publishing-probe-$
 }
 
 async function main() {
-  const { values } = parseArgs({ options: { "include-store": { type: "boolean", default: false } } });
+  const { values } = parseArgs({ options: {
+    "include-store": { type: "boolean", default: false },
+    "typed-pages": { type: "boolean", default: false },
+  } });
   if (!process.env.WIX_API_KEY) throw new Error("WIX_API_KEY is required for the manual publishing probe.");
   const config = JSON.parse(await readFile(join(root, "src/wix.config.json"), "utf8"));
   const client = createClient({
@@ -61,10 +65,15 @@ async function main() {
     auth: ApiKeyStrategy({ apiKey: process.env.WIX_API_KEY, siteId: process.env.WIX_SITE_ID || config.siteId }),
   });
   const marker = `publishing-probe-${randomUUID()}`;
-  await probeCollection(client.items, config.cms.pages, {
-    slug: marker, title: "Unpublished publishing probe", description: marker,
-    body: "<p>Temporary unpublished integration probe.</p>", published: false,
-  });
+  const pageCollections = config.cms.pageSource === "typed" || values["typed-pages"]
+    ? pageCollectionDefinitions.map(definition => ({ ...definition, id: config.cms[definition.configKey] }))
+    : [{ id: config.cms.legacyPages || config.cms.pages, type: "legacy" }];
+  for (const definition of pageCollections) {
+    await probeCollection(client.items, definition.id, {
+      slug: marker, title: "Unpublished publishing probe", description: marker, published: false,
+      ...(definition.type === "generated" ? {} : { body: "<p>Temporary unpublished integration probe.</p>" }),
+    });
+  }
   await probeCollection(client.items, config.cms.boardMembers, {
     role: marker, names: "Inactive publishing probe", active: false, displayOrder: 9999,
   });

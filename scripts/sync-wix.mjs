@@ -7,17 +7,22 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { assertPublicSnapshot, normalizeWixContent, WixContentError } from "./normalize-wix-content.mjs";
+import { pageCollectionDefinitions } from "./page-collections.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
 export async function readWixContent(client, config, { warn = console.warn } = {}) {
-  const [blogPosts, events, storeProducts, collections, boardMembers, cmsPages] = await Promise.all([
+  const pageSource = config.cms.pageSource || "legacy";
+  if (!["legacy", "typed"].includes(pageSource)) throw new WixContentError("Unknown CMS page source configuration.");
+  const [blogPosts, events, storeProducts, collections, boardMembers, pageData] = await Promise.all([
     query(() => client.posts.queryPosts({ fieldsets: ["URL", "CONTENT_TEXT", "RICH_CONTENT"] }).limit(100), "Blog posts"),
     query(() => client.wixEventsV2.queryEvents({ fields: ["DETAILS", "TEXTS", "URLS"], includeDrafts: false }).limit(100), "Events"),
     query(() => client.products.queryProducts().limit(100), "Store products"),
     query(() => client.storeCollections.queryCollections().limit(100), "Store collections"),
     queryCmsCollection(config.cms.boardMembers, "board members"),
-    queryCmsCollection(config.cms.pages, "website pages"),
+    pageSource === "legacy"
+      ? queryCmsCollection(config.cms.legacyPages || config.cms.pages, "legacy website pages").then(cmsPages => ({ cmsPages }))
+      : readTypedPages(),
   ]);
 
   // Stores v1 Product.collectionIds is string[]. The installed SDK supports
@@ -42,18 +47,27 @@ export async function readWixContent(client, config, { warn = console.warn } = {
     }
   }
   return {
-    blogPosts, events, boardMembers, cmsPages, storeCollections: collections,
+    blogPosts, events, boardMembers, ...pageData, storeCollections: collections,
     products: storeProducts.map((product) => ({
       ...product, collectionIds: membership.get(product._id) || [],
     })),
   };
 
-  async function queryCmsCollection(collectionId, label) {
-    if (!collectionId) return [];
+  async function readTypedPages() {
+    const groups = await Promise.all(pageCollectionDefinitions.map(async ({ configKey, id }) =>
+      [configKey, await queryCmsCollection(config.cms[configKey], id, true)]));
+    return { pageSource: "typed", ...Object.fromEntries(groups) };
+  }
+
+  async function queryCmsCollection(collectionId, label, required = false) {
+    if (!collectionId) {
+      if (required) throw new WixContentError(`Missing configured CMS collection: ${label}.`);
+      return [];
+    }
     try {
       return await fetchAll(client.items.query(collectionId).limit(1000));
     } catch (error) {
-      if (isMissingCollection(error)) {
+      if (!required && isMissingCollection(error)) {
         warn(`Optional CMS collection for ${label} does not exist; skipping it.`);
         return [];
       }

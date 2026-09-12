@@ -1,14 +1,17 @@
 import { htmlText, normalizeRichBody, publicHtml, publicText, publicUrl, wixMediaUrl } from "./wix-public-content.mjs";
-import { fundraisingFieldNames, normalizeFundraisingFields } from "./fundraising-fields.mjs";
+import { emptyFundraisingFields, fundraisingFieldNames, normalizeFundraisingFields } from "./fundraising-fields.mjs";
+import { normalizePageSlug, pageCollectionDefinitions, pageFieldsForType, validatePagePlacement } from "./page-collections.mjs";
 
 // Only messages constructed locally may be printed by the authenticated CLI.
 export class WixContentError extends Error {}
 
-export function normalizeWixContent({ blogPosts, events, products, storeCollections, boardMembers, cmsPages }, {
+export function normalizeWixContent({ blogPosts, events, products, storeCollections, boardMembers, cmsPages = [],
+  pageSource = "legacy", commonPages, fundraisingPages, generatedPages }, {
   syncedAt = new Date().toISOString(), warn = console.warn,
 } = {}) {
+  if (!["legacy", "typed"].includes(pageSource)) throw new WixContentError("Unknown CMS page source.");
   return {
-    schemaVersion: 2,
+    schemaVersion: pageSource === "typed" ? 3 : 2,
     source: "wix-headless",
     syncedAt,
     cms: {
@@ -19,8 +22,9 @@ export function normalizeWixContent({ blogPosts, events, products, storeCollecti
         active: true,
       })).filter((item) => item.role && item.names)
         .sort((a, b) => a.displayOrder - b.displayOrder || compare(a.role, b.role) || compare(a.names, b.names)),
-      pages: routed(cmsPages.map(unwrap).filter((item) => item.published !== false).map((item) => ({
-        slug: normalizeCmsSlug(item.slug), title: publicText(item.title), heading: publicText(item.heading),
+      pages: pageSource === "typed" ? normalizeTypedPages({ commonPages, fundraisingPages, generatedPages }, warn)
+        : routed(cmsPages.map(unwrap).filter((item) => item.published !== false).map((item) => ({
+        slug: normalizePageSlug(item.slug), title: publicText(item.title), heading: publicText(item.heading),
         kicker: publicText(item.kicker), description: publicText(item.description),
         accent: ["coral", "blue", "yellow"].includes(item.accent) ? item.accent : "",
         body: publicHtml(item.body), published: true,
@@ -100,12 +104,29 @@ function normalizeSlug(value) {
   return typeof value === "string" ? value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
     .replaceAll("&", " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : "";
 }
-function normalizeCmsSlug(value) {
-  if (typeof value !== "string" || /[\\?#%]/.test(value)) return "";
-  const parts = value.split("/");
-  if (parts.some((part) => !part || part === "." || part === "..")) return "";
-  const normalized = parts.map(normalizeSlug);
-  return normalized.every(Boolean) ? normalized.join("/") : "";
+export function normalizeTypedPage(record, type) {
+  const item = unwrap(record);
+  const slug = normalizePageSlug(item.slug);
+  if (slug) validatePagePlacement(type, slug);
+  const page = {
+    pageType: type, slug, title: publicText(item.title), heading: publicText(item.heading),
+    description: publicText(item.description), published: item.published !== false,
+  };
+  if (type !== "fundraising") page.accent = ["coral", "blue", "yellow"].includes(item.accent) ? item.accent : "";
+  if (type !== "generated") page.body = publicHtml(item.body);
+  if (type === "fundraising") Object.assign(page, emptyFundraisingFields,
+    normalizeFundraisingFields(item, { html: publicHtml, text: publicText, image: wixMediaUrl }));
+  return page;
+}
+
+function normalizeTypedPages(groups, warn) {
+  const pages = [];
+  for (const { type, configKey } of pageCollectionDefinitions) {
+    if (!Array.isArray(groups[configKey])) throw new WixContentError(`Missing typed CMS data for ${configKey}.`);
+    pages.push(...groups[configKey].map(unwrap).filter(item => item.published !== false)
+      .map(item => normalizeTypedPage(item, type)));
+  }
+  return routed(pages, "CMS page", warn);
 }
 
 export function assertPublicSnapshot(snapshot) {
@@ -113,11 +134,12 @@ export function assertPublicSnapshot(snapshot) {
     && Object.keys(value).every((key) => allowed.includes(key));
   const fail = () => { throw new WixContentError("Snapshot is not in the normalized public export format."); };
   if (!keys(snapshot, ["schemaVersion", "source", "syncedAt", "cms", "blogPosts", "events", "products", "storeCollections"])
-    || ![1, 2].includes(snapshot.schemaVersion) || snapshot.source !== "wix-headless"
+    || ![1, 2, 3].includes(snapshot.schemaVersion) || snapshot.source !== "wix-headless"
     || !keys(snapshot.cms, ["pages", "boardMembers"])) fail();
   const groups = [
     [snapshot.cms.pages, ["slug", "title", "heading", "kicker", "description", "accent", "body", "published",
-      ...(snapshot.schemaVersion === 2 ? fundraisingFieldNames : [])]],
+      ...(snapshot.schemaVersion >= 2 ? fundraisingFieldNames : []),
+      ...(snapshot.schemaVersion === 3 ? ["pageType"] : [])]],
     [snapshot.cms.boardMembers, ["schoolYear", "role", "names", "email", "displayOrder", "active"]],
     [snapshot.blogPosts, ["id", "slug", "title", "excerpt", "contentText", "bodyHtml", "publishedAt", "updatedAt", "image", "sourceUrl"]],
     [snapshot.events, ["id", "slug", "title", "summary", "descriptionText", "bodyHtml", "startAt", "endAt", "location", "address", "image", "status", "sourceUrl"]],
@@ -139,6 +161,11 @@ export function assertPublicSnapshot(snapshot) {
       }
     }
     for (const page of snapshot.cms.pages) {
+      if (snapshot.schemaVersion === 3) {
+        if (!pageCollectionDefinitions.some(definition => definition.type === page.pageType)
+          || !keys(page, ["pageType", ...pageFieldsForType(page.pageType)])) fail();
+        validatePagePlacement(page.pageType, page.slug);
+      }
       const fields = normalizeFundraisingFields(page, { html: publicHtml, text: publicText, image: wixMediaUrl });
       for (const [key, value] of Object.entries(fields)) if (value !== page[key]) fail();
     }

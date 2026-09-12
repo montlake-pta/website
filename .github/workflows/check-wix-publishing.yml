@@ -7,6 +7,10 @@ on:
         description: Also exercise a temporary hidden product and its collection membership
         type: boolean
         default: false
+      typed_pages:
+        description: Exercise all three typed page collections before activating the typed reader
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -33,9 +37,13 @@ jobs:
           WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
           WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
           INCLUDE_STORE: ${{ inputs.include_store }}
+          TYPED_PAGES: ${{ inputs.typed_pages }}
         run: |
+          args=()
           if [[ "$INCLUDE_STORE" == "true" ]]; then
-            node scripts/check-wix-publishing.mjs --include-store
-          else
-            node scripts/check-wix-publishing.mjs
+            args+=(--include-store)
           fi
+          if [[ "$TYPED_PAGES" == "true" ]]; then
+            args+=(--typed-pages)
+          fi
+          node scripts/check-wix-publishing.mjs "${args[@]}"

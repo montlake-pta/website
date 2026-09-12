@@ -10,6 +10,8 @@ import { items } from "@wix/data";
 import { sanitizeCmsHtml } from "./render-wix-content.mjs";
 import { normalizeFundraisingFields } from "./fundraising-fields.mjs";
 import { publicHtml, publicText, wixMediaUrl } from "./wix-public-content.mjs";
+import { normalizeTypedPage } from "./normalize-wix-content.mjs";
+import { generatedPageSlugs, pageCollectionDefinitions } from "./page-collections.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const managedFields = ["title", "heading", "description", "body"];
@@ -63,7 +65,8 @@ export function candidateForPage(pages, slug = "enrichment") {
   return candidate;
 }
 
-export function publicPage(item) {
+export function publicPage(item, pageType) {
+  if (pageType) return normalizeTypedPage(item, pageType);
   const text = (key) => typeof item[key] === "string" ? item[key] : "";
   return {
     slug: text("slug"),
@@ -119,8 +122,10 @@ export async function readUniquePage(api, collectionId, slug) {
 export async function updateWixPage({
   api, collectionId, siteId, pages, slug = "enrichment", mode = "plan", sourceCommit,
   expectedFingerprint, expectedCandidateFingerprint, expectedCommit,
-  saveReport = async () => {},
+  saveReport = async () => {}, pageType,
 }) {
+  requireCondition(!pageType || ["common", "fundraising"].includes(pageType),
+    "This body-repair workflow supports CommonPages and FundraisingPages. Edit GeneratedPages metadata in Wix.");
   requireCondition(["plan", "apply"].includes(mode), "Mode must be plan or apply.");
   requireCondition(typeof collectionId === "string" && collectionId.length > 0 &&
     typeof siteId === "string" && siteId.length > 0, "A configured Wix site and page collection are required.");
@@ -151,8 +156,8 @@ export async function updateWixPage({
     sourceCommit,
     currentRecordFingerprint,
     candidateFingerprint,
-    before: publicPage(current),
-    proposed: publicPage(proposed),
+    before: publicPage(current, pageType),
+    proposed: publicPage(proposed, pageType),
     after: null,
     verifiedRecordFingerprint: null,
     writeAttempted: false,
@@ -172,7 +177,7 @@ export async function updateWixPage({
     // This does not bypass the fingerprint guard on any replacement.
     if (managedFields.every((key) => current[key] === managed[key])) {
       report.status = "already-current";
-      report.after = publicPage(current);
+      report.after = publicPage(current, pageType);
       report.verifiedRecordFingerprint = currentRecordFingerprint;
     } else {
       requireCondition(expectedFingerprint === currentRecordFingerprint,
@@ -208,7 +213,7 @@ export async function updateWixPage({
         fingerprint(withoutUpdatedDate(proposed)),
       "Read-back found unrelated field changes after the write. Inspect Wix; no rollback was attempted.");
       report.status = "applied";
-      report.after = publicPage(verified);
+      report.after = publicPage(verified, pageType);
       report.verifiedRecordFingerprint = recordFingerprint(verified);
     }
     await saveReport(report);
@@ -254,13 +259,19 @@ async function main() {
   const sourceCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
   try {
     execFileSync("git", ["diff", "--quiet", "HEAD", "--",
-      "src/site.mjs", "src/wix.config.json", "scripts/update-wix-page.mjs",
-      "scripts/render-wix-content.mjs", "package.json", "package-lock.json"],
+      "src/site.mjs", "src/wix.config.json", "scripts", "package.json", "package-lock.json"],
     { cwd: root, stdio: "ignore" });
   } catch {
     throw new PageUpdateError("Commit the candidate source, repair script, configuration, and dependency changes before planning or applying.");
   }
   const { pages } = await import("../src/site.mjs");
+  const pageType = config.cms.pageSource === "typed"
+    ? generatedPageSlugs.includes(options.slug) ? "generated"
+      : pages.find(page => page.slug === options.slug)?.layout === "fundraising" ? "fundraising" : "common"
+    : undefined;
+  const collectionId = pageType
+    ? config.cms[pageCollectionDefinitions.find(definition => definition.type === pageType).configKey]
+    : config.cms.legacyPages || config.cms.pages;
   const siteId = process.env.WIX_SITE_ID || config.siteId;
   const client = createClient({ modules: { items }, auth: ApiKeyStrategy({ apiKey: process.env.WIX_API_KEY, siteId }) });
   // Fresh directories prevent a failed run from uploading an older success.
@@ -275,7 +286,7 @@ async function main() {
   }
   const writeJson = (name, value) => writeFile(join(output, name), `${JSON.stringify(value, null, 2)}\n`);
   const report = await updateWixPage({
-    api: client.items, collectionId: config.cms?.pages, siteId, pages,
+    api: client.items, collectionId, siteId, pages, pageType,
     mode: options.mode, slug: options.slug, sourceCommit,
     expectedFingerprint: options["expected-fingerprint"],
     expectedCandidateFingerprint: options["expected-candidate-fingerprint"],

@@ -8,7 +8,7 @@ export function mergeNewsletterContent(pages, snapshot, signupUrl) {
     .filter(validEdition)
     .sort((left, right) => Number(left.archiveOrder || 0) - Number(right.archiveOrder || 0));
   const archiveConnected = snapshot.source === "public-archive" && Boolean(snapshot.archiveId);
-  if (!editions.length) {
+  if (!editions.length && !newsletterPage.cmsDescription) {
     newsletterPage.description = "Sign up for weekly school news and updates from Montlake PTA.";
   }
   newsletterPage.content = renderNewsletterContent(editions[0], editions, signupUrl, "../", archiveConnected);

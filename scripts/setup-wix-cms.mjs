@@ -8,6 +8,8 @@ import { boardMembers } from "../src/data/cms-seed.mjs";
 import { pages } from "../src/site.mjs";
 import { fundraisingFieldDefinitions, normalizeFundraisingFields } from "./fundraising-fields.mjs";
 import { publicHtml, publicText, wixMediaUrl } from "./wix-public-content.mjs";
+import { pageCollectionDefinitions, projectLegacyPage } from "./page-collections.mjs";
+import { normalizeTypedPage } from "./normalize-wix-content.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const { values } = parseArgs({ options: { page: { type: "string" } } });
@@ -40,8 +42,23 @@ if (!values.page) await ensureCollection({
   keyOf: (item) => `${item.schoolYear}:${item.role}`,
 });
 
-await ensureCollection({
-  id: config.cms.pages,
+if (config.cms.pageSource === "typed") {
+  const projected = seedPages.map(page => projectLegacyPage({ ...page, body: page.content }));
+  for (const definition of pageCollectionDefinitions) {
+    const selected = projected.filter(page => page.type === definition.type);
+    if (values.page && !selected.length) continue;
+    if (!config.cms[definition.configKey]) throw new Error("Missing typed CMS collection configuration.");
+    await ensureCollection({
+      id: config.cms[definition.configKey], displayName: definition.displayName, fields: definition.fields,
+      seed: selected.map(({ data, type }) => {
+        const { pageType, ...record } = normalizeTypedPage(data, type);
+        return record;
+      }),
+      keyOf: item => item.slug,
+    });
+  }
+} else await ensureCollection({
+  id: config.cms.legacyPages || config.cms.pages,
   displayName: "Website Pages",
   fields: [
     field("slug", "Slug", "TEXT"),

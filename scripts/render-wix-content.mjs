@@ -1,6 +1,7 @@
 import sanitizeHtml from "sanitize-html";
 import visitorConfig from "../src/wix-client.config.json" with { type: "json" };
 import { emptyFundraisingFields, fundraisingFieldNames, normalizeFundraisingFields } from "./fundraising-fields.mjs";
+import { validatePagePlacement } from "./page-collections.mjs";
 
 const allowedCmsHtml = {
   allowedTags: [
@@ -48,7 +49,7 @@ export function mergeWixContent(staticPages, content, calendarEvents = [], { tra
   const products = content.products.filter(hasValidSlug);
   const storeCollections = content.storeCollections.filter(hasValidSlug);
   const publicCalendarEvents = calendarEvents.filter(validCalendarEvent);
-  applyCmsPages(pageMap, content.cms.pages);
+  applyCmsPages(pageMap, content.cms.pages, content.schemaVersion === 3);
   applyBudgetDonationCta(pageMap);
   applyBoardMembers(pageMap, content.cms.boardMembers);
   applyHomeFeed(pageMap, blogPosts, events, publicCalendarEvents);
@@ -163,14 +164,16 @@ function homeEventKey(event) {
   return `${title}|${localDateKey(new Date(event.startAt))}`;
 }
 
-function applyCmsPages(pageMap, pages) {
+function applyCmsPages(pageMap, pages, typed = false) {
   for (const cmsPage of pages) {
     if (cmsPage.published === false || typeof cmsPage.slug !== "string"
       || !cmsPage.slug.split("/").every(slug => hasValidSlug({ slug }))) continue;
     const existing = pageMap.get(cmsPage.slug);
-    const fundraising = Boolean(cmsPage.campaignStatus)
+    if (typed) validatePagePlacement(cmsPage.pageType, cmsPage.slug);
+    const fundraising = typed ? cmsPage.pageType === "fundraising" : Boolean(cmsPage.campaignStatus)
       || (existing?.layout === "fundraising" && fundraisingFieldNames.some(key => Object.hasOwn(cmsPage, key)));
-    if (!existing && (!cmsPage.title || !cmsPage.description || !cmsPage.body)) {
+    const generated = typed && cmsPage.pageType === "generated";
+    if (!existing && (!cmsPage.title || !cmsPage.description || (!generated && !cmsPage.body))) {
       console.warn(`Ignoring incomplete CMS page ${cmsPage.slug}.`);
       continue;
     }
@@ -182,13 +185,14 @@ function applyCmsPages(pageMap, pages) {
       kicker: cmsPage.kicker || existing?.kicker,
       description: fundraising ? cmsPage.description || "" : cmsPage.description || existing?.description,
       accent: ["coral", "blue", "yellow"].includes(cmsPage.accent) ? cmsPage.accent : existing?.accent,
-      content: fundraising ? sanitizeCmsHtml(cmsPage.body || "") : cmsPage.body ? sanitizeCmsHtml(cmsPage.body) : existing?.content,
+      content: generated ? existing?.content : fundraising ? sanitizeCmsHtml(cmsPage.body || "") : cmsPage.body ? sanitizeCmsHtml(cmsPage.body) : existing?.content,
       ...(fundraising ? emptyFundraisingFields : {}),
-      ...normalizeFundraisingFields(cmsPage, {
+      ...(!typed || fundraising ? normalizeFundraisingFields(cmsPage, {
         html: sanitizeCmsHtml,
         image: (value) => value,
-      }),
+      }) : {}),
       ...(fundraising ? { layout: "fundraising" } : {}),
+      ...(generated ? { cmsDescription: Boolean(cmsPage.description) } : {}),
     });
   }
 }
@@ -201,7 +205,7 @@ function applyBoardMembers(pageMap, members) {
 
   const years = [...new Set(activeMembers.map((member) => member.schoolYear).filter(Boolean))];
   const page = pageMap.get("pta-board");
-  page.description = `Connect with the ${years.join(" and ") || "current"} Montlake PTA officers and committee leads.`;
+  if (!page.cmsDescription) page.description = `Connect with the ${years.join(" and ") || "current"} Montlake PTA officers and committee leads.`;
   page.content = `
     <p class="lead">The PTA board coordinates fundraising, programs, events, advocacy, family outreach, and more. Reach out directly—we welcome your ideas and involvement.</p>
     ${renderBoardCards(activeMembers)}
@@ -586,7 +590,7 @@ function escapeAttribute(value) {
 }
 
 function validateSnapshot(content) {
-  if (!content || ![1, 2].includes(content.schemaVersion)) throw new Error("Unsupported Wix content snapshot schema.");
+  if (!content || ![1, 2, 3].includes(content.schemaVersion)) throw new Error("Unsupported Wix content snapshot schema.");
   for (const key of ["blogPosts", "events", "products", "storeCollections"]) {
     if (!Array.isArray(content[key])) throw new Error(`Wix content snapshot is missing ${key}.`);
   }
