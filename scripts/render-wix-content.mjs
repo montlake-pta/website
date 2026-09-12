@@ -279,14 +279,12 @@ function renderBlogPostPage(post) {
   return {
     slug: `post/${post.slug}`,
     title: post.title,
-    kicker: "PTA news",
+    layout: "blog",
     description: post.excerpt || excerpt(post.contentText),
-    accent: "yellow",
-    content: `
-      <p class="card-meta">${formatDate(post.publishedAt)}${post.updatedAt && post.updatedAt !== post.publishedAt ? ` · Updated ${formatDate(post.updatedAt)}` : ""}</p>
-      ${image(post.image, post.title, "detail-image")}
-      <div class="article-body">${richBodyHtml(post.bodyHtml, post.contentText || post.excerpt)}</div>
-      <p><a class="text-link" href="../../blog/">← Back to all news</a></p>`,
+    publishedAt: post.publishedAt,
+    updatedAt: post.updatedAt,
+    image: post.image,
+    content: `<div class="article-body">${richBodyHtml(post.bodyHtml, post.contentText || post.excerpt)}</div>`,
   };
 }
 
@@ -498,7 +496,7 @@ function textToHtml(value) {
     .join("");
 }
 
-function formatDate(value) {
+export function formatDate(value) {
   if (!value) return "";
   const date = new Date(value);
   if (Number.isNaN(date.valueOf())) return "";

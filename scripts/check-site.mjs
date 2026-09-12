@@ -38,6 +38,17 @@ for (const page of renderedPages) {
       ? wixContent.blogPosts.find((post) => `post/${post.slug}` === page.slug)
       : page.slug.startsWith("event-details/")
         ? wixContent.events.find((event) => `event-details/${event.slug}` === page.slug) : null;
+    if (page.layout === "blog") {
+      const document = parseDocument(html);
+      if (!selectOne("article.blog-post > .blog-header h1", document)
+        || selectOne(".page-hero, .page-aside", document)) {
+        failures.push(`${file}: blog article lost its dedicated reading layout`);
+      }
+      if (!selectOne(".blog-end", document)) failures.push(`${file}: blog article lost its closing navigation`);
+      for (const anchor of selectAll(".blog-post .page-outline a", document)) {
+        if (!selectOne(anchor.attribs.href, document)) failures.push(`${file}: broken article outline anchor`);
+      }
+    }
     if (record?.bodyHtml) {
       const expected = parseDocument(sanitizeCmsHtml(record.bodyHtml));
       const article = selectOne(".article-body", parseDocument(html));

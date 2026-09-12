@@ -27,6 +27,7 @@ typography:
     body: "1rem"
     body-large: "1.05rem"
     supporting: "1.1rem"
+    article: "1.125rem"
     compact-title: "1.15rem"
     lede-small: "1.2rem"
     title-small: "1.25rem"
@@ -45,6 +46,7 @@ typography:
     display-base: "3rem"
     display-subsection: "3.1rem"
     display-hero: "3.2rem"
+    display-article: "3.5rem"
     display-large: "4rem"
     display-mobile-large: "4.2rem"
     display-section: "4.7rem"
@@ -204,6 +206,19 @@ than using hero-image cropping. Figure captions use readable supporting text,
 and data graphics retain a textual equivalent where authored.
 Article tables preserve row/cell structure, use thin dividers and wrap within
 the reading column rather than introducing horizontal page scroll.
+
+Blog posts use a centered, single `68ch` reading column on the paper surface,
+not the general page banner and sidebar. A compact news return link, balanced
+`2rem–3.5rem` Literata title and publication date precede the article. An updated
+date appears only when its local calendar day differs. Excerpts belong to news
+listings and metadata, not a repeated introduction above the article.
+Article copy is `1.125rem` with `1.65` line height; section headings are smaller
+than general-page headings. Long articles retain the shared on-page outline.
+Cover thumbnails are decorative and optional: omit the cover when the same
+image is already in the body, preserving the authored figure, caption and alt
+text. Never crop an informational graphic; standalone covers fit within
+`28rem` height. A divided closing section carries the news return link and
+PTA contact, without a competing help card.
 
 Visitor transaction forms are Operate surfaces within the same reading layout:
 visible labels, 48px controls, native validation, explicit loading/error states

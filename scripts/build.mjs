@@ -10,6 +10,7 @@ import { build as bundleJavaScript } from "esbuild";
 import { emitLegacyDocuments, rewriteCutoverLinks } from "./cutover-links.mjs";
 import { renderFundraisingOverview, renderFundraisingPage } from "./render-fundraising.mjs";
 import { escapeAttribute, prepareContent } from "./page-content.mjs";
+import { renderBlogArticle } from "./render-blog.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
@@ -122,7 +123,7 @@ function renderPage(page, base) {
     </header>
     ${renderDailyTools(base)}
     <main id="main-content">
-      ${page.home ? renderHome(page, base) : page.layout === "fundraising" ? renderFundraisingPage(page, base, renderedPages) : renderContentPage(page)}
+      ${page.home ? renderHome(page, base) : page.layout === "fundraising" ? renderFundraisingPage(page, base, renderedPages) : page.layout === "blog" ? renderBlogArticle(page, base) : renderContentPage(page)}
     </main>
     ${renderFooter(base)}
   </body>

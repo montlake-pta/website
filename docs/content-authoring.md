@@ -19,6 +19,32 @@ text block, a generated HTML file, or the seed script. The seed script only
 inserts missing rows. A successful sync cannot recover details that were never
 put in the CMS.
 
+### Blog articles
+
+Author posts in Wix Blog, not GeneratedPages. The article template shows the
+title and publication date once, followed by the full rich body. The excerpt
+is used in news listings and page metadata, not repeated above the body; write
+a short, complete summary rather than pasting the opening paragraphs.
+
+Use native headings and ordered/nested lists instead of bold-only labels,
+typed numbering or spaces for indentation. Three or more main headings
+automatically produce an on-page outline. Use paragraphs for content, not blank
+spacer blocks; spacing belongs to the template.
+
+Give informative images meaningful alt text and retain captions. Put essential
+flyer instructions and chart conclusions in normal text as well. The listing
+cover is optional in the article: when its image already occurs in the body,
+the template keeps the authored figure and does not add another copy. Graphics
+retain their full aspect ratio. Existing dates, fees, caveats and attribution
+must survive a formatting cleanup; historical posts are not current-year
+policy confirmations.
+
+Before repairing a published post through an API, compare its published and
+draft revisions. Do not publish unrelated pending edits. Re-read the exact
+record immediately before writing, preserve unrelated fields, reject concurrent
+changes, and verify the published read-back. Blog publishing can trigger a
+production build, so deploy compatible templates before live content repairs.
+
 ### Source precedence and fallback behavior
 
 The generator begins with `src/site.mjs`, overlays the configured CMS source,
