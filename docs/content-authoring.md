@@ -45,6 +45,18 @@ record immediately before writing, preserve unrelated fields, reject concurrent
 changes, and verify the published read-back. Blog publishing can trigger a
 production build, so deploy compatible templates before live content repairs.
 
+Routine Wix edits do not need a separate maintenance-window confirmation.
+Blog APIs have no documented atomic revision or `If-Match` precondition;
+use just-in-time comparisons and stop on observed changes, without claiming a
+lock. Verify authored content and persistent settings separately from
+provider-generated audit fields and empty serialization defaults.
+
+Set descriptive alternatives on rich-body image nodes. The article's separate
+cover thumbnail is decorative. Preserve its asset and settings rather than
+changing the cover configuration to force an alt-text write: with derived
+covers, Wix can omit `media.altText` and the returned filename while retaining
+the same image ID, URL, dimensions and display settings.
+
 ### Source precedence and fallback behavior
 
 The generator begins with `src/site.mjs`, overlays the configured CMS source,
