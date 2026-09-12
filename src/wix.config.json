@@ -10,6 +10,15 @@
   },
   "validationFixtures": {
     "products": [],
-    "events": []
+    "events": [
+      {
+        "id": "e19cde03-30f8-45ea-9fb2-d8027c52e463",
+        "name": "Montlake SDK validation RSVP 20260912-01"
+      },
+      {
+        "id": "431dad5e-1ddc-492e-a6f9-ae470726de72",
+        "name": "Montlake SDK validation tickets 20260912-01"
+      }
+    ]
   }
 }
