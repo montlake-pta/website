@@ -116,6 +116,14 @@ not be true together. It retains static fallback information and the marked
 Wix registration handoff. Read-only mode is enforced by this application's
 adapter, not a new OAuth permission boundary.
 
+The read-only SDK is deployed at commit `a5266ed`
+([Pages run](https://github.com/montlake-pta/website/actions/runs/34675324093)).
+Browser-origin product and event reads succeeded on the GitHub frontend.
+Desktop/mobile, refresh focus, failed-read fallback and JavaScript-disabled
+handoffs were exercised without transaction requests. Full RSVP submission,
+cart mutations, checkout and ticket reservations remain unapproved; keep
+[issue #4](https://github.com/montlake-pta/website/issues/4) open for those gates.
+
 Match real SDK schemas rather than synthetic fixtures: Wix Events v2 reports
 `OPEN_RSVP`/`OPEN_TICKETS` registration statuses, and Catalog V1 stock quantity
 may be omitted or null. Availability flags remain meaningful without a numeric
