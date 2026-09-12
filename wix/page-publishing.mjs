@@ -21,6 +21,8 @@ export const pageMutationTriggers = [
 export function pagePublishingAutomations(action) {
   const info = action?.appDefinedInfo;
   if (action?.type !== "APP_DEFINED" || !action.id || !action.namespace
+    || Object.keys(action).some(key => !["id", "type", "namespace", "appDefinedInfo"].includes(key))
+    || Object.keys(info || {}).some(key => !["appId", "actionKey", "inputMapping", "postActionIds", "skipConditionOrExpressionGroups"].includes(key))
     || info?.appId !== "139ef4fa-c108-8f9a-c7be-d5f492a2c939" || info.actionKey !== "wix_automations-velo_action"
     || Object.keys(info.inputMapping || {}).length !== 3
     || !Object.entries(publisherActionMapping).every(([key, value]) => info.inputMapping[key] === value)

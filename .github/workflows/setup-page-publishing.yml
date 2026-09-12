@@ -1,0 +1,66 @@
+name: Set Up Typed Page Publishing
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        description: Plan and validate all nine native CMS automations before applying
+        options: [plan, apply]
+        default: plan
+      candidate_commit:
+        type: string
+        description: Full planned commit SHA (required for apply)
+      expected_fingerprint:
+        type: string
+        description: Reviewed publishing plan fingerprint (required for apply)
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wix-page-publishing-setup
+  cancel-in-progress: false
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Validate approval
+        env:
+          MODE: ${{ inputs.mode }}
+          COMMIT: ${{ inputs.candidate_commit }}
+          FINGERPRINT: ${{ inputs.expected_fingerprint }}
+        run: |
+          if [[ "$MODE" != "plan" && "$MODE" != "apply" ]] ||
+             [[ -n "$COMMIT" && ! "$COMMIT" =~ ^[a-f0-9]{40}$ ]]; then exit 1; fi
+          if [[ "$MODE" == "apply" ]] &&
+             [[ ! "$COMMIT" =~ ^[a-f0-9]{40}$ || ! "$FINGERPRINT" =~ ^[a-f0-9]{64}$ ]]; then exit 1; fi
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.candidate_commit || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: node --test scripts/setup-page-publishing.test.mjs scripts/wix-publisher.test.mjs
+      - name: Configure only reviewed publishing automations
+        env:
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
+          WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
+          MODE: ${{ inputs.mode }}
+          FINGERPRINT: ${{ inputs.expected_fingerprint }}
+        run: |
+          node scripts/setup-page-publishing.mjs --mode "$MODE" \
+            --expected-fingerprint "$FINGERPRINT" \
+            --output-dir "$RUNNER_TEMP/wix-page-publishing"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wix-page-publishing-${{ inputs.mode }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/wix-page-publishing/report.json
+          if-no-files-found: warn
+          retention-days: 14
