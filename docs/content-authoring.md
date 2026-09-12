@@ -33,7 +33,13 @@ spacer blocks; spacing belongs to the template.
 
 Give informative images meaningful alt text and retain captions. Put essential
 flyer instructions and chart conclusions in normal text as well. The listing
-cover is optional in the article: when its image already occurs in the body,
+thumbnail uses the configured Wix cover when available, otherwise the first
+public HTTP(S) image in the sanitized article body, excluding images explicitly
+sized at one pixel or smaller. This fallback also applies to homepage news and
+older offline snapshots; it does not change Wix records. Posts without either
+image remain text-only.
+
+The selected image is optional in the article: when it already occurs in the body,
 the template keeps the authored figure and does not add another copy. Graphics
 retain their full aspect ratio. Existing dates, fees, caveats and attribution
 must survive a formatting cleanup; historical posts are not current-year

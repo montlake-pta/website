@@ -6,16 +6,23 @@ import { textContent } from "domutils";
 import { mergeWixContent } from "./render-wix-content.mjs";
 import { renderBlogArticle } from "./render-blog.mjs";
 
+function mergePost(post, schemaVersion = 3) {
+  return mergeWixContent([
+    { slug: "", title: "Home", description: "School news", content: "" },
+    { slug: "blog", title: "News", description: "School news", content: "" },
+  ], {
+    schemaVersion, source: "test", cms: { pages: [], boardMembers: [] },
+    blogPosts: [post], events: [], products: [], storeCollections: [],
+  });
+}
+
 function render(overrides = {}) {
   const post = {
     slug: "school-update", title: "A school update", excerpt: "A brief listing summary.",
     contentText: "The complete article.", publishedAt: "2026-09-08T08:00:00.000Z",
     updatedAt: "2026-09-08T20:00:00.000Z", ...overrides,
   };
-  const [page] = mergeWixContent([], {
-    schemaVersion: 3, source: "test", cms: { pages: [], boardMembers: [] },
-    blogPosts: [post], events: [], products: [], storeCollections: [],
-  });
+  const page = mergePost(post).find(page => page.layout === "blog");
   assert.equal(page.layout, "blog");
   assert.equal(page.description, post.excerpt);
   return parseDocument(renderBlogArticle(page, "../../"));
@@ -78,6 +85,79 @@ test("different cover and inline images are preserved, including distinct non-Wi
   assert.equal(selectAll("img", document).length, 2);
   assert(selectOne(".blog-cover", document));
 });
+
+test("a configured cover takes priority in both news listings and the homepage feed", () => {
+  const cover = "https://static.wixstatic.com/media/cover.jpg";
+  const merged = mergePost({
+    slug: "school-news", title: "School news", image: cover,
+    bodyHtml: '<figure><img src="https://static.wixstatic.com/media/inline.jpg" alt="In the classroom"></figure>',
+  });
+  const index = parseDocument(merged.find(page => page.slug === "blog").content);
+  const home = parseDocument(merged.find(page => page.slug === "").homeFeed);
+  assert.equal(selectOne(".content-card img", index).attribs.src, cover);
+  assert.equal(selectOne(".home-post img", home).attribs.src, cover);
+});
+
+for (const schemaVersion of [1, 2, 3]) {
+  test(`missing covers fall back consistently without changing a schema-${schemaVersion} snapshot`, () => {
+    const source = "https://static.wixstatic.com/media/school.jpg";
+    const post = {
+      slug: "school-news", title: "School news", image: null,
+      bodyHtml: `<figure><img src="${source}" alt="School entrance"><figcaption>Welcome to school.</figcaption></figure>`,
+    };
+    const original = structuredClone(post);
+    const merged = mergePost(post, schemaVersion);
+    const index = parseDocument(merged.find(page => page.slug === "blog").content);
+    const home = parseDocument(merged.find(page => page.slug === "").homeFeed);
+    const detail = parseDocument(renderBlogArticle(merged.find(page => page.layout === "blog"), "../../"));
+    assert.equal(selectOne(".content-card img", index).attribs.src, source);
+    assert.equal(selectOne(".home-post img", home).attribs.src, source);
+    assert.equal(selectAll("img", detail).length, 1);
+    assert.equal(selectAll(".blog-cover", detail).length, 0);
+    assert.equal(selectOne(".article-body img", detail).attribs.alt, "School entrance");
+    assert.equal(textContent(selectOne("figcaption", detail)), "Welcome to school.");
+    assert.deepEqual(post, original);
+  });
+}
+
+test("thumbnail fallback skips unsafe sources and pixel images before selecting the first usable image", () => {
+  const source = "https://example.org/photo?school=1&size=large";
+  const merged = mergePost({
+    slug: "school-news", title: "School news", image: "javascript:alert(1)",
+    bodyHtml: `<img src="javascript:alert(1)"><img src="mailto:someone@example.org">
+      <img src="https://user:password@example.org/private.jpg">
+      <img src="https://meet.google.com/abc-defg-hij">
+      <img src="https://example.org/pixel.gif" width="1" height="1">
+      <img src="https://example.org/hidden.jpg" width="0">
+      <figure><a href="https://example.org/gallery"><img src="${source.replaceAll("&", "&amp;")}" alt="School photo"></a></figure>
+      <img src="https://example.org/later.jpg">`,
+  });
+  const index = parseDocument(merged.find(page => page.slug === "blog").content);
+  const home = parseDocument(merged.find(page => page.slug === "").homeFeed);
+  assert.equal(selectOne(".content-card img", index).attribs.src, source);
+  assert.equal(selectOne(".home-post img", home).attribs.src, source);
+});
+
+test("canonicalized fallback URLs do not duplicate linked article figures", () => {
+  const detail = render({
+    image: null,
+    bodyHtml: '<figure><a href="https://example.org/gallery"><img src="HTTPS://EXAMPLE.ORG/photo?school=1&amp;size=large" alt="School photo"></a><figcaption>A school day.</figcaption></figure>',
+  });
+  assert.equal(selectAll("img", detail).length, 1);
+  assert.equal(selectAll(".blog-cover", detail).length, 0);
+  assert(selectOne(".article-body figure a", detail));
+});
+
+for (const bodyHtml of [undefined, "<p>A text-only update.</p>", '<img src="data:image/png,invalid"><img src="https://example.org/pixel.gif" width="1">']) {
+  test(`posts without a usable image retain text-only cards: ${bodyHtml || "plain snapshot"}`, () => {
+    const merged = mergePost({ slug: "school-news", title: "School news", contentText: "A text-only update.", bodyHtml });
+    const index = parseDocument(merged.find(page => page.slug === "blog").content);
+    const home = parseDocument(merged.find(page => page.slug === "").homeFeed);
+    assert.equal(selectAll(".content-card img", index).length, 0);
+    assert(selectOne(".home-post-no-image", home));
+    assert.equal(selectAll(".home-post img", home).length, 0);
+  });
+}
 
 test("long articles retain semantic lists, tables and working heading anchors", () => {
   const document = render({ bodyHtml: `

@@ -1,7 +1,10 @@
 import sanitizeHtml from "sanitize-html";
+import { parseDocument } from "htmlparser2";
+import { getElementsByTagName } from "domutils";
 import visitorConfig from "../src/wix-client.config.json" with { type: "json" };
 import { emptyFundraisingFields, fundraisingFieldNames, normalizeFundraisingFields } from "./fundraising-fields.mjs";
 import { validatePagePlacement } from "./page-collections.mjs";
+import { publicUrl } from "./wix-public-content.mjs";
 
 const allowedCmsHtml = {
   allowedTags: [
@@ -46,7 +49,7 @@ export function mergeWixContent(staticPages, content, calendarEvents = [], {
   validateSnapshot(content);
 
   const pageMap = new Map(staticPages.map((page) => [page.slug, { ...page }]));
-  const blogPosts = content.blogPosts.filter(hasValidSlug);
+  const blogPosts = content.blogPosts.filter(hasValidSlug).map(withBlogThumbnail);
   const events = content.events.filter(hasValidSlug);
   const products = content.products.filter(hasValidSlug);
   const storeCollections = content.storeCollections.filter(hasValidSlug);
@@ -73,6 +76,18 @@ export function mergeWixContent(staticPages, content, calendarEvents = [], {
   }
 
   return [...pageMap.values()];
+}
+
+function withBlogThumbnail(post) {
+  const cover = publicUrl(post.image, { image: true });
+  if (cover) return { ...post, image: cover };
+  const images = getElementsByTagName("img", parseDocument(sanitizeCmsHtml(post.bodyHtml || "")));
+  for (const { attribs } of images) {
+    const source = publicUrl(attribs.src, { image: true });
+    const pixel = [attribs.width, attribs.height].some(value => value !== undefined && Number(value) <= 1);
+    if (source && !pixel) return { ...post, image: source };
+  }
+  return { ...post, image: null };
 }
 
 function applyCalendarEmbed(pageMap) {

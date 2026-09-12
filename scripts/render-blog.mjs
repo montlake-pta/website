@@ -5,8 +5,9 @@ import { formatDate } from "./render-wix-content.mjs";
 import { publicUrl } from "./wix-public-content.mjs";
 
 function imageIdentity(source) {
-  const media = source?.match(/^https:\/\/static\.wixstatic\.com\/media\/([^/?#]+)/i);
-  return media ? `wix:${media[1]}` : source;
+  const url = publicUrl(source, { image: true });
+  const media = url?.match(/^https:\/\/static\.wixstatic\.com\/media\/([^/?#]+)/i);
+  return media ? `wix:${media[1]}` : url;
 }
 
 export function renderBlogArticle(page, base) {

@@ -216,7 +216,9 @@ Article copy is `1.125rem` with `1.65` line height; section headings are smaller
 than general-page headings. Long articles retain the shared on-page outline.
 Cover thumbnails are decorative and optional: omit the cover when the same
 image is already in the body, preserving the authored figure, caption and alt
-text. Never crop an informational graphic; standalone covers fit within
+text. News cards and homepage updates prefer the configured cover, falling back
+to the first usable public article image; posts with neither remain text-only.
+Never crop an informational graphic; standalone covers fit within
 `28rem` height. A divided closing section carries the news return link and
 PTA contact, without a competing help card.
 
