@@ -13,6 +13,8 @@ applyTo: 'scripts/sync-wix.mjs,scripts/normalize-wix-content.mjs,scripts/wix-pub
   or malformed-response failures into empty successful snapshots.
 - Optional missing CMS collections may return empty arrays with a clear warning.
 - Preserve pagination for all Wix query builders.
+- CMS sync uses `consistentRead: true` and `showDrafts: false`: read committed
+  changes immediately without including native drafts or stale empty replicas.
 - Normalize optional fields and slugs defensively. Skip records that cannot
   produce a safe stable route.
 - Keep CMS setup idempotent and resumable after partial failure.

@@ -24,6 +24,8 @@ are not permanent invariants.
   metadata-only GeneratedPages. Read `cms.pageSource` in `src/wix.config.json`
   before operating on live data; legacy mode is only for staged migration or
   recovery. See the [copy/activate/retire procedure](content-authoring.md#splitting-the-legacy-page-collection).
+  The split is complete: 13 common, 3 fundraising and 4 generated records were
+  copied; WebsitePages is retained as **Legacy WebsitePages (backup)**.
 - Visitor transaction activation remains off in
   [src/wix-client.config.json](../src/wix-client.config.json). The public client
   ID is empty; the active Welcome Back RSVP retains a marked legacy handoff.
@@ -161,6 +163,11 @@ network/timeout error. A timeout can have an unknown dispatch outcome. There
 is no durable outbox or exactly-once guarantee. CMS hooks report notification
 failure but return the author's successfully saved item; hourly sync remains
 recovery for missed signals and unsupported mutation paths.
+
+CMS reads explicitly use `consistentRead: true` and `showDrafts: false`.
+Default replica reads briefly omitted newly migrated GeneratedPages records
+even though consistent read-back confirmed them. Do not diagnose missing live
+content from such a stale read, or enable native drafts as a workaround.
 
 Native CMS automation selectors bind one collection each. The deletion
 trigger uses `deletedEntity.dataCollectionId`; create/update use

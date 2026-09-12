@@ -111,6 +111,22 @@ validate permissions. It accepts `mode`, `candidate_commit` and
 copy only that public inventory into `wix/page-publishing.config.json`.
 Both setups require a fresh reviewed plan after a partial failure.
 
+The typed split is complete. The [copy run](https://github.com/montlake-pta/website/actions/runs/34669105224)
+moved 13 ordinary pages, 3 fundraising pages and 4 generated-page metadata
+records. The [lifecycle probe](https://github.com/montlake-pta/website/actions/runs/34669604522)
+exercised creation, update and deletion in every new collection and removed
+its temporary records. All nine native automations showed an ended run, and
+the [resulting deployment](https://github.com/montlake-pta/website/actions/runs/34669621681)
+succeeded.
+
+The [complete schema-3 export](https://github.com/montlake-pta/website/actions/runs/34670087188)
+contains all 20 typed records. CMS sync now uses consistent reads: the first
+default-replica read temporarily omitted the four GeneratedPages records.
+The [retirement run](https://github.com/montlake-pta/website/actions/runs/34670160354)
+then labeled the original collection as a backup while preserving all records,
+fields and permissions. Current authoring belongs in the typed collections;
+these migration steps do not need to be repeated.
+
 ## Fundraising pages
 
 Use `FundraisingPages` for these stable fundraising slugs:
