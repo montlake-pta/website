@@ -15,11 +15,12 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
 const deploymentBase = new URL(site.previewUrl).pathname;
 const visitor = visitorConfiguration();
+const visitorUpdates = visitor.enabled || visitor.readOnly;
 const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
 const calendarContent = JSON.parse(await readFile(join(root, "src", "data", "calendar-events.json"), "utf8"));
 const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
 const renderedPages = preserveRetiredProductRoutes(preserveCollectionRoutes(mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events, {
-  transactionsEnabled: visitor.enabled,
+  transactionsEnabled: visitor.enabled, readOnly: visitor.readOnly,
 }), newsletterContent, site.newsletterUrl)));
 if (visitor.enabled) {
   for (const page of transactionPages) {
@@ -35,7 +36,7 @@ await cp(join(root, "src", "assets"), join(output, "assets"), { recursive: true 
 await emitLegacyDocuments(output);
 await cp(join(root, "src", "styles.css"), join(output, "styles.css"));
 await cp(join(root, "src", "site.js"), join(output, "site.js"));
-if (visitor.enabled) {
+if (visitorUpdates) {
   await bundleJavaScript({
     entryPoints: [join(root, "src", "wix-transactions.mjs")],
     outfile: join(output, "transactions.js"),
@@ -76,7 +77,7 @@ function renderPage(page, base) {
       return `<a href="${base}${slug ? `${slug}/` : ""}"${active}>${label}</a>`;
     })
     .join("\n              ");
-  const needsTransactions = visitor.enabled && /data-wix-(?:product-id|event-id|cart|confirmation)\b/.test(page.content || "");
+  const needsTransactions = visitorUpdates && /data-wix-(?:product-id|event-id|cart|confirmation)\b/.test(page.content || "");
   const publicConfig = JSON.stringify(visitor).replaceAll("<", "\\u003c").replaceAll("\u2028", "\\u2028").replaceAll("\u2029", "\\u2029");
 
   return `<!doctype html>

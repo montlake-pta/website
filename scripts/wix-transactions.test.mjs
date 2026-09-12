@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { wixEventsV2 } from '@wix/events';
 import {
   createVisitorApi, productSelection, eventState, rsvpFormResponse, rsvpV2Request, ticketSelections,
-  validateConfig, callbackUrls, validateRedirect, validateExternalUrl, STORES_APP_ID, money,
+  validateConfig, callbackUrls, validateRedirect, validateExternalUrl, STORES_APP_ID, money, stockState,
 } from '../src/wix-visitor-api.mjs';
 import { initializeTransactions, bootstrapTransactions } from '../src/wix-transactions.mjs';
 
@@ -17,8 +18,11 @@ const product = () => ({
 const event = (type = 'RSVP') => ({
   _id: id(4), title: 'School gathering', slug: 'school-gathering', status: 'UPCOMING',
   dateAndTimeSettings: { startDate: new Date('2099-01-01T00:00:00Z') },
-  registration: { type, initialType: type, status: type === 'TICKETING' ? 'OPEN_TICKETS' : `OPEN_${type}`,
-    allowedGuestTypes: 'VISITOR_OR_MEMBER', rsvp: { responseType: 'YES_ONLY' }, tickets: { ticketLimitPerOrder: 5 } },
+  registration: { type, initialType: type === 'TICKETING' ? 'TICKETING' : 'RSVP',
+    status: { RSVP: 'OPEN_RSVP', TICKETING: 'OPEN_TICKETS', EXTERNAL: 'OPEN_EXTERNAL', NONE: 'UNKNOWN_REGISTRATION_STATUS' }[type],
+    registrationPaused: false, registrationDisabled: false,
+    allowedGuestTypes: 'VISITOR_OR_MEMBER', rsvp: { responseType: 'YES_ONLY' },
+    tickets: { ticketLimitPerOrder: 5, soldOut: type !== 'TICKETING' } },
 });
 const form = () => ({ controls: [
   { type: 'NAME', system: true, orderIndex: 0, inputs: [
@@ -96,7 +100,36 @@ test('validates public config and derives nested callbacks without reading query
     assert.throws(() => validateConfig({ ...config, baseUrl }), rejectCode('CONFIG'));
   }
   assert.throws(() => validateConfig({ ...config, clientId: 'not-a-client' }));
-  assert.deepEqual(Object.keys(validateConfig({ ...config, apiKey: 'must-not-be-forwarded' })).sort(), ['baseUrl', 'clientId', 'siteId']);
+  assert.deepEqual(Object.keys(validateConfig({ ...config, apiKey: 'must-not-be-forwarded' })).sort(), ['baseUrl', 'clientId', 'readOnly', 'siteId']);
+});
+test('read-only configuration stays explicit and every mutation rejects before any SDK or session call', async () => {
+  for (const patch of [{ readOnly: 'true' }, { readOnly: null }, { readOnly: 1 }, { readOnly: true, enabled: true }]) {
+    assert.throws(() => validateConfig({ ...config, ...patch }), rejectCode('CONFIG'));
+  }
+  const { client, calls } = fakeClient();
+  const api = createVisitorApi({ ...config, enabled: false, readOnly: true }, { client, storage: null });
+  assert.equal(api.config.readOnly, true);
+  const attempts = [
+    () => api.addProduct(id(3), {}, {}, 1), () => api.updateQuantity(id(7), 1),
+    () => api.removeItem(id(7)), () => api.checkout(), () => api.submitRsvp(id(4), answers()),
+    () => api.reserveTickets(id(4), [{ ticketDefinitionId: id(5), quantity: 1 }]),
+  ];
+  for (const mutate of attempts) await assert.rejects(mutate(), rejectCode('READ_ONLY'));
+  assert.deepEqual(calls, []);
+  api.config.readOnly = false;
+  await assert.rejects(api.checkout(), rejectCode('READ_ONLY'));
+  assert.deepEqual(calls, [], 'The construction-time read-only guard cannot be changed through exposed config');
+});
+test('read-only adapter permits product, event/form/policy and empty-cart reads without mutation', async () => {
+  const { client, calls } = fakeClient();
+  client.currentCart.getCurrentCart = async () => { throw { status: 404, details: { applicationError: { code: 'OWNED_CART_NOT_FOUND' } } }; };
+  const api = createVisitorApi({ ...config, readOnly: true }, { client, storage: null });
+  assert.equal((await api.product(id(3)))._id, id(3));
+  assert.equal((await api.event(id(4))).state.kind, 'rsvp');
+  assert.deepEqual(await api.cart(), { lineItems: [] });
+  assert.equal(calls.filter(call => call[0] === 'tokens').length, 1);
+  assert.ok(calls.some(call => call[0] === 'policies'));
+  assert.equal(calls.filter(call => ['add', 'quantity', 'remove', 'checkout', 'redirect', 'rsvp', 'reserve'].includes(call[0])).length, 0);
 });
 test('the final frontend domain is valid for callbacks but never for hosted checkout destinations', () => {
   for (const baseUrl of ['https://www.montlakepta.org/', 'https://montlakepta.org/', 'https://www.montlakepta.org/preview/website/']) {
@@ -151,6 +184,33 @@ test('product stock, required choices, quantity, variant and personalization are
   item.variants = [{ _id: id(11), choices: { Color: 'Blue' }, stock: { trackQuantity: true, quantity: 2 }, variant: { visible: true, priceData: { price: 25, currency: 'USD' } } }];
   assert.equal(productSelection(item, { Color: 'Blue' }, { 'Name on shirt': 'Test' }).lineItem.catalogReference.options.variantId, id(11));
   assert.throws(() => productSelection(item, { Color: 'Blue' }, { 'Name on shirt': 'Test' }, 3));
+});
+test('missing and null tracked quantities use availability flags without inventing quantities or NaN bounds', () => {
+  for (const quantity of [undefined, null]) {
+    const item = product();
+    item.stock = { trackInventory: true, inStock: true, inventoryStatus: 'IN_STOCK' };
+    if (quantity === null) item.stock.quantity = null;
+    assert.equal(Object.hasOwn(item.stock, 'quantity'), quantity === null);
+    const selection = productSelection(item, {}, {}, 1);
+    assert.equal(selection.lineItem.quantity, 1);
+    assert.equal(selection.max, 100000);
+    assert.equal(Object.hasOwn(item.stock, 'quantity'), quantity === null);
+    assert.equal(item.stock.quantity, quantity);
+    assert.equal(stockState(item.stock), 'IN_STOCK');
+    assert.throws(() => productSelection({ ...item, stock: { ...item.stock, inventoryStatus: 'OUT_OF_STOCK' } }), rejectCode('OUT_OF_STOCK'));
+    item.manageVariants = true;
+    item.productOptions = [{ name: 'Size', choices: [{ description: 'M' }] }];
+    item.variants = [{
+      _id: id(12), choices: { Size: 'M' }, variant: { visible: true },
+      stock: { trackQuantity: true, inStock: true, ...(quantity === null ? { quantity: null } : {}) },
+    }];
+    assert.equal(productSelection(item, { Size: 'M' }).lineItem.catalogReference.options.variantId, id(12));
+  }
+  assert.equal(stockState({ trackInventory: true, inventoryStatus: 'IN_STOCK', quantity: 0 }), 'OUT_OF_STOCK');
+  assert.equal(stockState({ trackQuantity: true, quantity: null, inStock: false }), 'OUT_OF_STOCK');
+  assert.equal(stockState(undefined), 'UNKNOWN');
+  assert.equal(stockState({ trackQuantity: true, quantity: null }), 'UNKNOWN');
+  assert.throws(() => productSelection({ ...product(), stock: { trackInventory: true } }), rejectCode('OUT_OF_STOCK'));
 });
 test('adding a product re-reads live inventory and sends only official catalog reference', async () => {
   const { api, calls, client, wrap } = setup();
@@ -227,6 +287,66 @@ test('past, canceled, draft, disabled, member-only and scheduled events are non-
   }
   assert.equal(eventState({ ...event(), registration: { type: 'NONE' } }).kind, 'none');
   assert.equal(eventState({ ...event(), registration: { ...event().registration, status: 'OPEN_RSVP_WAITLIST_ONLY' } }).status, 'WAITING');
+});
+test('installed registration enums and boolean flags drive eligibility, not unused ticket settings', () => {
+  const statuses = wixEventsV2.RegistrationStatusStatus;
+  const cases = {
+    [statuses.OPEN_RSVP]: ['RSVP', 'rsvp'],
+    [statuses.OPEN_RSVP_WAITLIST_ONLY]: ['RSVP', 'rsvp'],
+    [statuses.OPEN_TICKETS]: ['TICKETING', 'tickets'],
+    [statuses.OPEN_EXTERNAL]: ['EXTERNAL', 'external'],
+  };
+  for (const status of Object.values(statuses)) {
+    const [type, expected] = cases[status] || ['RSVP', 'closed'];
+    const current = event(type);
+    current.registration.status = status;
+    assert.equal(eventState(current).kind, expected, status);
+  }
+  for (const type of ['RSVP', 'TICKETING', 'EXTERNAL']) {
+    for (const flag of ['registrationPaused', 'registrationDisabled']) {
+      const current = event(type);
+      assert.equal(current.registration[flag], false);
+      assert.notEqual(eventState(current).kind, 'closed');
+      current.registration[flag] = true;
+      assert.equal(eventState(current).kind, 'closed');
+    }
+  }
+  for (const soldOut of [undefined, null, false, true]) {
+    const rsvp = event();
+    rsvp.registration.tickets.soldOut = soldOut;
+    assert.equal(eventState(rsvp).kind, 'rsvp');
+    const ticketed = event('TICKETING');
+    ticketed.registration.tickets.soldOut = soldOut;
+    assert.equal(eventState(ticketed).kind, soldOut === true ? 'closed' : 'tickets');
+  }
+  for (const status of ['OPEN', 'OPEN_TICKETING']) {
+    const current = event();
+    current.registration.status = status;
+    assert.equal(eventState(current).kind, 'closed');
+  }
+});
+test('an open Welcome Back-shaped RSVP with sold-out unused tickets returns its form and policies', async () => {
+  const { api, client, calls, wrap } = setup();
+  const eventId = '91563613-7f0e-4dd3-a491-4d8d028b2e32';
+  const registration = {
+    type: 'RSVP', initialType: 'RSVP', status: 'OPEN_RSVP',
+    rsvp: { responseType: 'YES_ONLY', waitlistEnabled: false, confirmationMessages: {} },
+    tickets: { soldOut: true },
+    allowedGuestTypes: 'VISITOR_OR_MEMBER', registrationPaused: false, registrationDisabled: false,
+  };
+  const current = { ...event(), _id: eventId, registration, form: form() };
+  assert.equal(eventState({
+    ...current, dateAndTimeSettings: { startDate: '2026-09-26T00:30:00Z', endDate: '2026-09-26T02:30:00Z' },
+  }, Date.parse('2026-09-11T21:00:00Z')).kind, 'rsvp');
+  assert.equal(eventState({
+    ...current, registration: { ...registration, rsvp: { ...registration.rsvp, waitlistEnabled: true } },
+  }).status, 'YES', 'Waitlist capability alone does not change OPEN_RSVP eligibility');
+  client.wixEventsV2.getEvent = wrap('event', current);
+  const data = await api.event(eventId);
+  assert.equal(data.state.kind, 'rsvp');
+  assert.equal(data.form.controls.length, form().controls.length);
+  assert.ok(calls.some(call => call[0] === 'policies'));
+  assert.equal(calls.filter(call => ['rsvp', 'reserve'].includes(call[0])).length, 0);
 });
 test('event GET uses installed readonly fields options; form fallback and policies use live APIs', async () => {
   const { api, client, calls, wrap } = setup();
@@ -609,6 +729,122 @@ test('optioned UI labels required fields and prevents submission before a valid 
   size.value = 'M';
   await document.querySelectorAll('form')[0].fire('change');
   assert.equal(add.disabled, false);
+});
+test('full product UI accepts in-stock tracked products with missing or null quantities', async () => {
+  for (const quantity of [undefined, null]) {
+    const document = new TestDocument('data-wix-product-id');
+    const { api, client, wrap } = setup();
+    const stock = { trackInventory: true, inStock: true, inventoryStatus: 'IN_STOCK', ...(quantity === null ? { quantity: null } : {}) };
+    client.products.getProduct = wrap('getProduct', { product: { ...product(), stock } });
+    await initializeTransactions(config, document, { api });
+    assert.equal(namedButton(document, 'Add to cart').disabled, false);
+    assert.equal(inputByLabel(document, 'Quantity').max, '100000');
+    assert.doesNotMatch(document.textContent, /out of stock|NaN/);
+  }
+});
+
+function readonlyDocument(attribute) {
+  const document = new TestDocument(attribute);
+  const link = document.createElement('a');
+  link.setAttribute('href', 'https://www.montlakepta.org/event-details/working');
+  link.setAttribute('data-legacy-transaction', 'true');
+  link.textContent = 'Working existing details link';
+  document.append(link);
+  if (attribute === 'data-wix-product-id') {
+    const metadata = document.createElement('div');
+    metadata.setAttribute('data-wix-product-metadata', '');
+    const price = document.createElement('p');
+    price.textContent = '$999.00';
+    const status = document.createElement('p');
+    status.textContent = 'Old published availability';
+    metadata.append(price, status);
+    document.slot.append(metadata);
+  }
+  return document;
+}
+
+test('read-only product UI updates only published metadata and never offers mutating controls', async () => {
+  const document = readonlyDocument('data-wix-product-id');
+  const { api, client, calls, wrap } = setup();
+  client.products.getProduct = wrap('getProduct', { product: {
+    ...product(), stock: { trackInventory: true, quantity: null, inventoryStatus: 'IN_STOCK' },
+  } });
+  await initializeTransactions({ ...config, enabled: false, readOnly: true }, document, { api });
+  assert.equal(document.querySelectorAll('form,input,select,textarea').length, 0);
+  assert.deepEqual(buttons(document).map(node => node.textContent), ['Refresh availability']);
+  assert.match(document.textContent, /\$15\.00/);
+  assert.match(document.textContent, /In stock/);
+  assert.doesNotMatch(document.textContent, /\$999\.00|Old published availability|Add to cart|View cart|checkout/);
+  assert.match(document.textContent, /Server-rendered details remain readable/);
+  assert.equal(document.querySelectorAll('[data-legacy-transaction]')[0].getAttribute('href'), 'https://www.montlakepta.org/event-details/working');
+  client.products.getProduct = wrap('getProduct', { product: { ...product(), stock: { inventoryStatus: 'OUT_OF_STOCK' } } });
+  await namedButton(document, 'Refresh availability').fire('click');
+  assert.equal(document.activeElement.className, 'transaction-status');
+  assert.match(document.textContent, /Out of stock/);
+  assert.doesNotMatch(document.textContent, /In stock/);
+  assert.equal(document.querySelectorAll('[data-wix-product-metadata]').length, 1);
+  assert.equal(calls.filter(call => ['add', 'quantity', 'checkout', 'redirect'].includes(call[0])).length, 0);
+});
+
+test('failed read-only product GETs preserve published or last-read metadata and all fallback links', async () => {
+  const document = readonlyDocument('data-wix-product-id');
+  const { api, client, wrap } = setup();
+  client.products.getProduct = async () => { throw { status: 403 }; };
+  await initializeTransactions({ ...config, readOnly: true }, document, { api });
+  assert.match(document.textContent, /\$999\.00/);
+  assert.match(document.textContent, /Old published availability/);
+  assert.match(document.textContent, /Working existing details link/);
+  assert.match(document.textContent, /Server-rendered details remain readable/);
+  assert.equal(document.querySelectorAll('form').length, 0);
+  client.products.getProduct = wrap('getProduct', { product: product() });
+  await namedButton(document, 'Try again').fire('click');
+  assert.doesNotMatch(document.textContent, /\$999\.00/);
+  assert.match(document.textContent, /\$15\.00/);
+  client.products.getProduct = async () => { throw { status: 403 }; };
+  await namedButton(document, 'Refresh availability').fire('click');
+  assert.match(document.textContent, /\$15\.00/);
+  assert.match(document.textContent, /Working existing details link/);
+});
+
+test('read-only event UI displays live registration state without RSVP, ticket, or payment controls', async () => {
+  for (const type of ['RSVP', 'TICKETING', 'EXTERNAL']) {
+    const document = readonlyDocument('data-wix-event-id');
+    const { api, client, calls, wrap } = setup();
+    const current = { ...event(type), form: form() };
+    if (type === 'EXTERNAL') current.registration.external = { url: 'https://example.org/register' };
+    client.wixEventsV2.getEvent = wrap('event', current);
+    await initializeTransactions({ ...config, readOnly: true }, document, { api, navigate: () => assert.fail('No read-only navigation') });
+    assert.equal(document.querySelectorAll('form,input,select,textarea').length, 0);
+    assert.deepEqual(buttons(document).map(node => node.textContent), ['Refresh registration details']);
+    assert.match(document.textContent, type === 'RSVP' ? /Registration is open/ : type === 'TICKETING' ? /Ticket sales are open/ : /event provider/);
+    assert.equal(document.querySelectorAll('a').length, 1, 'Retain the existing handoff rather than replace or duplicate it');
+    assert.equal(document.querySelectorAll('[data-legacy-transaction]').length, 1);
+    await namedButton(document, 'Refresh registration details').fire('click');
+    assert.equal(document.activeElement.className, 'transaction-status');
+    assert.equal(calls.filter(call => ['rsvp', 'reserve', 'checkout', 'redirect'].includes(call[0])).length, 0);
+  }
+});
+
+test('read-only event failures retain details and the working registration handoff', async () => {
+  const document = readonlyDocument('data-wix-event-id');
+  const { api, client } = setup();
+  client.wixEventsV2.getEvent = async () => { throw { status: 403 }; };
+  await initializeTransactions({ ...config, readOnly: true }, document, { api });
+  assert.match(document.textContent, /Server-rendered details remain readable/);
+  assert.match(document.textContent, /Working existing details link/);
+  assert.ok(namedButton(document, 'Try again'));
+  assert.equal(document.querySelectorAll('form,input,select,textarea').length, 0);
+});
+
+test('read-only bootstrap cannot turn stale cart or confirmation slots into transaction controls', async () => {
+  for (const attribute of ['data-wix-cart', 'data-wix-confirmation']) {
+    const document = new TestDocument(attribute);
+    const { api, calls } = setup();
+    await initializeTransactions({ ...config, readOnly: true }, document, { api });
+    assert.equal(document.querySelectorAll('form,input,select,textarea,button').length, 0);
+    assert.deepEqual(calls, []);
+    assert.match(document.textContent, /Online ordering is not enabled/);
+  }
 });
 test('cart UI disables controls during mutation, avoids duplicate submits and focuses confirmed status', async () => {
   const document = new TestDocument('data-wix-cart');

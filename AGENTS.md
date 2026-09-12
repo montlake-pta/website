@@ -171,6 +171,10 @@ python3 -m http.server 4173 --directory dist
   controls.
 - Visitor SDK calls use a public Headless client ID and visitor/member OAuth,
   never an API key. Keep admin credentials in Actions or an approved backend.
+- Read-only SDK enhancement and full transactions are separate modes.
+  `readOnly: true` must retain static content and marked registration handoffs,
+  omit transaction forms, and reject adapter mutations before SDK calls.
+  It is not permission to retire the legacy frontend or relax cutover gates.
 - Do not enable unconfigured visitor flows or replace working registration
   with a fake success/unavailable widget just to eliminate legacy-link counts.
   Transitional handoffs must be explicitly marked and rejected by the strict

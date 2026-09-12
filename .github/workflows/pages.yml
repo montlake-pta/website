@@ -26,6 +26,7 @@ jobs:
       SITE_URL: ${{ vars.SITE_URL }}
       WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
       WIX_HEADLESS_ENABLED: ${{ vars.WIX_HEADLESS_ENABLED }}
+      WIX_HEADLESS_READ_ONLY: ${{ vars.WIX_HEADLESS_READ_ONLY }}
       WIX_HEADLESS_CLIENT_ID: ${{ vars.WIX_HEADLESS_CLIENT_ID }}
     environment:
       name: github-pages

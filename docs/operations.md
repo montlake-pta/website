@@ -26,9 +26,11 @@ are not permanent invariants.
   recovery. See the [copy/activate/retire procedure](content-authoring.md#splitting-the-legacy-page-collection).
   The split is complete: 13 common, 3 fundraising and 4 generated records were
   copied; WebsitePages is retained as **Legacy WebsitePages (backup)**.
-- Visitor transaction activation remains off in
-  [src/wix-client.config.json](../src/wix-client.config.json). A public Headless
-  client has now been provisioned and anonymous catalog/event reads work.
+- Full visitor transaction activation remains off in
+  [src/wix-client.config.json](../src/wix-client.config.json). The public Headless
+  client supports a separate read-only enhancement for live catalog and
+  registration information; this mode does not show transaction forms or
+  allow adapter mutations.
   The active Welcome Back RSVP retains a marked legacy handoff until the
   remaining visitor activation gates in [#4](https://github.com/montlake-pta/website/issues/4) are met.
 - Constant Contact's public archive is configured as `a07eh3xf9of0`, but the
@@ -104,11 +106,22 @@ public Store products, and read the Welcome Back event's registration/form
 metadata. A new visitor's cart read returned the expected
 `OWNED_CART_NOT_FOUND`/404. No RSVP, ticket reservation or payment was created.
 
-Provisioning is not activation approval. At this checkpoint all 10 catalog
+Provisioning is not full-transaction activation approval. At this checkpoint all 10 catalog
 products were out of stock, and **Wix pages domain** was still
-`https://www.montlakepta.org/`; the frontend link was unset. Keep SDK activation
+`https://www.montlakepta.org/`; the frontend link was unset. Keep full transactions
 gated until the real browser paths and hosted-checkout destination are
 verified. Do not change DNS or the existing site's publication implicitly.
+Read-only enhancement uses `readOnly: true`, `enabled: false`; both flags must
+not be true together. It retains static fallback information and the marked
+Wix registration handoff. Read-only mode is enforced by this application's
+adapter, not a new OAuth permission boundary.
+
+Match real SDK schemas rather than synthetic fixtures: Wix Events v2 reports
+`OPEN_RSVP`/`OPEN_TICKETS` registration statuses, and Catalog V1 stock quantity
+may be omitted or null. Availability flags remain meaningful without a numeric
+quantity; do not coerce an absent quantity to zero or invent an inventory count.
+An unused `tickets.soldOut` flag can be true on an open RSVP event; apply that
+flag only to ticketing events, not to RSVP eligibility.
 
 Historically both Actions and Wix MCP setup returned HTTP 403 and the dashboard
 denied access. Operator permissions and Actions-key scopes are separate; the
@@ -223,9 +236,10 @@ records. Existing live verification links are in the README.
 
 Before changing the live domain:
 
-1. Resolve the Headless role/client setup. Approve the preview and intended
-   final frontend return domains. Keep the existing site/data; do not create
-   a separate empty backend or assume authentication implies authorization.
+1. Recheck the provisioned Headless client and approve the preview and intended
+   final frontend return domains. Operator provisioning is now complete; do
+   not create a duplicate client or empty backend. Do not assume anonymous
+   read access proves transaction authorization.
 2. Validate visitor reads and actual registration/checkout behavior against
    the intended site. The current maintained adapter uses **RSVP v2**, not the
    removed/deprecated v1 candidate. Required guest fields and event policies
@@ -247,7 +261,8 @@ Before changing the live domain:
    supported. Server-authorized form reads and mock tests do not prove visitor
    write permissions. No real RSVP, scarce-ticket reservation or payment was
    made during the earlier cutover work.
-6. Enable/configure the visitor client deliberately and run the gates below.
+6. Disable read-only enhancement and enable full transactions deliberately
+   only after the remaining flow checks, then run the gates below.
    Preserve `data-legacy-transaction` handoffs until working replacements exist.
    Do not use a self-link or an unavailable widget to produce a zero-link count.
 7. Coordinate Wix primary/pages-domain changes, GitHub Pages custom-domain

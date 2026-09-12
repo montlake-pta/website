@@ -8,6 +8,9 @@ test("configuration-file activation and the final domain cannot bypass the deplo
   assert.equal(cutoverRequested({ ...config, enabled: true }, {}), true);
   assert.equal(cutoverRequested({ ...config, baseUrl: "https://www.montlakepta.org/" }, {}), true);
   assert.equal(cutoverRequested(config, { SITE_URL: config.baseUrl }), true);
+  assert.equal(cutoverRequested({ ...config, readOnly: true }, {}), false);
+  assert.equal(cutoverRequested({ ...config, readOnly: true }, { WIX_HEADLESS_READ_ONLY: "true" }), false);
+  assert.equal(cutoverRequested({ ...config, readOnly: true }, { SITE_URL: config.baseUrl }), true);
 });
 
 test("cutover checks reject old content/assets and explicitly marked transaction fallbacks", () => {

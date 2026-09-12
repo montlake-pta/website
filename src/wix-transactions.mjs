@@ -1,5 +1,5 @@
 import {
-  createVisitorApi, TransactionError, formFields, money, productSelection, validateConfig,
+  createVisitorApi, TransactionError, formFields, hasStock, money, productSelection, stockState, validateConfig,
 } from './wix-visitor-api.mjs';
 
 let nextId = 0;
@@ -115,18 +115,33 @@ function storageNotice(document, body, api) {
   if (!api.persistentSession) body.append(element(document, 'p',
     'Your browser is not saving this guest session. Enable session storage to keep your cart when moving between pages.'));
 }
-function productPanel(document, slot, api) {
-  const ui = panel(document, slot, 'Order this item');
+function productPanel(document, slot, api, readOnly = false) {
+  const ui = panel(document, slot, readOnly ? 'Current availability' : 'Order this item');
   const id = slot.getAttribute('data-wix-product-id');
   async function load(userInitiated = false) {
     await ui.perform('Checking current price and availability…', async () => {
       const product = await api.product(id);
       ui.body.replaceChildren();
-      storageNotice(document, ui.body, api);
       const stock = product.stock;
-      if (!stock || product.visible === false || stock.inventoryStatus === 'OUT_OF_STOCK' ||
-          (stock.inStock === false && stock.inventoryStatus !== 'PARTIALLY_OUT_OF_STOCK') ||
-          (stock.trackInventory && !(stock.quantity > 0))) {
+      if (readOnly) {
+        const availability = product.visible === false ? 'This item is unavailable.' : {
+          IN_STOCK: 'In stock', PARTIALLY_OUT_OF_STOCK: 'Some options are out of stock',
+          OUT_OF_STOCK: 'Out of stock', UNKNOWN: 'Current availability could not be confirmed.',
+        }[stockState(stock)];
+        const price = product.visible === false ? 'Price unavailable'
+          : money(product.priceData?.discountedPrice ?? product.priceData?.price, product.priceData?.currency);
+        const metadata = slot.querySelectorAll('[data-wix-product-metadata]')[0];
+        const details = [element(document, 'p', price, 'product-price'), element(document, 'p', availability, 'card-meta')];
+        if (metadata) metadata.replaceChildren(...details);
+        else ui.body.append(...details);
+        const refresh = button(document, 'Refresh availability');
+        refresh.addEventListener('click', load);
+        ui.body.append(refresh);
+        ui.tell('Showing the latest product information.', Boolean(userInitiated));
+        return;
+      }
+      storageNotice(document, ui.body, api);
+      if (!hasStock(stock) || product.visible === false) {
         ui.tell('This item is currently out of stock.');
         const again = button(document, 'Check availability again');
         again.addEventListener('click', load);
@@ -307,7 +322,7 @@ function plainPolicy(body = '') {
     .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
 }
-function eventPanel(document, slot, api, navigate) {
+function eventPanel(document, slot, api, navigate, readOnly = false) {
   const ui = panel(document, slot, 'Registration');
   const id = slot.getAttribute('data-wix-event-id');
   function drawRsvp(data) {
@@ -402,14 +417,23 @@ function eventPanel(document, slot, api, navigate) {
     await ui.perform('Checking registration details…', async () => {
       const data = await api.event(id);
       ui.body.replaceChildren();
-      if (data.state.kind === 'external') {
+      if (readOnly) {
+        ui.tell(data.state.message || {
+          rsvp: 'Registration is open. Use the event registration link for details and to respond.',
+          tickets: 'Ticket sales are open. Use the event link for current ticketing details.',
+          external: 'Registration is handled by the event provider.',
+        }[data.state.kind] || 'See the event details for participation information.', Boolean(userInitiated));
+        const refresh = button(document, 'Refresh registration details');
+        refresh.addEventListener('click', load);
+        ui.body.append(refresh);
+      } else if (data.state.kind === 'external') {
         const url = new URL(data.url);
         ui.body.append(link(document, `Register with ${url.hostname}`, data.url));
         ui.tell('Registration is handled directly by the event provider.');
       } else if (data.state.kind === 'rsvp') drawRsvp(data);
       else if (data.state.kind === 'tickets') drawTickets(data);
       else ui.tell(data.state.message);
-      if (['rsvp', 'tickets'].includes(data.state.kind)) {
+      if (!readOnly && ['rsvp', 'tickets'].includes(data.state.kind)) {
         const refresh = button(document, 'Refresh registration details');
         refresh.addEventListener('click', load);
         ui.body.append(refresh);
@@ -447,8 +471,10 @@ export async function initializeTransactions(config, document = globalThis.docum
   const slots = [...document.querySelectorAll('[data-wix-product-id],[data-wix-event-id],[data-wix-cart],[data-wix-confirmation]')];
   if (!slots.length) return [];
   let api;
+  let readOnly;
   try {
     const publicConfig = validateConfig(config);
+    readOnly = publicConfig.readOnly;
     api = dependencies.api || createVisitorApi(publicConfig, { frontendOrigin: document.location?.origin });
   } catch {
     for (const slot of slots) {
@@ -468,8 +494,12 @@ export async function initializeTransactions(config, document = globalThis.docum
   return Promise.all(slots.map(slot => {
     if (mounted.has(slot)) return undefined;
     mounted.add(slot);
-    if (slot.hasAttribute('data-wix-product-id')) return productPanel(document, slot, api);
-    if (slot.hasAttribute('data-wix-event-id')) return eventPanel(document, slot, api, navigate);
+    if (slot.hasAttribute('data-wix-product-id')) return productPanel(document, slot, api, readOnly);
+    if (slot.hasAttribute('data-wix-event-id')) return eventPanel(document, slot, api, navigate, readOnly);
+    if (readOnly) {
+      panel(document, slot, 'Online information').tell('Online ordering is not enabled on this page.');
+      return undefined;
+    }
     if (slot.hasAttribute('data-wix-cart')) return cartPanel(document, slot, api, navigate);
     return confirmationPanel(document, slot, api);
   }));

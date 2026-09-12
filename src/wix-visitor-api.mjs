@@ -19,13 +19,16 @@ function requireValue(condition, message, code = 'INVALID_INPUT') {
 export function validateConfig(config) {
   requireValue(config && UUID.test(config.clientId) && UUID.test(config.siteId),
     'Online registration and shopping are not available yet. Please try again later.', 'CONFIG');
+  requireValue((config.readOnly === undefined || typeof config.readOnly === 'boolean') &&
+    (config.enabled === undefined || typeof config.enabled === 'boolean') && !(config.readOnly && config.enabled),
+  'Online services are not configured correctly. Please try again later.', 'CONFIG');
   let base;
   try { base = new URL(config.baseUrl); } catch { /* checked below */ }
   requireValue(base && base.protocol === 'https:' && !base.username && !base.password &&
     !base.search && !base.hash,
   'Online registration and shopping are not available yet. Please try again later.', 'CONFIG');
   base.pathname = `${base.pathname.replace(/\/+$/, '')}/`;
-  return { clientId: config.clientId, siteId: config.siteId, baseUrl: base.href };
+  return { clientId: config.clientId, siteId: config.siteId, baseUrl: base.href, readOnly: config.readOnly === true };
 }
 export function callbackUrls(config) {
   const { baseUrl } = validateConfig(config);
@@ -73,10 +76,21 @@ export function money(value, currency) {
   }
   return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(Number(amount));
 }
-function hasStock(stock) {
-  if (!stock || stock.inventoryStatus === 'OUT_OF_STOCK') return false;
-  if (stock.trackInventory || stock.trackQuantity) return Number(stock.quantity) > 0;
-  return stock.inStock === true || ['IN_STOCK', 'PARTIALLY_OUT_OF_STOCK'].includes(stock.inventoryStatus);
+function inventoryQuantity(stock) {
+  return (stock?.trackInventory === true || stock?.trackQuantity === true) && Number.isFinite(stock.quantity)
+    ? stock.quantity : null;
+}
+export function stockState(stock) {
+  if (!stock) return 'UNKNOWN';
+  if (stock.inventoryStatus === 'OUT_OF_STOCK') return 'OUT_OF_STOCK';
+  const count = inventoryQuantity(stock);
+  if (count !== null && count <= 0) return 'OUT_OF_STOCK';
+  if (['IN_STOCK', 'PARTIALLY_OUT_OF_STOCK'].includes(stock.inventoryStatus)) return stock.inventoryStatus;
+  if (count !== null || stock.inStock === true) return 'IN_STOCK';
+  return stock.inStock === false ? 'OUT_OF_STOCK' : 'UNKNOWN';
+}
+export function hasStock(stock) {
+  return ['IN_STOCK', 'PARTIALLY_OUT_OF_STOCK'].includes(stockState(stock));
 }
 export function productSelection(product, choices = {}, customText = {}, count = 1) {
   requireValue(UUID.test(product?._id) && product.visible !== false, 'This product is not available.', 'UNAVAILABLE');
@@ -110,7 +124,8 @@ export function productSelection(product, choices = {}, customText = {}, count =
     if (val) text[field.title] = val;
   }
   if (Object.keys(text).length) options.customTextFields = text;
-  const max = stock.trackInventory || stock.trackQuantity ? Math.min(stock.quantity, 100000) : 100000;
+  const available = inventoryQuantity(stock);
+  const max = available === null ? 100000 : Math.min(available, 100000);
   return {
     lineItem: { quantity: quantity(count, max), catalogReference: {
       catalogItemId: product._id, appId: STORES_APP_ID, ...(Object.keys(options).length ? { options } : {}),
@@ -127,8 +142,9 @@ export function eventState(event, now = Date.now()) {
   }
   if (!['UPCOMING', 'STARTED'].includes(event?.status)) return { kind: 'closed', message: 'Registration is not available for this event.' };
   if (registration.type === 'NONE') return { kind: 'none', message: 'See the event details for participation and ticket information.' };
-  if (registration.registrationPaused || registration.registrationDisabled ||
-      registration.status?.startsWith('CLOSED') || registration.tickets?.soldOut) {
+  if (registration.registrationPaused === true || registration.registrationDisabled === true ||
+      ['CLOSED_AUTOMATICALLY', 'CLOSED_MANUALLY'].includes(registration.status) ||
+      (registration.type === 'TICKETING' && registration.tickets?.soldOut === true)) {
     return { kind: 'closed', message: 'Registration is closed.' };
   }
   if (registration.allowedGuestTypes === 'MEMBER') return { kind: 'closed', message: 'This event requires a member account. Online guest registration is not available.' };
@@ -294,6 +310,7 @@ function browserStorage() {
 }
 export function createVisitorApi(rawConfig, dependencies = {}) {
   const config = validateConfig(rawConfig);
+  const readOnly = config.readOnly;
   const storage = dependencies.storage === undefined ? browserStorage() : dependencies.storage;
   const sessionKey = `montlake:wix:visitor:${config.siteId}:${config.clientId}`;
   const flowKey = `${sessionKey}:checkout`;
@@ -346,6 +363,11 @@ export function createVisitorApi(rawConfig, dependencies = {}) {
     });
     queue = result.catch(() => {});
     return result;
+  }
+  function mutate(action, operation) {
+    if (readOnly) return Promise.reject(new TransactionError('READ_ONLY',
+      'This page provides live information only. Use the existing registration or product link to continue.'));
+    return run(action, operation);
   }
   async function getProduct(id) {
     requireValue(UUID.test(id), 'This product is unavailable.');
@@ -414,7 +436,7 @@ export function createVisitorApi(rawConfig, dependencies = {}) {
     config,
     get persistentSession() { return persistent; },
     product: id => run('Loading product details', () => getProduct(id)),
-    addProduct: (id, choices, customText, count) => run('Adding to your cart', async () => {
+    addProduct: (id, choices, customText, count) => mutate('Adding to your cart', async () => {
       // Re-read stock immediately before changing the cart. Server still enforces stock.
       const product = await getProduct(id);
       const { lineItem } = productSelection(product, choices, customText, count);
@@ -427,19 +449,19 @@ export function createVisitorApi(rawConfig, dependencies = {}) {
       return result.cart;
     }),
     cart: () => run('Loading your cart', getCart),
-    updateQuantity: (id, count) => run('Updating your cart', async () => {
+    updateQuantity: (id, count) => mutate('Updating your cart', async () => {
       requireValue(UUID.test(id), 'This cart item is unavailable.');
       const result = await client.currentCart.updateCurrentCartLineItemQuantity([{ _id: id, quantity: quantity(count) }]);
       requireValue(Array.isArray(result.cart?.lineItems), 'Your cart update could not be confirmed.', 'INVALID_RESPONSE');
       return result.cart;
     }),
-    removeItem: id => run('Removing the cart item', async () => {
+    removeItem: id => mutate('Removing the cart item', async () => {
       requireValue(UUID.test(id), 'This cart item is unavailable.');
       const result = await client.currentCart.removeLineItemsFromCurrentCart([id]);
       requireValue(Array.isArray(result.cart?.lineItems), 'Your cart update could not be confirmed.', 'INVALID_RESPONSE');
       return result.cart;
     }),
-    checkout: () => run('Opening checkout', async () => {
+    checkout: () => mutate('Opening checkout', async () => {
       const cart = await getCart();
       requireValue(cart.lineItems.length, 'Your cart is empty.');
       requireValue(cart.lineItems.every(item => !item.availability?.status || item.availability.status === 'AVAILABLE'),
@@ -461,7 +483,7 @@ export function createVisitorApi(rawConfig, dependencies = {}) {
       if (state.kind === 'tickets') return { event, state, tickets: await availableTickets(id) };
       return { event, state };
     }),
-    submitRsvp: (id, answers, consentIds = [], response) => run('Registration', async () => {
+    submitRsvp: (id, answers, consentIds = [], response) => mutate('Registration', async () => {
       const event = await getEvent(id);
       const state = eventState(event);
       requireValue(state.kind === 'rsvp', 'Registration is closed.', 'CLOSED');
@@ -483,7 +505,7 @@ export function createVisitorApi(rawConfig, dependencies = {}) {
         'Your RSVP could not be confirmed. Check your email before trying again.', 'UNCONFIRMED');
       return { status: result.status === 'WAITLIST' ? 'WAITING' : result.status };
     }),
-    reserveTickets: (id, selections) => run('Opening ticket checkout', async () => {
+    reserveTickets: (id, selections) => mutate('Opening ticket checkout', async () => {
       const event = await getEvent(id);
       const definitions = await availableTickets(id);
       const tickets = ticketSelections(event, definitions, selections);

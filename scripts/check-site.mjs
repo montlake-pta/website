@@ -21,7 +21,7 @@ const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "n
 const visitor = visitorConfiguration();
 const publicBasePath = new URL(site.previewUrl).pathname;
 const renderedPages = preserveRetiredProductRoutes(preserveCollectionRoutes(mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events, {
-  transactionsEnabled: visitor.enabled,
+  transactionsEnabled: visitor.enabled, readOnly: visitor.readOnly,
 }), newsletterContent, "https://example.com/signup")));
 if (visitor.enabled) renderedPages.push(...transactionPages);
 

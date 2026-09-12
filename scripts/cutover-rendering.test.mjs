@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { parseDocument } from "htmlparser2";
+import { selectAll, selectOne } from "css-select";
+import { textContent } from "domutils";
 import { mergeWixContent } from "./render-wix-content.mjs";
 import { visitorConfiguration } from "./visitor-config.mjs";
 import { preserveRetiredProductRoutes } from "../src/site.mjs";
@@ -53,11 +56,50 @@ test("visitor configuration cannot activate without a real-shaped public client 
   assert.throws(() => visitorConfiguration({}, { enabled: false, clientId: "not-a-public-client-id" }), /public Wix Headless client ID/);
   assert.equal(visitorConfiguration({}, { enabled: true, clientId: id }).enabled, true);
   assert.throws(() => visitorConfiguration({ WIX_HEADLESS_ENABLED: "yes" }), /true or false/);
-  const config = visitorConfiguration({ WIX_HEADLESS_ENABLED: "true", WIX_HEADLESS_CLIENT_ID: id, WIX_API_KEY: "NEVER_EXPORT" });
+  const config = visitorConfiguration({ WIX_HEADLESS_ENABLED: "true", WIX_HEADLESS_READ_ONLY: "false", WIX_HEADLESS_CLIENT_ID: id, WIX_API_KEY: "NEVER_EXPORT" });
   assert.equal(config.enabled, true);
   assert.doesNotMatch(JSON.stringify(config), /NEVER_EXPORT|WIX_API_KEY/);
 });
 
+test("read-only configuration requires a client, accepts explicit overrides, and rejects conflicting modes", () => {
+  const missing = { enabled: false, readOnly: false, clientId: "" };
+  assert.throws(() => visitorConfiguration({ WIX_HEADLESS_READ_ONLY: "true" }, missing), /public Wix Headless client ID/);
+  assert.throws(() => visitorConfiguration({ WIX_HEADLESS_READ_ONLY: "yes" }, missing), /true or false/);
+  assert.throws(() => visitorConfiguration({}, { enabled: true, readOnly: true, clientId: id }), /not both/);
+  const readOnly = visitorConfiguration({ WIX_HEADLESS_READ_ONLY: "true", WIX_HEADLESS_CLIENT_ID: id }, missing);
+  assert.equal(readOnly.enabled, false);
+  assert.equal(readOnly.readOnly, true);
+  assert.equal(visitorConfiguration({ WIX_HEADLESS_READ_ONLY: "false" }, { ...missing, readOnly: true, clientId: id }).readOnly, false);
+  assert.equal(visitorConfiguration({}, { ...missing, readOnly: true, clientId: id }).readOnly, true);
+});
+
+test("read-only event slots preserve existing marked registration links and useful no-JavaScript guidance", () => {
+  const html = mergeWixContent([], { ...empty, events: [future] }, [], { transactionsEnabled: false, readOnly: true })[0].content;
+  const doc = parseDocument(html);
+  assert.equal(selectAll("[data-wix-event-id]", doc).length, 1);
+  assert.equal(selectAll("[data-legacy-transaction]", doc).length, 1);
+  assert.equal(selectOne("[data-legacy-transaction]", doc).attribs.href, future.sourceUrl);
+  assert.match(textContent(selectOne("noscript", doc)), /Published details and links remain available/);
+  assert.equal(selectAll("form,input,select,textarea,button", doc).length, 0);
+  assert.doesNotMatch(html, /data-transaction-loading/);
+});
+
+test("read-only product slots keep visible SSR metadata, descriptions and existing availability links", () => {
+  const product = {
+    id, slug: "school-shirt", name: "School shirt", price: 25, currency: "USD", availability: "InStock",
+    description: "Keep this authored description.", sourceUrl: "https://www.montlakepta.org/product-page/school-shirt",
+  };
+  const html = mergeWixContent([], { ...empty, products: [product] }, [], { transactionsEnabled: false, readOnly: true })[0].content;
+  const doc = parseDocument(html);
+  const metadata = selectOne("[data-wix-product-metadata]", doc);
+  assert.ok(metadata);
+  assert.equal(selectAll(".product-price", doc).length, 1);
+  assert.match(textContent(metadata), /25/);
+  assert.equal(selectOne("noscript .product-price", doc), null, "SSR prices remain readable when JavaScript is disabled or fails");
+  assert.equal(selectOne("[data-legacy-transaction]", doc).attribs.href, product.sourceUrl);
+  assert.match(textContent(selectOne(".article-body", doc)), /Keep this authored description/);
+  assert.equal(selectAll("form,input,select,textarea,button", doc).length, 0);
+});
 test("retired restricted-fund items get truthful pages without overriding a reactivated product", () => {
   const live = { slug: "product-page/islandwood-donation", content: "Active product" };
   const result = preserveRetiredProductRoutes([live]);

@@ -40,7 +40,9 @@ export function sanitizeCmsHtml(body) {
   return sanitizeHtml(body, allowedCmsHtml);
 }
 
-export function mergeWixContent(staticPages, content, calendarEvents = [], { transactionsEnabled = visitorConfig.enabled } = {}) {
+export function mergeWixContent(staticPages, content, calendarEvents = [], {
+  transactionsEnabled = visitorConfig.enabled, readOnly = !transactionsEnabled && visitorConfig.readOnly === true,
+} = {}) {
   validateSnapshot(content);
 
   const pageMap = new Map(staticPages.map((page) => [page.slug, { ...page }]));
@@ -59,8 +61,8 @@ export function mergeWixContent(staticPages, content, calendarEvents = [], { tra
 
   const dynamicPages = [
     ...blogPosts.map(renderBlogPostPage),
-    ...events.map((event) => renderEventPage(event, transactionsEnabled)),
-    ...products.map((product) => renderProductPage(product, transactionsEnabled)),
+    ...events.map((event) => renderEventPage(event, transactionsEnabled, readOnly)),
+    ...products.map((product) => renderProductPage(product, transactionsEnabled, readOnly)),
     ...storeCollections.map((collection) => renderCollectionPage(collection, products)),
   ];
 
@@ -272,7 +274,7 @@ function renderBlogPostPage(post) {
   };
 }
 
-function renderEventPage(event, transactionsEnabled) {
+function renderEventPage(event, transactionsEnabled, readOnly) {
   const date = formatDateRange(event.startAt, event.endAt);
   return {
     slug: `event-details/${event.slug}`,
@@ -288,12 +290,14 @@ function renderEventPage(event, transactionsEnabled) {
         ${event.location ? `<div><dt>Where</dt><dd>${escapeHtml(event.location)}${event.address ? `<br>${escapeHtml(event.address)}` : ""}</dd></div>` : ""}
       </dl>
       <div class="article-body">${richBodyHtml(event.bodyHtml, event.descriptionText || event.summary)}</div>
-      ${eventAction(event, transactionsEnabled)}
+      ${eventAction(event, transactionsEnabled, readOnly)}
       <p><a class="text-link" href="../../event-list/">← Back to all events</a></p>`,
   };
 }
 
-function renderProductPage(product, transactionsEnabled) {
+function renderProductPage(product, transactionsEnabled, readOnly) {
+  const metadata = `${product.price != null ? `<p class="product-price">${formatCurrency(product.price, product.currency)}</p>` : ""}
+      <p class="card-meta">${productAvailability(product)}</p>`;
   return {
     slug: `product-page/${product.slug}`,
     title: product.name,
@@ -302,11 +306,10 @@ function renderProductPage(product, transactionsEnabled) {
     accent: "yellow",
     content: `
       ${image(product.image, product.name, "detail-image product-image")}
-      ${transactionsEnabled ? "<noscript>" : ""}
-      ${product.price != null ? `<p class="product-price">${formatCurrency(product.price, product.currency)}</p>` : ""}
-      <p class="card-meta">${productAvailability(product)}</p>
-      ${transactionsEnabled ? "</noscript>" : ""}
-      ${transactionsEnabled ? transactionSlot("product", product.id) : ""}
+      ${readOnly
+        ? transactionSlot("product", product.id, { readOnly, metadata })
+        : `${transactionsEnabled ? "<noscript>" : ""}${metadata}${transactionsEnabled ? "</noscript>" : ""}
+          ${transactionsEnabled ? transactionSlot("product", product.id) : ""}`}
       <div class="article-body">${textToHtml(product.description || productDescriptionAbsent(product))}</div>
       ${!transactionsEnabled && availabilityValue(product) !== "OutOfStock" && product.sourceUrl
         ? `<p><a class="button button-primary" data-legacy-transaction="true" href="${escapeAttribute(product.sourceUrl)}">View availability</a></p>` : ""}
@@ -314,25 +317,29 @@ function renderProductPage(product, transactionsEnabled) {
   };
 }
 
-function transactionSlot(type, id) {
+function transactionSlot(type, id, { readOnly = false, metadata = "" } = {}) {
   if (typeof id !== "string" || !/^[a-zA-Z0-9_-]+$/.test(id)) {
     console.warn(`No public item identity for ${type} transaction controls.`);
-    return '<p>Online options are unavailable for this listing. Please contact the PTA for help.</p>';
+    return `${metadata}<p>Online options are unavailable for this listing. Please contact the PTA for help.</p>`;
   }
+  if (readOnly) return `<div class="transaction-panel" data-wix-${type}-id="${escapeAttribute(id)}">
+    ${metadata ? `<div data-wix-product-metadata>${metadata}</div>` : ""}
+    <noscript><p>Published details and links remain available without live updates.</p></noscript></div>`;
   return `<div class="transaction-panel" data-wix-${type}-id="${escapeAttribute(id)}"><p role="status" data-transaction-loading>Loading current ${type === "product" ? "options and availability" : "registration options"}…</p><noscript><p>JavaScript is needed for online ${type === "product" ? "purchasing" : "registration"}. For help, email <a href="mailto:${type === "product" ? "fundraising" : "events"}@montlakepta.org">the PTA team</a>.</p></noscript></div>`;
 }
 
-function eventAction(event, transactionsEnabled) {
+function eventAction(event, transactionsEnabled, readOnly) {
   if (isCanceled(event)) return "";
   if (event.status === "ENDED" || (event.endAt && dateValue(event.endAt) < Date.now())) {
     return '<p class="registration-state">This event has ended; registration is closed.</p>';
   }
   const external = externalTicketLink([event.summary, event.descriptionText].filter(Boolean).join("\n"));
-  if (external) return `<p><a class="button button-primary" href="${escapeAttribute(external)}">Get tickets with FEVO</a></p>`;
+  const updates = readOnly ? transactionSlot("event", event.id, { readOnly }) : "";
+  if (external) return `${updates}<p><a class="button button-primary" href="${escapeAttribute(external)}">Get tickets with FEVO</a></p>`;
   if (transactionsEnabled) return transactionSlot("event", event.id);
-  return event.sourceUrl
+  return updates + (event.sourceUrl
     ? `<p><a class="button button-primary" data-legacy-transaction="true" href="${escapeAttribute(event.sourceUrl)}">Registration and event details</a></p>`
-    : "<p>Registration details are not available for this event.</p>";
+    : "<p>Registration details are not available for this event.</p>");
 }
 
 function externalTicketLink(text) {

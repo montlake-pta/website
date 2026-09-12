@@ -85,21 +85,29 @@ the enrichment PDFs locally, including their old `_files/ugd/` paths. Missing
 legacy targets fail the build instead of becoming silent broken links.
 Historical promotion and unavailable Islandwood item routes remain useful.
 
-Visitor transactions are controlled by `src/wix-client.config.json`, or the
-public Actions variables `WIX_HEADLESS_CLIENT_ID` and `WIX_HEADLESS_ENABLED`.
+Visitor SDK behavior is controlled by `src/wix-client.config.json`, or the
+public Actions variables `WIX_HEADLESS_CLIENT_ID`, `WIX_HEADLESS_READ_ONLY`
+and `WIX_HEADLESS_ENABLED`.
 Only a public Headless client ID belongs in browser configuration; never use
 `WIX_API_KEY` there. The manual **Set Up Wix Headless Client** workflow can
 plan/create the named client when the account/API-key permissions allow it.
 
-**Activation is currently blocked by [issue #4](https://github.com/montlake-pta/website/issues/4).**
-The current key cannot query Headless clients or discover the required account
-context, and authenticated dashboard access also lacked the custom
-**Manage headless settings** permission. Standard collaborator roles do not
-include it. See [the precise permission handoff](docs/operations.md#the-precise-headless-permission-blocker).
-Until resolved, activation stays off and a still-needed, explicitly marked
-registration handoff is retained rather than breaking the working signup path.
-Wix-to-GitHub content publishing is already live and is independent of this
-visitor-client blocker.
+The operator's Headless permission blocker is resolved and the public client
+is configured. The site supports a bounded **read-only enhancement**:
+`readOnly: true` with `enabled: false` loads live product and event information
+without rendering transaction forms or buttons. The adapter also refuses
+mutations in this mode. Existing registration links and useful static content
+remain available. This is an application mode, not a restriction on the
+underlying public OAuth client's visitor permissions.
+
+Full transactions remain gated by [issue #4](https://github.com/montlake-pta/website/issues/4).
+They require `readOnly: false` and `enabled: true`, plus real browser and
+hosted-checkout verification. Both modes cannot be selected simultaneously.
+The current Wix pages domain is still `www.montlakepta.org`, and no current
+Store products are in stock. Do not change stock or create real registrations
+or reservations simply to claim verification. See
+[Headless provisioning and activation](docs/operations.md#headless-provisioning-and-activation).
+Wix-to-GitHub content publishing remains independent of visitor SDK activation.
 
 Run `npm run build && npm test && npm run check:cutover` before retiring the
 old frontend. The strict check rejects unconfigured visitor access and
@@ -112,6 +120,8 @@ sitemap URLs, compatibility paths and transaction callbacks. The default
 remains `https://montlake-pta.github.io/website/`; the eventual custom-domain
 value is `https://www.montlakepta.org/`. Enabling transactions or setting an
 explicit `SITE_URL` activates the strict cutover gate in Pages deployment.
+Read-only enhancement alone does not relax or activate that full-cutover gate;
+a direct strict check still rejects the retained legacy registration handoff.
 Verify checkout return domains and actual visitor flows before changing DNS;
 the automation does not change DNS or unpublish the old site.
 
