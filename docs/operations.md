@@ -27,9 +27,10 @@ are not permanent invariants.
   The split is complete: 13 common, 3 fundraising and 4 generated records were
   copied; WebsitePages is retained as **Legacy WebsitePages (backup)**.
 - Visitor transaction activation remains off in
-  [src/wix-client.config.json](../src/wix-client.config.json). The public client
-  ID is empty; the active Welcome Back RSVP retains a marked legacy handoff.
-  Its removal is blocked by [#4](https://github.com/montlake-pta/website/issues/4).
+  [src/wix-client.config.json](../src/wix-client.config.json). A public Headless
+  client has now been provisioned and anonymous catalog/event reads work.
+  The active Welcome Back RSVP retains a marked legacy handoff until the
+  remaining visitor activation gates in [#4](https://github.com/montlake-pta/website/issues/4) are met.
 - Constant Contact's public archive is configured as `a07eh3xf9of0`, but the
   latest confirmed source response contained zero editions. Publishing
   editions is an editor action in
@@ -89,11 +90,29 @@ is needed. Do not collect passwords, reuse browser cookies as API credentials,
 or dump hidden dashboard state/browser globals. Inspect only the controls and
 public configuration needed for the task.
 
-### The precise Headless permission blocker
+### Headless provisioning and activation
 
-Both Actions and Wix MCP OAuth-app setup calls returned HTTP 403. After
-successful browser sign-in, **Headless Settings itself** showed an
-insufficient-permissions message. Repeated network retries do not fix this.
+The earlier permission blocker is resolved for the operator account.
+After the owner updated access, Wix MCP successfully created the dedicated
+**Montlake PTA Website** Web/JavaScript client:
+`b0a3701c-099d-4f99-8057-e3a0d1fb2d71`. This ID is public, not a secret.
+Allowed redirect domains are `montlake-pta.github.io`, `montlakepta.org` and
+`www.montlakepta.org`. Member-login redirect URIs have not been configured.
+
+Anonymous visitor OAuth authenticated successfully, returned all 10 expected
+public Store products, and read the Welcome Back event's registration/form
+metadata. A new visitor's cart read returned the expected
+`OWNED_CART_NOT_FOUND`/404. No RSVP, ticket reservation or payment was created.
+
+Provisioning is not activation approval. At this checkpoint all 10 catalog
+products were out of stock, and **Wix pages domain** was still
+`https://www.montlakepta.org/`; the frontend link was unset. Keep SDK activation
+gated until the real browser paths and hosted-checkout destination are
+verified. Do not change DNS or the existing site's publication implicitly.
+
+Historically both Actions and Wix MCP setup returned HTTP 403 and the dashboard
+denied access. Operator permissions and Actions-key scopes are separate; the
+operator's fix does not automatically grant the key OAuth administration.
 
 Wix documents that standard collaborator roles do not include this permission.
 An authorized owner must create/assign a custom role through
