@@ -1,6 +1,7 @@
 import { htmlText, normalizeRichBody, publicHtml, publicText, publicUrl, wixMediaUrl } from "./wix-public-content.mjs";
 import { emptyFundraisingFields, fundraisingFieldNames, normalizeFundraisingFields } from "./fundraising-fields.mjs";
 import { normalizePageSlug, PageCollectionError, pageCollectionDefinitions, pageFieldsForType, validatePagePlacement } from "./page-collections.mjs";
+import { validationFixturePrefix } from "./validation-fixtures.mjs";
 
 // Only messages constructed locally may be printed by the authenticated CLI.
 export class WixContentError extends Error {}
@@ -179,6 +180,8 @@ export function assertPublicSnapshot(snapshot) {
     || snapshot.cms.boardMembers.some((member) => member.active !== true)
     || snapshot.products.some((product) => product.visible !== true || !Array.isArray(product.collectionIds)
       || product.collectionIds.some((id) => !publicId(id)))) fail();
+  if (snapshot.events.some(event => event.title?.startsWith(validationFixturePrefix))
+    || snapshot.products.some(product => product.name?.startsWith(validationFixturePrefix))) fail();
 }
 
 function routed(records, label, warn) {

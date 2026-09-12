@@ -8,6 +8,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { assertPublicSnapshot, normalizeWixContent, WixContentError } from "./normalize-wix-content.mjs";
 import { pageCollectionDefinitions } from "./page-collections.mjs";
+import { excludeValidationFixtures, ValidationFixtureError } from "./validation-fixtures.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
@@ -47,8 +48,9 @@ export async function readWixContent(client, config, { warn = console.warn } = {
     }
   }
   return {
-    blogPosts, events, boardMembers, ...pageData, storeCollections: collections,
-    products: storeProducts.map((product) => ({
+    blogPosts, events: excludeValidationFixtures("events", events, config.validationFixtures?.events, warn),
+    boardMembers, ...pageData, storeCollections: collections,
+    products: excludeValidationFixtures("products", storeProducts, config.validationFixtures?.products, warn).map((product) => ({
       ...product, collectionIds: membership.get(product._id) || [],
     })),
   };
@@ -128,7 +130,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   // SDK errors can contain headers, request URLs, or signed destinations.
   // Neither raw messages nor error causes may reach the public Actions log.
   main().catch((error) => {
-    console.error(error instanceof WixContentError ? error.message
+    console.error(error instanceof WixContentError || error instanceof ValidationFixtureError ? error.message
       : "Wix content sync failed. Check credentials, permissions, response validity, and collection configuration.");
     process.exitCode = 1;
   });
