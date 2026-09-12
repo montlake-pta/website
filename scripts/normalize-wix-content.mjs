@@ -1,6 +1,6 @@
 import { htmlText, normalizeRichBody, publicHtml, publicText, publicUrl, wixMediaUrl } from "./wix-public-content.mjs";
 import { emptyFundraisingFields, fundraisingFieldNames, normalizeFundraisingFields } from "./fundraising-fields.mjs";
-import { normalizePageSlug, pageCollectionDefinitions, pageFieldsForType, validatePagePlacement } from "./page-collections.mjs";
+import { normalizePageSlug, PageCollectionError, pageCollectionDefinitions, pageFieldsForType, validatePagePlacement } from "./page-collections.mjs";
 
 // Only messages constructed locally may be printed by the authenticated CLI.
 export class WixContentError extends Error {}
@@ -107,7 +107,12 @@ function normalizeSlug(value) {
 export function normalizeTypedPage(record, type) {
   const item = unwrap(record);
   const slug = normalizePageSlug(item.slug);
-  if (slug) validatePagePlacement(type, slug);
+  try {
+    if (slug) validatePagePlacement(type, slug);
+  } catch (error) {
+    if (error instanceof PageCollectionError) throw new WixContentError(error.message);
+    throw error;
+  }
   const page = {
     pageType: type, slug, title: publicText(item.title), heading: publicText(item.heading),
     description: publicText(item.description), published: item.published !== false,

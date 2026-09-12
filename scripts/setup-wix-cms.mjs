@@ -16,6 +16,7 @@ const { values } = parseArgs({ options: { page: { type: "string" } } });
 const seedPages = pages.filter((page) => !page.home && (!values.page || page.slug === values.page));
 if (values.page && seedPages.length !== 1) throw new Error("The selected --page must identify exactly one static fallback page.");
 const config = JSON.parse(await readFile(join(root, "src", "wix.config.json"), "utf8"));
+if (!["legacy", "typed"].includes(config.cms.pageSource || "legacy")) throw new Error("Unknown CMS page source configuration.");
 const apiKey = process.env.WIX_API_KEY;
 const siteId = process.env.WIX_SITE_ID || config.siteId;
 

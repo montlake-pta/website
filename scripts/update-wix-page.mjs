@@ -122,7 +122,7 @@ export async function readUniquePage(api, collectionId, slug) {
 export async function updateWixPage({
   api, collectionId, siteId, pages, slug = "enrichment", mode = "plan", sourceCommit,
   expectedFingerprint, expectedCandidateFingerprint, expectedCommit,
-  saveReport = async () => {}, pageType,
+  saveReport = async () => {}, pageType = pageCollectionDefinitions.find(definition => definition.id === collectionId)?.type,
 }) {
   requireCondition(!pageType || ["common", "fundraising"].includes(pageType),
     "This body-repair workflow supports CommonPages and FundraisingPages. Edit GeneratedPages metadata in Wix.");

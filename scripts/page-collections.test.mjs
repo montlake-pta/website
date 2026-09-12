@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { pages } from "../src/site.mjs";
+import { pages, transactionPages } from "../src/site.mjs";
 import { normalizeWixContent, assertPublicSnapshot } from "./normalize-wix-content.mjs";
 import { mergeWixContent } from "./render-wix-content.mjs";
 import { mergeNewsletterContent } from "./render-newsletters.mjs";
@@ -61,6 +61,7 @@ test("typed normalization strips irrelevant fields and private metadata, never d
 });
 
 test("typed exports reject wrong types, unsupported fields, reserved routes and cross-collection duplicates", () => {
+  for (const page of transactionPages) assert.throws(() => validatePagePlacement("common", page.slug));
   for (const [type, slug] of [["common", "donate"], ["fundraising", "blog"], ["generated", "enrichment"],
     ["common", "post/a"], ["fundraising", "newsletter/an-edition"], ["common", "../escape"]]) {
     assert.throws(() => validatePagePlacement(type, slug));
@@ -155,4 +156,5 @@ test("typed repair read-back stays valid and generated body repair is rejected b
   assert.equal(page.pageType, "common");
   assert(!Object.hasOwn(page, "kicker"));
   await assert.rejects(updateWixPage({ pageType: "generated" }), /Edit GeneratedPages metadata/);
+  await assert.rejects(updateWixPage({ collectionId: "GeneratedPages" }), /Edit GeneratedPages metadata/);
 });

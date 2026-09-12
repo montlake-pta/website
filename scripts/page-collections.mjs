@@ -1,5 +1,7 @@
 import { fundraisingFieldDefinitions } from "./fundraising-fields.mjs";
 
+export class PageCollectionError extends Error {}
+
 const field = (key, displayName, type = "TEXT") => ({ key, displayName, type });
 const headers = [
   field("slug", "Page URL slug"), field("title", "Page title"),
@@ -42,20 +44,20 @@ export function legacyPageType(record) {
 
 export function pageFieldsForType(type) {
   const definition = pageCollectionDefinitions.find(value => value.type === type);
-  if (!definition) throw new Error("Unknown CMS page collection type.");
+  if (!definition) throw new PageCollectionError("Unknown CMS page collection type.");
   return definition.fields.map(value => value.key);
 }
 
 export function validatePagePlacement(type, slug) {
   if (!slug || normalizePageSlug(slug) !== slug
     || /^(?:post|event-details|product-page|category|newsletter)\//.test(slug)
-    || ["404", "cart", "checkout-confirmation", "rsvp-confirmation"].includes(slug)) {
-    throw new Error("CMS page has an invalid or reserved route.");
+    || ["404", "cart", "checkout/complete"].includes(slug)) {
+    throw new PageCollectionError("CMS page has an invalid or reserved route.");
   }
   pageFieldsForType(type);
   if ((type === "generated") !== generatedPageSlugs.includes(slug)
     || (type !== "fundraising" && fundraisingPageSlugs.includes(slug))) {
-    throw new Error("CMS page belongs in a different page collection.");
+    throw new PageCollectionError("CMS page belongs in a different page collection.");
   }
 }
 
