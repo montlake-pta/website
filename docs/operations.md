@@ -124,6 +124,28 @@ handoffs were exercised without transaction requests. Full RSVP submission,
 cart mutations, checkout and ticket reservations remain unapproved; keep
 [issue #4](https://github.com/montlake-pta/website/issues/4) open for those gates.
 
+### Approved transaction validation
+
+Approved test resources use the `Montlake SDK validation ` name prefix and
+explicit `{id, name}` entries in `src/wix.config.json`'s `validationFixtures`.
+The sync excludes only matching registered identities and stops if an
+unregistered public fixture appears or a registered identity changes.
+Public snapshot validation also rejects fixture names. Register hidden/draft
+fixtures before making them accessible for a controlled visitor test, and
+delete them before clearing the registry. Do not reuse real fundraiser stock.
+
+The first approved zero-price, non-tracked product scenario exercised actual
+anonymous SDK cart creation, add, quantity update and removal through the real
+UI components. Full-mode HTML was served only inside an isolated test browser;
+the public site stayed read-only. The test cart was emptied and the owned
+product was hidden and deleted. No order or payment was submitted.
+
+The resulting checkout redirect started at `https://www.montlakepta.org/_api/`
+and was correctly rejected. `useGenericWixPages` selects a standard Wix page
+template; it does **not** guarantee a separate Wix-owned hostname. Keep the
+redirect guard intact and resolve the Wix-hosted pages domain before full
+activation. An uncompleted checkout must remain a neutral confirmation state.
+
 Match real SDK schemas rather than synthetic fixtures: Wix Events v2 reports
 `OPEN_RSVP`/`OPEN_TICKETS` registration statuses, and Catalog V1 stock quantity
 may be omitted or null. Availability flags remain meaningful without a numeric

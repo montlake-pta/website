@@ -9,12 +9,7 @@
     "generatedPages": "GeneratedPages"
   },
   "validationFixtures": {
-    "products": [
-      {
-        "id": "7205bbfa-8657-4f0d-b6f8-8662faff56a3",
-        "name": "Montlake SDK validation cart 20260912-01"
-      }
-    ],
+    "products": [],
     "events": []
   }
 }
