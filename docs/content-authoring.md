@@ -10,7 +10,8 @@
 | Board roster | Wix CMS `BoardMembers` | Replaces the roster section of the board page |
 | Posts, event details, products | Wix Blog, Events, Stores | Generated indexes and individual routes |
 | Newsletter editions | Constant Contact public Email Archive | Public newsletter permalink embedded on the site |
-| School dates | Public Google Calendar | Included in homepage upcoming events |
+| Calendar introduction and subscription copy | Wix CMS `CommonPages`, slug `calendar` | Authored copy appears above the code-owned calendar embed |
+| School dates | Public Google Calendar | Live calendar page and homepage upcoming events |
 | Layout, navigation, design, fallback copy | Repository source | Deployed with the code change |
 
 For a normal copy edit, change the existing CMS record, not the legacy Editor
@@ -32,6 +33,12 @@ The title, heading, description and tone are supported header overrides;
 leaving the description blank retains the normal fallback or automatically
 generated description, including the board year and empty newsletter state.
 Layout, navigation and generic interface labels remain in source.
+
+The Calendar page keeps its introduction in CommonPages, but its Google Calendar
+embed is rendered from `calendarEmbedUrl` in `src/site.mjs`, not from the rich-text
+body. Wix rich-text edits can omit iframe markup. Older body embeds are replaced
+with the code-owned embed to avoid duplicates; a direct Google Calendar link
+remains available when a visitor's browser blocks embedded content.
 
 Page slugs must be unique across collections. Generated slugs are reserved;
 Blog/Event/Product/Newsletter detail namespaces cannot be claimed by an

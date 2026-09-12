@@ -181,10 +181,10 @@ export const pages = [
     kicker: "Dates & events",
     description: "The live Montlake calendar for school dates, PTA meetings, and community events.",
     accent: "yellow",
+    calendarEmbedUrl: "https://calendar.google.com/calendar/embed?src=c_85551f0d8214f96fbf6bb14c67224de93550a0d69a65773fc3b80597196de3cb%40group.calendar.google.com&ctz=America%2FLos_Angeles",
     content: `
       <p class="lead">This calendar stays connected to the PTA’s existing Google Calendar, so updates appear here automatically.</p>
-      <p><a class="button button-primary" href="https://calendar.google.com/calendar/ical/c_85551f0d8214f96fbf6bb14c67224de93550a0d69a65773fc3b80597196de3cb%40group.calendar.google.com/public/basic.ics">Add to your calendar</a></p>
-      <iframe title="Montlake PTA calendar" loading="lazy" src="https://calendar.google.com/calendar/embed?src=c_85551f0d8214f96fbf6bb14c67224de93550a0d69a65773fc3b80597196de3cb%40group.calendar.google.com&ctz=America%2FLos_Angeles"></iframe>`,
+      <p><a class="button button-primary" href="https://calendar.google.com/calendar/ical/c_85551f0d8214f96fbf6bb14c67224de93550a0d69a65773fc3b80597196de3cb%40group.calendar.google.com/public/basic.ics">Add to your calendar</a></p>`,
   },
   {
     slug: "event-list",

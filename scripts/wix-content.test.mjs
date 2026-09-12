@@ -5,7 +5,10 @@ import { mergeWixContent, sanitizeCmsHtml } from "./render-wix-content.mjs";
 import { assertPublicSnapshot, normalizeWixContent } from "./normalize-wix-content.mjs";
 import { normalizeRichBody, publicHtml, publicText, publicUrl } from "./wix-public-content.mjs";
 import { fetchAll, readWixContent } from "./sync-wix.mjs";
-import { preserveCollectionRoutes } from "../src/site.mjs";
+import { pages, preserveCollectionRoutes } from "../src/site.mjs";
+import { parseDocument } from "htmlparser2";
+import { selectAll, selectOne } from "css-select";
+import calendarConfig from "../src/calendar.config.json" with { type: "json" };
 
 // Ricos fixtures use the installed Blog/Events SDK Node, Decoration, V1Media,
 // FileSource, Gallery Item, and oEmbed shapes, not an invented HTML payload.
@@ -56,6 +59,69 @@ const staticPages = ["", "blog", "event-list", "shop", "pta-board"].map((slug) =
   slug, title: slug || "Home", description: "Static fallback", content: `<p>Fallback ${slug}</p>`,
 }));
 const page = (snapshot, slug, calendar = []) => mergeWixContent(staticPages, snapshot, calendar).find((item) => item.slug === slug);
+
+function assertCalendarEmbed(calendar) {
+  const document = parseDocument(calendar.content);
+  const frames = selectAll("iframe", document);
+  assert.equal(frames.length, 1);
+  const frame = frames[0];
+  const url = new URL(frame.attribs.src);
+  assert.equal(url.origin, "https://calendar.google.com");
+  assert.equal(url.pathname, "/calendar/embed");
+  assert.equal(url.searchParams.get("src"), decodeURIComponent(new URL(calendarConfig.icsUrl).pathname.split("/")[3]));
+  assert.equal(url.searchParams.get("ctz"), "America/Los_Angeles");
+  assert.equal(frame.attribs.title, "Montlake PTA calendar");
+  assert(selectOne(`a[href="${frame.attribs.src}"]`, document), "Calendar has a direct fallback link");
+}
+
+for (const pageSource of ["typed", "legacy"]) {
+  test(`${pageSource} calendar keeps the code-owned embed when CMS rich text contains only copy`, () => {
+    const record = {
+      slug: "calendar", title: "School calendar", heading: "Authored calendar heading",
+      description: "Authored calendar introduction", published: true,
+      body: `<p class="font_8 lead">The latest school dates.</p><p><a href="${calendarConfig.icsUrl}">Add to your calendar</a></p>`,
+    };
+    const snapshot = normalize(pageSource === "typed"
+      ? { pageSource, commonPages: [record], fundraisingPages: [], generatedPages: [] }
+      : { cmsPages: [record] });
+    assertPublicSnapshot(snapshot);
+    const calendar = mergeWixContent(pages, snapshot).find(item => item.slug === "calendar");
+    assert.equal(calendar.heading, record.heading);
+    assert.equal(calendar.description, record.description);
+    assert.match(calendar.content, /The latest school dates\./);
+    assert.match(calendar.content, /Add to your calendar/);
+    assertCalendarEmbed(calendar);
+  });
+}
+
+test("calendar replaces old CMS embeds without duplicating them or allowing unsafe markup", () => {
+  const snapshot = normalize({ cmsPages: [{
+    slug: "calendar", title: "Calendar", description: "School dates",
+    body: '<p>Keep this copy.</p><iframe src="https://calendar.google.com/calendar/embed?src=old"></iframe>'
+      + '<iframe src="https://untrusted.example/"></iframe><script>alert(1)</script>',
+  }] });
+  const calendar = mergeWixContent(pages, snapshot).find(item => item.slug === "calendar");
+  assertCalendarEmbed(calendar);
+  assert.match(calendar.content, /Keep this copy\./);
+  assert.doesNotMatch(calendar.content, /src=old|untrusted\.example|<script|alert\(1\)/);
+});
+
+test("calendar retains the embed with absent, empty or unpublished CMS content and offline snapshots", async () => {
+  const offline = JSON.parse(await readFile(new URL("../src/data/wix-content.json", import.meta.url), "utf8"));
+  const inputs = [
+    normalize({}),
+    normalize({ cmsPages: [{ slug: "calendar", title: "Calendar", body: "" }] }),
+    normalize({ cmsPages: [{ slug: "calendar", title: "Calendar", published: false, body: "<p>Draft</p>" }] }),
+    offline,
+    { ...offline, schemaVersion: 1 },
+  ];
+  for (const snapshot of inputs) {
+    const calendar = mergeWixContent(pages, snapshot).find(item => item.slug === "calendar");
+    assertCalendarEmbed(calendar);
+    assert.match(calendar.content, /Add to your calendar/);
+    assert.doesNotMatch(calendar.content, /Draft/);
+  }
+});
 
 test("Ricos links, split marks, headings, lists, images, captions and galleries survive sanitization", () => {
   const warnings = [];

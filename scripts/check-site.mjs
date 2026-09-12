@@ -90,7 +90,7 @@ const cmsRoundTrip = mergeWixContent(pages, {
   cms: {
     boardMembers: [],
     pages: [{
-      slug: "calendar",
+      slug: "cms-calendar-test",
       title: "Calendar",
       description: "Calendar test",
       body: '<p class="lead">Calendar</p><iframe title="Calendar" src="https://calendar.google.com/calendar/embed?src=test"></iframe><script>alert(1)</script>',
@@ -98,10 +98,21 @@ const cmsRoundTrip = mergeWixContent(pages, {
     }],
   },
 });
-const sanitizedCalendar = cmsRoundTrip.find((page) => page.slug === "calendar")?.content || "";
+const sanitizedCalendar = cmsRoundTrip.find((page) => page.slug === "cms-calendar-test")?.content || "";
 if (!sanitizedCalendar.includes('class="lead"')) failures.push("CMS sanitizer removed supported presentation classes");
 if (!sanitizedCalendar.includes("<iframe")) failures.push("CMS sanitizer removed the Google Calendar embed");
 if (sanitizedCalendar.includes("<script")) failures.push("CMS sanitizer retained executable script content");
+
+const calendarDocument = parseDocument(await readFile(join(output, "calendar", "index.html"), "utf8"));
+const calendarFrames = selectAll("article.prose iframe", calendarDocument);
+const calendarEmbedUrl = pages.find(page => page.slug === "calendar").calendarEmbedUrl;
+if (calendarFrames.length !== 1 || calendarFrames[0].attribs.src !== calendarEmbedUrl
+  || calendarFrames[0].attribs.title !== "Montlake PTA calendar") {
+  failures.push("Calendar page must contain exactly one titled, code-owned Google Calendar embed");
+}
+if (!selectOne(`article.prose a[href="${calendarEmbedUrl}"]`, calendarDocument)) {
+  failures.push("Calendar page must retain a direct link when the embed cannot load");
+}
 
 const enrichmentFallback = pages.find((page) => page.slug === "enrichment");
 const enrichmentFromCms = mergeWixContent(

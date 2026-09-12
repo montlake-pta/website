@@ -52,6 +52,7 @@ export function mergeWixContent(staticPages, content, calendarEvents = [], {
   const storeCollections = content.storeCollections.filter(hasValidSlug);
   const publicCalendarEvents = calendarEvents.filter(validCalendarEvent);
   applyCmsPages(pageMap, content.cms.pages, content.schemaVersion === 3);
+  applyCalendarEmbed(pageMap);
   applyBudgetDonationCta(pageMap);
   applyBoardMembers(pageMap, content.cms.boardMembers);
   applyHomeFeed(pageMap, blogPosts, events, publicCalendarEvents);
@@ -72,6 +73,21 @@ export function mergeWixContent(staticPages, content, calendarEvents = [], {
   }
 
   return [...pageMap.values()];
+}
+
+function applyCalendarEmbed(pageMap) {
+  const calendar = pageMap.get("calendar");
+  if (!calendar?.calendarEmbedUrl) return;
+  // Rich-text edits can drop embeds; replace legacy body iframes with the
+  // code-owned calendar so both old snapshots and text-only CMS records work.
+  calendar.content = sanitizeHtml(calendar.content, {
+    ...allowedCmsHtml,
+    exclusiveFilter: ({ tag }) => tag === "iframe",
+  });
+  const url = escapeAttribute(calendar.calendarEmbedUrl);
+  calendar.content += `
+    <iframe title="Montlake PTA calendar" loading="lazy" src="${url}"></iframe>
+    <p><a href="${url}">Open in Google Calendar</a></p>`;
 }
 
 function applyBudgetDonationCta(pageMap) {
