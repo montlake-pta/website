@@ -148,6 +148,20 @@ test("typed sync reads all required collections and never falls back to legacy o
   assert(!queried.includes("WebsitePages"));
 });
 
+test("CMS sync bypasses stale replicas after mutations without opting into native drafts", async () => {
+  const options = [];
+  const data = await readWixContent(client(id => ({
+    limit() { return this; },
+    find: async value => {
+      options.push(value);
+      return { items: id === "GeneratedPages" && value?.consistentRead ? [row("blog")] : [], hasNext: () => false };
+    },
+  })), config);
+  assert.equal(data.generatedPages.length, 1);
+  assert.equal(typed(data).cms.pages.length, 1);
+  assert(options.every(value => value.consistentRead === true && value.showDrafts === false));
+});
+
 test("typed repair read-back stays valid and generated body repair is rejected before reading Wix", async () => {
   const page = publicPage(row("enrichment", { kicker: "unused" }), "common");
   const snapshot = typed({});

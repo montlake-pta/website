@@ -65,7 +65,7 @@ export async function readWixContent(client, config, { warn = console.warn } = {
       return [];
     }
     try {
-      return await fetchAll(client.items.query(collectionId).limit(1000));
+      return await fetchAll(client.items.query(collectionId).limit(1000), { consistentRead: true, showDrafts: false });
     } catch (error) {
       if (!required && isMissingCollection(error)) {
         warn(`Optional CMS collection for ${label} does not exist; skipping it.`);
@@ -81,9 +81,9 @@ async function query(builder, label) {
   catch { throw new WixContentError(`Failed to query ${label}; sync stopped.`); }
 }
 
-export async function fetchAll(builder) {
+export async function fetchAll(builder, options) {
   const allItems = [];
-  let result = await builder.find();
+  let result = await builder.find(options);
   while (true) {
     if (!Array.isArray(result?.items) || typeof result.hasNext !== "function"
       || result.items.some((item) => !item || typeof item !== "object" || Array.isArray(item))) {
