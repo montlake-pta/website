@@ -1,6 +1,6 @@
 ---
 description: 'Rules for the Wix backend mutation-to-GitHub publishing bridge and its live verification'
-applyTo: 'wix/backend/**/*.js,scripts/check-wix-publishing.mjs,scripts/wix-publisher.test.mjs,.github/workflows/check-wix-publishing.yml'
+applyTo: 'wix/backend/**/*.js,wix/page-publishing.mjs,wix/page-publishing.config.json,scripts/setup-page-publishing*.mjs,scripts/check-wix-publishing.mjs,scripts/wix-publisher.test.mjs,.github/workflows/check-wix-publishing.yml,.github/workflows/setup-page-publishing.yml'
 ---
 
 # Wix publishing bridge instructions
@@ -31,3 +31,11 @@ applyTo: 'wix/backend/**/*.js,scripts/check-wix-publishing.mjs,scripts/wix-publi
 - A dispatch receipt is not deployment completion. Correlate the returned run
   ID with GitHub's outcome; inspect existing runs before retrying an operation
   whose outcome was unknown.
+- CommonPages, FundraisingPages and GeneratedPages use native CMS automations,
+  one for each collection and create/update/delete event. Each invokes the
+  same existing published GitHub Velo action once. Keep the inventory in
+  `wix/page-publishing.config.json` aligned with actual Wix configuration.
+- The CMS deletion trigger filters `deletedEntity.dataCollectionId`, unlike
+  create/update's `dataCollectionId`. Use the verified trigger catalog IDs and
+  validate configurations before activation. Never take over an active Editor
+  merely to configure native automations or add duplicate typed data hooks.

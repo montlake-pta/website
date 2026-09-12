@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "templateAutomationId": "ea50b8de-0b25-446e-a80f-70765e472cef",
+  "connections": [
+    {
+      "automationId": "4db86d6d-ba6d-4bad-a54b-fd7d60953e09",
+      "name": "GitHub publish - CommonPages created",
+      "collectionId": "CommonPages",
+      "event": "created"
+    },
+    {
+      "automationId": "ee63e6f7-38bf-49fc-88e7-e8f178b89424",
+      "name": "GitHub publish - CommonPages updated",
+      "collectionId": "CommonPages",
+      "event": "updated"
+    },
+    {
+      "automationId": "3f7dc1eb-f6fa-4ba5-8d6e-425bacb59162",
+      "name": "GitHub publish - CommonPages deleted",
+      "collectionId": "CommonPages",
+      "event": "deleted"
+    },
+    {
+      "automationId": "8597a758-25d2-4625-a988-c8318df6e522",
+      "name": "GitHub publish - FundraisingPages created",
+      "collectionId": "FundraisingPages",
+      "event": "created"
+    },
+    {
+      "automationId": "44c142b2-6ce9-4a60-8c6a-872c467f6550",
+      "name": "GitHub publish - FundraisingPages updated",
+      "collectionId": "FundraisingPages",
+      "event": "updated"
+    },
+    {
+      "automationId": "ba95666d-1c70-4792-af23-1e211197dc6a",
+      "name": "GitHub publish - FundraisingPages deleted",
+      "collectionId": "FundraisingPages",
+      "event": "deleted"
+    },
+    {
+      "automationId": "beff30f3-1e43-40f3-8cd9-4dbebafee0bc",
+      "name": "GitHub publish - GeneratedPages created",
+      "collectionId": "GeneratedPages",
+      "event": "created"
+    },
+    {
+      "automationId": "192b5ff5-fbba-4a6e-90a1-81d0aaa802a2",
+      "name": "GitHub publish - GeneratedPages updated",
+      "collectionId": "GeneratedPages",
+      "event": "updated"
+    },
+    {
+      "automationId": "d16d55cd-6f13-4f84-b374-6373a9d11305",
+      "name": "GitHub publish - GeneratedPages deleted",
+      "collectionId": "GeneratedPages",
+      "event": "deleted"
+    }
+  ]
+}

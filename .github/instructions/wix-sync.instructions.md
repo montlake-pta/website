@@ -1,6 +1,6 @@
 ---
 description: 'Rules for Wix Headless synchronization, CMS schema, snapshots, and dynamic content rendering'
-applyTo: 'scripts/sync-wix.mjs,scripts/normalize-wix-content.mjs,scripts/wix-public-content.mjs,scripts/wix-content.test.mjs,scripts/setup-wix-cms.mjs,scripts/update-wix-page*.mjs,scripts/migrate-fundraising*.mjs,scripts/fundraising*.mjs,scripts/bootstrap-wix-snapshot.mjs,scripts/render-wix-content.mjs,scripts/render-fundraising.mjs,src/data/**,src/wix.config.json'
+applyTo: 'scripts/sync-wix.mjs,scripts/normalize-wix-content.mjs,scripts/wix-public-content.mjs,scripts/wix-content.test.mjs,scripts/setup-wix-cms.mjs,scripts/update-wix-page*.mjs,scripts/*page-collections*.mjs,scripts/migrate-fundraising*.mjs,scripts/fundraising*.mjs,scripts/bootstrap-wix-snapshot.mjs,scripts/render-wix-content.mjs,scripts/render-fundraising.mjs,src/data/**,src/wix.config.json'
 ---
 
 # Wix synchronization instructions
@@ -25,3 +25,9 @@ applyTo: 'scripts/sync-wix.mjs,scripts/normalize-wix-content.mjs,scripts/wix-pub
   `assertPublicSnapshot`; never persist raw nodes or conferencing credentials.
 - When changing snapshot schema, version it and update build validation in the
   same change.
+- Typed page collections are required once activated; do not silently substitute
+  WebsitePages or an empty successful response. Schema 3 records carry a
+  collection-owned `pageType`, not an editor-authored layout selector.
+- Copy applicable live fields into typed collections and keep the complete
+  legacy backup. Do not expose unpublished copy or private metadata in public
+  migration artifacts. Existing conflicting destination rows require review.

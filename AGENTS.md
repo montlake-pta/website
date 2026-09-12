@@ -63,6 +63,7 @@ the documented `user-invocable: false` agent-profile override.
 | Wix CMS creation and seed behavior | `scripts/setup-wix-cms.mjs` |
 | Reviewed repair of an existing CMS page | `scripts/update-wix-page.mjs`, `.github/workflows/update-wix-page.yml` |
 | CMS fundraising fields, rendering and one-time migration | `scripts/fundraising-fields.mjs`, `scripts/render-fundraising.mjs`, `scripts/migrate-fundraising.mjs` |
+| Typed page collection contracts and migration | `scripts/page-collections.mjs`, `scripts/migrate-page-collections.mjs`, `src/wix.config.json` |
 | Dynamic page rendering and HTML sanitization | `scripts/render-wix-content.mjs` |
 | Public newsletter archive synchronization | `scripts/sync-newsletters.mjs` |
 | Newsletter latest/archive page generation | `scripts/render-newsletters.mjs` |
@@ -72,6 +73,7 @@ the documented `user-invocable: false` agent-profile override.
 | Offline public calendar snapshot | `src/data/calendar-events.json` |
 | Deployment | `.github/workflows/pages.yml` |
 | Wix mutation-to-GitHub publishing | `wix/backend/`, `.github/workflows/check-wix-publishing.yml` |
+| Native typed-page publishing automations | `wix/page-publishing.mjs`, `wix/page-publishing.config.json`, `scripts/setup-page-publishing.mjs` |
 | Headless client provisioning | `scripts/setup-wix-headless.mjs`, `.github/workflows/setup-wix-headless.yml` |
 | Operational handoff and recovery | `docs/operations.md`, `docs/content-authoring.md` |
 
@@ -124,7 +126,10 @@ python3 -m http.server 4173 --directory dist
   implementation details in visitor-facing copy.
 - Content parity means preserving instructions, caveats, documents, contacts,
   and deadlines, not just creating the route or summarizing its topic.
-- Update existing public-page copy in Wix `WebsitePages`; editing fallback
+- Update existing public-page copy in Wix `CommonPages` or `FundraisingPages`;
+  `GeneratedPages` contains header metadata only. Check `cms.pageSource` in
+  `src/wix.config.json` during a migration; `WebsitePages` is the legacy source.
+  Editing fallback
   `src/site.mjs` or rerunning the CMS seed script does not update existing CMS
   records. A one-time repair must preserve unrelated fields and reject a
   changed live record; subsequent routine authoring belongs in Wix.
@@ -137,6 +142,9 @@ python3 -m http.server 4173 --directory dist
   `body`; edit those records for campaign facts, hero copy and primary actions.
   Keep `campaignStatus` set and clear optional fields to remove old values.
   See `docs/content-authoring.md` before rolling over a campaign.
+- Page renderers are selected by collection, not by a record's campaign status.
+  Keep slugs unique across typed collections and keep generated routes out of
+  CommonPages/FundraisingPages. Do not add fields unsupported by that renderer.
 
 ### Wix integration
 
@@ -229,6 +237,11 @@ python3 -m http.server 4173 --directory dist
   limited to this repository with Actions write, not Contents write.
 - Changes to `wix/backend/` require deployment to the corresponding Wix backend
   files/action; a GitHub commit alone does not update the Wix sender.
+- Typed page collections use native CMS automations for item creation, update
+  and deletion, invoking the existing GitHub Velo action. Do not add duplicate
+  typed data hooks or take over another operator's Editor session to configure
+  them. Validate automation configurations before activation and retain the
+  collection-specific deletion payload path from `wix/page-publishing.mjs`.
 - The Copilot setup workflow must contain exactly one job named
   `copilot-setup-steps`.
 

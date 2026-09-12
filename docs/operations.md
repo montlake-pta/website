@@ -20,6 +20,10 @@ are not permanent invariants.
   deliberate migration.
 - Authenticated build-time sync and Wix-to-GitHub publishing are live.
   Ordinary publishing does **not** depend on the visitor Headless client.
+- Page collection routing is explicit: CommonPages, FundraisingPages and
+  metadata-only GeneratedPages. Read `cms.pageSource` in `src/wix.config.json`
+  before operating on live data; legacy mode is only for staged migration or
+  recovery. See the [copy/activate/retire procedure](content-authoring.md#splitting-the-legacy-page-collection).
 - Visitor transaction activation remains off in
   [src/wix-client.config.json](../src/wix-client.config.json). The public client
   ID is empty; the active Welcome Back RSVP retains a marked legacy handoff.
@@ -53,7 +57,10 @@ dated observation.
 
 - **GitHub Actions reading/administering Wix:** `WIX_API_KEY` is an Actions
   secret. Routine sync requires read access; CMS repairs/seeding require
-  write access. Account/OAuth-app administration has additional permissions.
+  write access. Native publishing setup additionally requires automation
+  read/create/validate permissions. The current key returned HTTP 403 for
+  automation administration; initial native setup used authorized Wix MCP,
+  without broadening the deployment key. Account/OAuth-app administration has additional permissions.
   A working CMS query does not establish access to Headless setup APIs.
 - **Wix publishing to GitHub:** a dedicated GitHub App signs requests using
   `github-publish-bridge-private-key` in **Wix Secrets Manager**, not GitHub's
@@ -111,16 +118,20 @@ business data to the external frontend.
 ## Diagnose publishing before changing content
 
 The deployed sender consists of the shared **github-publish** automation Velo
-action, sixteen business-event handlers in `backend/events.js`, and six CMS
-hooks in `backend/data.js`. One additional active WebsitePages-update Automation
-calls the same action. See [trigger coverage](../README.md#on-demand-publishing-from-wix).
+action, sixteen business-event handlers in `backend/events.js`, and six legacy
+WebsitePages/BoardMembers hooks in `backend/data.js`. The three typed page
+collections use nine native CMS automations, one per collection and
+create/update/delete operation, invoking that same published action.
+Their definitions and real IDs are in `wix/page-publishing.mjs` and
+`wix/page-publishing.config.json`. The older WebsitePages-update automation is
+retained for rollback compatibility. See [trigger coverage](../README.md#on-demand-publishing-from-wix).
 
 1. Confirm the edit was made in an authoritative source. Legacy Editor text
-   blocks do not update `WebsitePages`; newsletter and Google Calendar changes
+   blocks do not update CommonPages/FundraisingPages; newsletter and Google Calendar changes
    do not originate in Wix. Blog drafts have no dedicated handlers here.
 2. In Wix **Developer Tools → Wix Logs**, look for
-   `GitHub website publish requested` and its run ID. In Automations, the
-   WebsitePages update automation also has a run log. An accepted dispatch
+   `GitHub website publish requested` and its run ID. The matching named
+   `GitHub publish - COLLECTION EVENT` automation also has a run log. An accepted dispatch
    means a run was requested, not that the new site is already deployed.
 3. Inspect the matching GitHub run, including the failing step if any:
 
@@ -140,7 +151,8 @@ calls the same action. See [trigger coverage](../README.md#on-demand-publishing-
    gh workflow run pages.yml --repo montlake-pta/website --ref main
    ```
 
-6. If no dispatch was requested, inspect hook coverage, the published Wix code,
+6. If no dispatch was requested, inspect the native automation status/filter or
+   applicable hook coverage, the published Wix action code,
    the GitHub App installation and the **name** of its Wix secret. Do not print
    the signing key, installation token, raw SDK errors or event payloads.
 
@@ -149,6 +161,17 @@ network/timeout error. A timeout can have an unknown dispatch outcome. There
 is no durable outbox or exactly-once guarantee. CMS hooks report notification
 failure but return the author's successfully saved item; hourly sync remains
 recovery for missed signals and unsupported mutation paths.
+
+Native CMS automation selectors bind one collection each. The deletion
+trigger uses `deletedEntity.dataCollectionId`; create/update use
+`dataCollectionId`. A single root action avoids duplicate dispatches from one
+automation. Validate definitions before activating them and do not add
+duplicate typed collection hooks.
+
+Do not take over another operator's active Editor session to deploy publishing
+changes. Native CMS automations can reuse the already-published Velo action
+without an Editor publish. If actual backend code must change, coordinate the
+Editor handoff instead of publishing another person's unsaved work.
 
 Two implementation details matter when maintaining the Velo action:
 

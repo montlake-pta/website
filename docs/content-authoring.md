@@ -4,8 +4,9 @@
 
 | Content | Editing location | Website behavior |
 |---|---|---|
-| Informational page bodies, including Enrichment, Advocacy, Budget, Donate and dated campaign pages | Wix CMS `WebsitePages`, selected by `slug` | Read during the next Pages build |
-| Fundraising headings, summaries, campaign facts, primary actions, hero image and impact/equity/trust sections | Wix CMS `WebsitePages` | Shared fundraising layout; summaries also appear on Donate and the homepage |
+| Informational page bodies, including Enrichment, Advocacy, Budget and ordinary historical pages | Wix CMS `CommonPages`, selected by `slug` | Read during the next Pages build |
+| Complete Donate, Annual Fund and Spring Auction records, including campaign facts, primary actions, images and rich sections | Wix CMS `FundraisingPages` | Shared fundraising layout; summaries also appear on Donate and the homepage |
+| Blog, Events, Shop, PTA Board and optional Newsletter header overrides | Wix CMS `GeneratedPages` | Changes the header, not the generated lists, roster or editions |
 | Board roster | Wix CMS `BoardMembers` | Replaces the roster section of the board page |
 | Posts, event details, products | Wix Blog, Events, Stores | Generated indexes and individual routes |
 | Newsletter editions | Constant Contact public Email Archive | Public newsletter permalink embedded on the site |
@@ -19,12 +20,24 @@ put in the CMS.
 
 ### Source precedence and fallback behavior
 
-The generator begins with `src/site.mjs`, overlays valid published
-`WebsitePages` records, then applies specialized renderers. The board roster,
-Blog/Events/Shop indexes and newsletter content have their own data sources;
-editing an index's CMS body is not a reliable way to change generated cards or
-newsletter editions. Layout, navigation and generic interface labels remain in
-source. Fundraising campaign copy and facts do not live in those templates.
+The generator begins with `src/site.mjs`, overlays the configured CMS source,
+then applies specialized renderers. In typed mode, the collection selects the
+renderer: CommonPages for ordinary content, FundraisingPages for fundraising,
+and GeneratedPages for metadata only. An editor cannot accidentally change
+the renderer by setting or clearing campaign status.
+
+The board roster, Blog/Events/Shop indexes and newsletter content have their
+own data sources. Their GeneratedPages records therefore have no body column.
+The title, heading, description and tone are supported header overrides;
+leaving the description blank retains the normal fallback or automatically
+generated description, including the board year and empty newsletter state.
+Layout, navigation and generic interface labels remain in source.
+
+Page slugs must be unique across collections. Generated slugs are reserved;
+Blog/Event/Product/Newsletter detail namespaces cannot be claimed by an
+ordinary CMS page. The build rejects incorrect placement rather than quietly
+ignoring a record's fields. `kicker` is not used by any current renderer and
+is omitted from every new collection; tone is omitted from FundraisingPages.
 
 For a static route that exists in `src/site.mjs`, deleting/unpublishing its CMS
 record or leaving its body empty can expose the fallback again; it does **not**
@@ -33,9 +46,74 @@ board records, the board page retains its CMS/static fallback. A deliberate
 page withdrawal or roster-hiding requirement needs a coordinated source change,
 not an assumption that an empty collection hides everything.
 
+### Splitting the legacy page collection
+
+`src/wix.config.json` is the source switch: `cms.pageSource = legacy` reads
+WebsitePages; `typed` reads CommonPages, FundraisingPages and GeneratedPages.
+Once typed mode is selected, missing or inaccessible typed collections stop
+the build. They never silently fall back to the legacy backup.
+
+Use **Split CMS Page Collections**, not the ordinary seed script, to move
+existing live content:
+
+1. Deploy compatible code while keeping `pageSource` at `legacy`.
+2. Run the workflow with `phase=copy`, `mode=plan`. Review its public report:
+   proposed collections, applicable content fields, counts and conflicts.
+   Source values come from live WebsitePages, not repository fallbacks.
+3. Apply using that report's exact commit and fingerprints. Existing matching
+   targets are preserved; conflicting records are not overwritten. Applicable
+   raw authoring fields are copied, while the complete original records,
+   unused fields and metadata remain in the legacy collection. Unpublished
+   copy must not appear in public reports.
+4. Use authorized Wix MCP automation APIs to validate and create the nine
+   definitions from `wix/page-publishing.mjs`, reusing the existing published
+   GitHub Velo action without overwriting named conflicts. The optional
+   **Set Up Typed Page Publishing** plan/apply workflow can do this with an
+   appropriately privileged Actions key.
+   Record their real IDs in `wix/page-publishing.config.json`. This does not
+   require republishing the Wix Editor site.
+5. Run **Verify Wix Publish Notifications** with `typed_pages=true`. It creates,
+   updates and removes its own unpublished items in all three new collections.
+   Confirm lifecycle delivery, cleanup and app-origin GitHub deployments.
+6. Commit `pageSource = typed`, deploy, and compare the live pages. Refresh the
+   authenticated public snapshot. Schema 3 retains a flat `cms.pages` array
+   with a collection-owned `pageType`; older schema 1/2 snapshots remain
+   readable for offline recovery.
+7. Run a fresh `phase=retire` plan/apply pair. This requires typed mode and
+   verified copies, then changes only the legacy collection's display name to
+   **Legacy WebsitePages (backup)**. It does not delete records, change
+   permissions or erase the backup.
+
+The copy and retire phases are not atomic transactions. After a partial failure,
+review a fresh plan; never blindly retry, delete conflicts or overwrite newer
+authoring. Collection names describe page types, not individual URLs or years.
+Keep each complete page in one collection.
+
+```sh
+gh workflow run migrate-page-collections.yml --ref main \
+  -f phase=copy -f mode=plan
+```
+
+The report's `applyInputs` supply the corresponding apply arguments. The
+artifact name includes phase, mode, run ID and attempt; it contains only
+`report.json`, not a private full-item backup.
+
+The current Actions key returned HTTP 403 on automation administration, so the
+initial connections were created through the authorized Wix MCP session. This
+does not affect ordinary CMS sync or publishing. Do not broaden key permissions
+just to repeat a completed setup. Wix's dashboard also refuses to duplicate a
+Velo-code automation; use the API definitions rather than copying code or taking
+over an Editor session.
+
+The optional publishing setup workflow requires automation read, create and
+validate permissions. It accepts `mode`, `candidate_commit` and
+`expected_fingerprint`. Its successful report supplies the nine connection IDs;
+copy only that public inventory into `wix/page-publishing.config.json`.
+Both setups require a fresh reviewed plan after a partial failure.
+
 ## Fundraising pages
 
-Use the existing `WebsitePages` records with these stable slugs:
+Use `FundraisingPages` for these stable fundraising slugs:
 
 - `donate`: evergreen giving hub, payment/matching/check instructions, impact,
   participation and nonprofit information.
@@ -43,8 +121,9 @@ Use the existing `WebsitePages` records with these stable slugs:
   guidance and an `upcoming` status, not an invented year, goal or deadline.
 - `spring-auction`: the spring campaign destination. The initial migrated
   content describes the closed 2026 campaign and its 2025–2026 spending plan.
-- `fall-fundraiser-2025`: the existing historical archive. Do not overwrite it
-  with the next campaign.
+
+The existing `fall-fundraiser-2025` archive retains its ordinary informational
+layout in CommonPages. Do not overwrite it with the next campaign.
 
 The homepage reads the Donate heading/description and all three current pages'
 titles, descriptions, school years and statuses. Donate also links to Annual
@@ -74,12 +153,12 @@ sanitizer is unchanged. The Donate impact list uses a leading bold phrase and
 a following text group for its open, divided rows. No arbitrary HTML, scripts
 or additional styling classes are needed.
 
-Keep `campaignStatus` populated. On a configured fundraising record, clearing
+Keep `campaignStatus` populated. On a FundraisingPages record, clearing
 or removing an optional field removes it from the page rather than resurrecting
 repository fallback text. This also applies to blank `body` and `description`.
-Records with no fundraising fields retain legacy fallback behavior so an old
-snapshot still builds; deleting all fields or unpublishing the entire record
-is not a reliable way to hide a fallback route.
+Clearing status does not change the renderer; it safely behaves as upcoming.
+Old schema 1/2 snapshots retain legacy field-detection behavior for recovery.
+Unpublishing an entire record is not a reliable way to hide a fallback route.
 
 Only `active` and `evergreen` show the configured primary action. Upcoming,
 closed and archived campaigns instead point visitors to year-round giving.
@@ -105,13 +184,15 @@ accurately and remove obsolete donation asks there as well.
    automatic deployment, inspect the campaign page, Donate hub and homepage.
    Updating one field does not rewrite historical prose in other CMS records.
 
-### Initial fundraising migration
+### Earlier fundraising migration (historical)
 
-The manual **Migrate Fundraising Pages** workflow is a one-time, reviewed
+The manual **Migrate Fundraising Pages** workflow was a one-time, reviewed
 schema/content migration, not routine authoring. It adds only missing field
 definitions, updates the existing Donate and Spring Auction candidates and
 inserts Annual Fund if absent. It preserves unrelated fields, collection
-permissions and other records.
+permissions and other records. It targeted WebsitePages before the collection
+split and refuses to run after typed activation; it is not the current migration
+or authoring procedure.
 
 Deploy compatible source to `main` first: live writes can immediately request
 a build of `main`. Run a plan, review the sanitized before/proposed content
@@ -124,11 +205,12 @@ not one atomic transaction; after a partial failure, inspect a new plan rather
 than blindly retrying. There is no destructive rollback. Refresh the complete
 public offline snapshot after successful migration.
 
-Snapshot schema 2 carries the allowlisted fundraising fields. Version 1
-snapshots remain readable. The older **Update One Wix Page** workflow still
-changes only title, heading, description and body; it preserves fundraising
-fields and includes them in public read-back. Use Wix CMS for subsequent
-campaign-field edits, not the seed or migration scripts.
+Snapshot schema 2 introduced the allowlisted fundraising fields; schema 3 adds
+explicit page types. **Update One Wix Page** changes only title, heading,
+description and body in the applicable CommonPages or FundraisingPages record;
+it preserves fundraising fields and includes them in typed public read-back.
+It refuses GeneratedPages body repairs because those pages have no authored
+body. Edit generated metadata directly in Wix.
 
 The initial migration completed on September 11, 2026, from source commit
 `0480ef0`: [reviewed plan](https://github.com/montlake-pta/website/actions/runs/34631755802),
@@ -141,7 +223,7 @@ This is a completed migration, not an outstanding setup step.
 
 ## What causes a website update
 
-- **CMS `WebsitePages` and `BoardMembers`:** adding, editing or deleting records
+- **CMS `CommonPages`, `FundraisingPages`, `GeneratedPages` and `BoardMembers`:** adding, editing or deleting records
   requests a rebuild.
 - **Blog:** publishing, updating or deleting a published post requests a
   rebuild; saving a draft alone has no dedicated trigger.
@@ -156,7 +238,8 @@ suppressed hooks may wait for hourly recovery. Newsletter editions and Google
 Calendar changes are picked up on the next rebuild or hourly refresh, not by
 the Wix mutation sender.
 
-Edit page copy in `WebsitePages`, not independent legacy Editor text blocks.
+Edit page copy in its typed collection, not the legacy WebsitePages backup or
+independent Editor text blocks.
 For a saved edit that is not appearing, follow
 [publishing diagnosis](operations.md#diagnose-publishing-before-changing-content)
 instead of repeatedly changing the content.
@@ -281,11 +364,11 @@ needed just to repair missing content.
 ## Stop parallel authoring
 
 The existing live legacy site remains a separate Wix Editor presentation.
-Changing `WebsitePages` does **not** modify those editor elements.
+Changing the typed page collections does **not** modify those editor elements.
 
 A site owner must make one deliberate Editor handoff:
 
-1. Connect the legacy enrichment text to a read-only dataset for `WebsitePages`,
+1. Connect the legacy enrichment text to a read-only dataset for `CommonPages`,
    filtered to `slug = enrichment`, if the legacy elements support it; publish
    and compare both versions.
 2. If binding is not supported, replace the independently maintained legacy

@@ -12,7 +12,7 @@ use [content authoring](docs/content-authoring.md); the
 
 ## Edit the site
 
-- Routine page copy: Wix CMS → `WebsitePages` (match by `slug`)
+- Routine page copy: Wix CMS → `CommonPages` or `FundraisingPages` (match by `slug`)
 - Static fallback copy, navigation, and external service URLs: `src/site.mjs`
 - Visual design and responsive styles: `src/styles.css`
 - Mobile navigation: `src/site.js`
@@ -175,7 +175,8 @@ authoritative content changes. This uses a dedicated GitHub App with
 **Actions write and Metadata read**, installed only on `montlake-pta/website`;
 it does not reuse a personal token or require Contents write.
 
-- **CMS `WebsitePages` and `BoardMembers`:** add, edit or delete a record.
+- **CMS `CommonPages`, `FundraisingPages`, `GeneratedPages`, and `BoardMembers`:**
+  add, edit or delete a record.
 - **Blog:** publish, update or delete a published post; draft-only edits have
   no dedicated handler.
 - **Events:** create, edit, cancel or delete an event.
@@ -185,9 +186,13 @@ it does not reuse a personal token or require Contents write.
 Changes appear after the rebuild finishes, not instantly on Save. Legacy
 Editor text/layout changes do not update the new site's page copy.
 
-An additional active automation, **GitHub publish - WebsitePages updated**,
-listens to the Website Pages collection's Item updated trigger and calls the
-same tested server action. It is intentionally redundant with the data hook.
+Typed page collections use nine native CMS automations: one per collection and
+item-added, item-updated or item-deleted trigger. Each calls the same existing
+server action once. Their definitions and IDs are maintained in
+`wix/page-publishing.mjs` and `wix/page-publishing.config.json`. Native automations
+do not require publishing Editor code or taking over another operator's session.
+The legacy **GitHub publish - WebsitePages updated** automation and legacy data
+hooks remain for rollback compatibility; legacy copy is not read after cutover.
 Overlapping notifications and bulk changes can create several dispatches:
 GitHub's existing concurrency group keeps the running deployment and coalesces
 pending runs. Pending runs marked canceled are expected; the newest pending
@@ -228,6 +233,20 @@ Update the existing action rather than creating a differently named one;
 backend handlers import its established path. Save the action and publish
 changed backend files in Wix. A GitHub push does not deploy these Wix files.
 Keep unrelated Wix page/code changes intact.
+
+For typed page notifications, manage the native automations instead of adding
+duplicate hooks. `pagePublishingAutomations()` builds their configurations from
+the existing action; validate them through Wix's **Validate Automation** API
+before activation. The deletion event uses `deletedEntity.dataCollectionId`.
+Retain a single root action, even if an older template has duplicate root IDs.
+The manual **Set Up Typed Page Publishing** workflow provides guarded plan/apply
+setup using the Actions Wix key, without copying credentials into the browser
+or relying on an MCP session. It requires automation read/create/validate
+permissions and never overwrites a conflicting named automation.
+The currently configured Actions key returned HTTP 403 for automation
+administration; initial setup used the authorized Wix MCP APIs instead.
+Ordinary CMS sync and publishing do not require granting that key additional
+permissions. The dashboard cannot duplicate Velo-code automations.
 
 Public integration identifiers: GitHub App **4906160**
 (`montlake-pta-publish-bridge`), installation **160793888**, repository
@@ -271,14 +290,22 @@ npm run build
 ### CMS collections
 
 Regular editor page blocks are not available through Wix Headless APIs. The
-integration uses two CMS collections instead:
+integration uses these CMS collections instead:
 
 - `BoardMembers`: school year, role, names, email, display order, and active
-- `WebsitePages`: slug, title, heading, kicker, description, accent, body, and
-  published, plus optional fundraising campaign, action, image and rich-content
-  fields described in the [fundraising authoring guide](docs/content-authoring.md#fundraising-pages).
+- `CommonPages`: ordinary page slug, title, heading, description, tone, body,
+  and content-use checkbox.
+- `FundraisingPages`: complete fundraising page records, including campaign,
+  image, action and rich-content fields. No unused tone or kicker columns.
+- `GeneratedPages`: header metadata for Blog, Events, Shop, PTA Board and
+  optionally Newsletter. No body or campaign columns.
 
-Create and seed both collections from the current repository content:
+`cms.pageSource` in `src/wix.config.json` selects `legacy` during preparation and
+`typed` after the reviewed split. `WebsitePages` is retained as a labeled backup,
+not a second authoring location after activation. See the
+[typed migration procedure](docs/content-authoring.md#splitting-the-legacy-page-collection).
+
+Create and seed the configured collections from the current repository content:
 
 ```sh
 node --env-file=.env scripts/setup-wix-cms.mjs
@@ -293,8 +320,9 @@ gh workflow run setup-wix-cms.yml --repo montlake-pta/website
 
 This setup command creates missing collections and inserts missing seed rows;
 it never updates an existing record or upgrades an existing collection schema.
-Use the reviewed **Migrate Fundraising Pages** workflow for the additive
-fundraising schema/content migration on an existing site. Rerunning setup does
+Use **Split CMS Page Collections** to migrate an existing WebsitePages site.
+The older **Migrate Fundraising Pages** workflow is historical and refuses to
+run after typed activation. Rerunning setup does
 not publish edits to `src/site.mjs`. After setup, maintain existing page records in Wix CMS and each
 site build will pull them automatically.
 
@@ -308,13 +336,13 @@ The candidate branch is not promoted by that signal. See the
 
 ### One editing location
 
-`WebsitePages` is the authoritative editing location for migrated informational
-pages. `BoardMembers` owns the board roster; use Wix Blog, Events, and Stores for
+`CommonPages` and `FundraisingPages` are the editing locations for their page
+types; `GeneratedPages` contains header overrides only. `BoardMembers` owns the board roster; use Wix Blog, Events, and Stores for
 their respective content. Editing a regular legacy Wix Editor text block does
 not update any of these collections.
 
 Do not maintain two independent enrichment pages. In the Wix Editor, connect
-the legacy enrichment text to the same `WebsitePages` record if its elements
+the legacy enrichment text to the same `CommonPages` record if its elements
 support a CMS dataset. Otherwise replace the legacy body with a link to the
 new enrichment page during the agreed content handoff. Do not delete the
 legacy route or change DNS as part of that handoff.

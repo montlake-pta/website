@@ -23,7 +23,7 @@ export const pageCollectionDefinitions = [
 export const generatedPageSlugs = ["blog", "event-list", "shop", "pta-board", "newsletter"];
 export const fundraisingPageSlugs = ["donate", "annual-fund", "spring-auction"];
 export const legacyPageCollectionId = "WebsitePages";
-export const legacyPageCollectionLabel = "Legacy WebsitePages (not published)";
+export const legacyPageCollectionLabel = "Legacy WebsitePages (backup)";
 
 export function normalizePageSlug(value) {
   if (typeof value !== "string" || /[\\?#%]/.test(value)) return "";

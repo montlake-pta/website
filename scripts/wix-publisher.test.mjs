@@ -23,6 +23,19 @@ const tokenBody = () => ({
 const response = (status, body) => ({ ok: status >= 200 && status < 300, status, json: async () => body });
 const receipt = { workflow_run_id: 123, html_url: "https://github.com/montlake-pta/website/actions/runs/123" };
 
+test("native publishing inventory covers exactly the nine typed collection events", async () => {
+  const inventory = JSON.parse(await readFile(new URL("../wix/page-publishing.config.json", import.meta.url), "utf8"));
+  assert.equal(inventory.connections.length, 9);
+  assert.equal(new Set(inventory.connections.map(connection => connection.automationId)).size, 9);
+  const actual = inventory.connections.map(connection => {
+    assert.match(connection.automationId, /^[a-f0-9-]{36}$/);
+    assert.equal(connection.name, `GitHub publish - ${connection.collectionId} ${connection.event}`);
+    return `${connection.collectionId}:${connection.event}`;
+  });
+  assert.deepEqual(actual.sort(), pageCollectionDefinitions.flatMap(({ id }) =>
+    ["created", "updated", "deleted"].map(event => `${id}:${event}`)).sort());
+});
+
 test("native page automations cover each collection and lifecycle operation with one safe publishing action", () => {
   const action = {
     id: "24c5330f-804a-4ca5-a33c-aab30d27012c", type: "APP_DEFINED", namespace: "wix_automations-velo_action-2",

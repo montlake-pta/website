@@ -7,7 +7,9 @@ blockers and recovery, and `docs/content-authoring.md` before live CMS repairs.
 
 This is a Node.js 24, dependency-light static-site generator. Wix is the
 authoritative source for Blog, Events, Stores, `BoardMembers`, and
-`WebsitePages`; Constant Contact's public archive is authoritative for
+`CommonPages`, `FundraisingPages`, and metadata-only `GeneratedPages`;
+`src/wix.config.json` selects legacy `WebsitePages` only during migration.
+Constant Contact's public archive is authoritative for
 newsletter editions; the public Google Calendar is authoritative for school
 dates; GitHub Actions builds static HTML for GitHub Pages.
 
@@ -17,6 +19,8 @@ dates; GitHub Actions builds static HTML for GitHub Pages.
   `scripts/*.mjs` for generation or Wix integration.
 - Wix publisher code in `wix/backend/` is deployed separately to Wix; a
   repository commit does not update the live sender.
+- Typed CMS collections use native publishing automations defined in
+  `wix/page-publishing.mjs`; preserve their create/update/delete coverage.
 - Read `PRODUCT.md` and `DESIGN.md` before content, UX, or visual changes.
 - For visual work, follow `.github/skills/impeccable/SKILL.md` and run the
   Impeccable detector after building.
