@@ -104,7 +104,8 @@ Allowed redirect domains are `montlake-pta.github.io`, `montlakepta.org` and
 Anonymous visitor OAuth authenticated successfully, returned all 10 expected
 public Store products, and read the Welcome Back event's registration/form
 metadata. A new visitor's cart read returned the expected
-`OWNED_CART_NOT_FOUND`/404. No RSVP, ticket reservation or payment was created.
+`OWNED_CART_NOT_FOUND`/404. Those initial read-only probes created no RSVP,
+ticket reservation or payment.
 
 Provisioning is not full-transaction activation approval. At this checkpoint all 10 catalog
 products were out of stock, and **Wix pages domain** was still
@@ -120,9 +121,10 @@ The read-only SDK is deployed at commit `a5266ed`
 ([Pages run](https://github.com/montlake-pta/website/actions/runs/34675324093)).
 Browser-origin product and event reads succeeded on the GitHub frontend.
 Desktop/mobile, refresh focus, failed-read fallback and JavaScript-disabled
-handoffs were exercised without transaction requests. Full RSVP submission,
-cart mutations, checkout and ticket reservations remain unapproved; keep
-[issue #4](https://github.com/montlake-pta/website/issues/4) open for those gates.
+handoffs were exercised without transaction requests. Controlled write scenarios
+were subsequently approved and exercised as described below. Production
+transactions remain off; keep [issue #4](https://github.com/montlake-pta/website/issues/4)
+open for the remaining checkout-hosting and activation gates.
 
 ### Approved transaction validation
 
@@ -145,6 +147,32 @@ and was correctly rejected. `useGenericWixPages` selects a standard Wix page
 template; it does **not** guarantee a separate Wix-owned hostname. Keep the
 redirect guard intact and resolve the Wix-hosted pages domain before full
 activation. An uncompleted checkout must remain a neutral confirmation state.
+
+The approved event scenarios used fresh draft RSVP/ticket events, far-future
+dates and explicit test-only names. All eight event-scoped guest email switches
+were set to false and read back before publication; custom automation inspection
+found no event-created/publication broadcast. The GitHub exclusions were
+deployed before publication. The old Wix listing does not provide a confirmed
+global unlisted flag, so these were short-lived, clearly marked fixtures, not
+real community events.
+
+Actual anonymous UI/API calls created one confirmed test RSVP and one pending
+free ticket reservation against non-scarce test capacity. The pending
+reservation did not confirm payment. The RSVP was deleted; the reservation was
+released and deleted; both events and the free ticket definition were deleted.
+The automatically created synthetic non-member contact was removed from active
+contacts. No paid order or real-community registration was submitted. The
+isolated empty cart was also deleted; Wix can retain internal uncompleted
+checkout/audit history.
+
+The existing Wix-owned alias `https://tech1245.wixsite.com/montlake-pta-1/`
+was verified against the site. A temporary client-only `redirectUrlWixPages`
+override produced an initially permitted Wix URL, but the browser ultimately
+returned to `www.montlakepta.org/checkout`. The override was restored to its
+original empty value; primary domain, DNS and callback approvals were unchanged.
+OAuth app updates returned HTTP 504 after applying, so read-back—not blind
+retry—was required to establish both outcomes. A stable Wix-hosted checkout
+domain still needs a coordinated domain decision before full activation.
 
 Match real SDK schemas rather than synthetic fixtures: Wix Events v2 reports
 `OPEN_RSVP`/`OPEN_TICKETS` registration statuses, and Catalog V1 stock quantity
