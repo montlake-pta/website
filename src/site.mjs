@@ -1,17 +1,8 @@
-let publicSiteUrl;
-try {
-  publicSiteUrl = new URL(process.env.SITE_URL || "https://montlake-pta.github.io/website/");
-} catch {
-  throw new Error("SITE_URL must be a valid public HTTPS directory URL.");
-}
-if (publicSiteUrl.protocol !== "https:" || publicSiteUrl.username || publicSiteUrl.password
-  || publicSiteUrl.search || publicSiteUrl.hash || !publicSiteUrl.pathname.endsWith("/")) {
-  throw new Error("SITE_URL must be an HTTPS directory URL without credentials, query or fragment.");
-}
+import { deploymentBaseUrl } from "./deployment.mjs";
 
 export const site = {
   name: "Montlake PTA",
-  previewUrl: publicSiteUrl.href,
+  previewUrl: deploymentBaseUrl(),
   newsletterUrl: "https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp",
   membershipUrl: "https://montlakepta.givebacks.com/store",
   donateUrl: "https://www.paypal.com/donate/?hosted_button_id=L86AXUQZC74VN",

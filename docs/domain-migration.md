@@ -217,9 +217,10 @@ The website maintainer must have a prepared final-domain release and confirm:
   result.
 - A known rollback release and coordinated settings rollback are recorded.
 
-**The currently shipped release is not this final launch release.** It remains
-read-only and its checkout validator does not yet accept
-`checkout.montlakepta.org`. Existing controlled tests proved cart operations,
+**Production remains read-only; it has not switched domains.** Code support for
+the exact checkout origin and an isolated final-domain rehearsal are now
+prepared. Neither configures the checkout hostname or proves that its final
+redirect chain works. Existing controlled tests proved cart operations,
 RSVP submission and ticket reservation, but the checkout URL still returned
 to the old primary domain. These are engineering prerequisites, not problems
 the DNS maintainer should solve by trial and error.
@@ -459,8 +460,8 @@ No manual action is needed to maintain the fundraising snapshots.
 
 This section is for the technical role, not the domain editor.
 
-- Approve only the intended `https://checkout.montlakepta.org` origin in
-  `validateRedirect()` and cover unsafe host/path variants with tests. Confirm
+- The intended `https://checkout.montlakepta.org` origin is explicitly supported
+  in `validateRedirect()` with unsafe host/URL regression coverage. Confirm
   the actual Wix redirect chain; an allowed initial alias is not enough.
 - Prepare `SITE_URL=https://www.montlakepta.org/`. At the approved full launch,
   `WIX_HEADLESS_READ_ONLY=false` and `WIX_HEADLESS_ENABLED=true` must agree with
@@ -478,6 +479,53 @@ This section is for the technical role, not the domain editor.
   [issue #4](https://github.com/montlake-pta/website/issues/4).
 - Before launch, fill in Wix's actual checkout DNS target and refresh the
   public DNS backup. This document intentionally does not invent that target.
+
+### Running the prepared checks
+
+The website maintainer can run **Rehearse official-domain launch** in the
+repository's **Actions** tab, choosing **Run workflow → main**. Leave
+**Refresh public content** selected to test current public Wix content.
+This workflow cannot deploy or change DNS/settings. A successful run produces
+an artifact with `report.json`, desktop/mobile screenshots and fundraising
+archive captures.
+
+The rehearsal tests a private local copy as though it were on the official
+domain. Wix API requests are blocked in that browser. Therefore, a pass means
+the prepared code, paths and page output work; it is not proof of the live
+checkout hostname or a completed payment.
+
+For actual public addresses, use **Check public launch readiness** in Actions.
+Choose **preview** before launch and **launch** after the coordinated switch.
+The report explains each result in plain language. The launch profile should
+report **NOT READY** while DNS and Wix/GitHub settings still describe the old
+site. It does not change anything to make itself pass.
+
+### Using the reviewed launch and rollback presets
+
+**Only the website/GitHub maintainer should do this during an approved launch
+or rollback. Do not do it now just to rehearse.**
+
+1. Open the website repository's **Settings → Secrets and variables →
+   Actions → Variables**.
+2. Record the current settings. Remove conflicting individual overrides named
+   `SITE_URL`, `WIX_HEADLESS_ENABLED` and `WIX_HEADLESS_READ_ONLY` when moving
+   to the complete profile. Do not remove `WIX_SITE_ID`, `WIX_SYNC_ENABLED`,
+   `WIX_HEADLESS_CLIENT_ID` or unrelated variables/secrets.
+3. Add or edit the repository variable **DEPLOYMENT_PROFILE**:
+   use `launch` for the approved official-domain/full-transaction release, or
+   `preview` for the GitHub-preview/read-only application rollback.
+4. In **Actions → Deploy GitHub Pages**, select **Run workflow → main** at the
+   agreed point in the coordinated domain procedure. Changing a variable alone
+   does not deploy a new build.
+5. Inspect the deployment and rerun the corresponding public readiness check.
+
+The presets select the URL and both visitor-mode flags together, preventing a
+mixture of preview and launch values. Conflicting overrides stop the build
+with an explanation; do not weaken the check.
+
+**The rollback preset does not restore DNS or Wix domain assignments.**
+Follow the coordinated rollback section as well, including GitHub's custom
+domain setting. Domain ownership verification and mail records remain intact.
 
 ## Official references
 

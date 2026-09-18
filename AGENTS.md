@@ -55,6 +55,7 @@ the documented `user-invocable: false` agent-profile override.
 | Visual system and responsive behavior | `src/styles.css`, `DESIGN.md` |
 | Browser navigation and visitor transactions | `src/site.js`, `src/wix-transactions.mjs`, `src/wix-visitor-api.mjs` |
 | Public visitor client configuration and activation | `src/wix-client.config.json`, `scripts/visitor-config.mjs` |
+| Deployment presets and prelaunch verification | `src/deployment.mjs`, `scripts/rehearse-cutover.mjs`, `scripts/check-launch.mjs` |
 | Shared HTML templates and generated metadata | `scripts/build.mjs` |
 | Wix querying and public normalization | `scripts/sync-wix.mjs`, `scripts/normalize-wix-content.mjs` |
 | Safe rich-content conversion and privacy filtering | `scripts/wix-public-content.mjs` |
@@ -195,9 +196,13 @@ python3 -m http.server 4173 --directory dist
 - Successful CMS/MCP access does not prove permission to manage Headless
   Settings. Standard collaborator roles exclude **Manage headless settings**;
   use the owner handoff in `docs/operations.md`, not repeated 403 retries.
-- A custom Wix checkout subdomain requires coordinated Wix primary/pages-domain
-  settings and a reviewed redirect-validator change; it is not currently
-  accepted merely because `SITE_URL` points to the new frontend.
+- The only approved custom checkout origin is `https://checkout.montlakepta.org`.
+  Code support does not establish DNS, TLS, Wix assignment or redirect-chain
+  readiness. Continue rejecting the public frontend and unapproved lookalikes.
+- `DEPLOYMENT_PROFILE=preview|launch` selects a complete URL/visitor-mode preset;
+  conflicting individual overrides are errors. Rehearsals use isolated copies,
+  never activate the live profile, and block browser access to live Wix APIs.
+  Public readiness checks are GET/DNS only, not transaction certification.
 
 ### Newsletter integration
 

@@ -9,6 +9,8 @@
     "build:wix-publisher": "esbuild wix/backend/github-publish.js --bundle --platform=node --format=esm --target=node18 --external:crypto --external:wix-*",
     "check:agents": "node scripts/check-agent-harness.mjs",
     "check:cutover": "node scripts/check-cutover.mjs",
+    "check:launch": "node scripts/check-launch.mjs",
+    "rehearse:cutover": "node scripts/rehearse-cutover.mjs",
     "archive:fundraising": "node scripts/publish-fundraising-archive.mjs",
     "migrate:fundraising": "node scripts/migrate-fundraising.mjs",
     "migrate:page-collections": "node scripts/migrate-page-collections.mjs",

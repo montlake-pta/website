@@ -133,10 +133,50 @@ the automation does not change DNS or unpublish the old site.
 
 The final domain switch needs a coordinated plan for GitHub Pages **and**
 Wix's primary domain, Wix-hosted checkout domain, frontend link and callback
-settings; changing a CNAME alone is insufficient. A dedicated checkout
-subdomain is not yet allowed by the current redirect validator. Follow
+settings; changing a CNAME alone is insufficient. The redirect validator now
+permits exactly `https://checkout.montlakepta.org` in addition to the approved
+Wix-owned hosts; this is code readiness, not proof of its actual hosting. Follow
 [the cutover sequence and remaining implementation checks](docs/operations.md#finish-cutover-without-breaking-checkout)
 before activating it. Preserve mail records and the Wix backend.
+
+### Rehearse before changing domains
+
+**Rehearse official-domain launch** automatically checks source changes on
+`main` and pull requests, and can also run manually. It never deploys, changes
+DNS/settings or writes to Wix. A manual run can first refresh public Wix data;
+ordinary push/PR runs use the checked-in snapshot.
+
+```sh
+npx playwright install chromium
+npm run rehearse:cutover -- --output-dir /tmp/montlake-launch-rehearsal
+```
+
+Choose a new output directory each time. The command copies the source into a
+temporary workspace, builds the final-domain/full-transaction configuration,
+runs the complete test suite and offline cutover gate, inspects desktop/mobile
+pages at the simulated official origin, and captures fundraising archives.
+It leaves the repository's `dist/` and public client configuration untouched.
+Browser Wix API requests are blocked; this does not certify live checkout.
+The workflow artifact contains the report and public screenshots/captures.
+
+For read-only checks of actual hosting, use **Check public launch readiness**
+in Actions or run:
+
+```sh
+npm run check:launch -- --profile preview --output /tmp/montlake-preview-readiness.json
+npm run check:launch -- --profile launch --output /tmp/montlake-launch-readiness.json
+```
+
+Launch checks intentionally report **NOT READY** until the official-domain
+switch is complete. They inspect DNS, HTTPS/redirects, Pages settings, page
+configuration and representative assets without submitting transactions.
+
+`DEPLOYMENT_PROFILE=preview` selects the GitHub preview/read-only setup;
+`DEPLOYMENT_PROFILE=launch` selects the official domain/full transactions.
+The profile is an optional single repository Actions variable. It rejects
+conflicting `SITE_URL`, `WIX_HEADLESS_ENABLED` or `WIX_HEADLESS_READ_ONLY`
+overrides. **Do not select `launch` in production merely to test it.** See the
+[maintainer's preset instructions](docs/domain-migration.md#using-the-reviewed-launch-and-rollback-presets).
 
 ## Wix content sync
 

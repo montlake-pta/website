@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pages, preserveCollectionRoutes, preserveRetiredProductRoutes, site, transactionPages } from "../src/site.mjs";
@@ -31,6 +31,16 @@ if (visitor.enabled) {
   }
 }
 const routeInventory = new Set(renderedPages.map((page) => page.slug));
+const assetPaths = new Set();
+async function listAssets(directory, prefix = "assets") {
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const path = `${prefix}/${entry.name}`;
+    if (entry.isDirectory()) await listAssets(join(directory, entry.name), path);
+    else if (entry.isFile()) assetPaths.add(path);
+    else throw new Error("Repository assets must be regular files, not links.");
+  }
+}
+await listAssets(join(root, "src", "assets"));
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
@@ -52,7 +62,7 @@ for (const page of renderedPages) {
   const base = page.slug ? "../".repeat(page.slug.split("/").length) : "./";
   await mkdir(pageDirectory, { recursive: true });
   await writeFile(join(pageDirectory, "index.html"), rewriteCutoverLinks(renderPage(page, base), {
-    slug: page.slug, routes: routeInventory, baseUrl: site.previewUrl,
+    slug: page.slug, routes: routeInventory, baseUrl: site.previewUrl, assetPaths,
     allowLegacyTransactions: !visitor.enabled,
   }));
 }
@@ -64,7 +74,7 @@ await emitLegacyEventAliases({
 });
 
 await writeFile(join(output, "404.html"), rewriteCutoverLinks(renderNotFound(), {
-  slug: "", routes: routeInventory, baseUrl: site.previewUrl,
+  slug: "", routes: routeInventory, baseUrl: site.previewUrl, assetPaths,
 }));
 await writeFile(join(output, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${site.previewUrl}sitemap.xml\n`);
 await writeFile(join(output, "sitemap.xml"), renderSitemap());

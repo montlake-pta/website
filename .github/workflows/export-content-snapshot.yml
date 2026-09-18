@@ -22,6 +22,7 @@ concurrency:
 jobs:
   export:
     env:
+      DEPLOYMENT_PROFILE: ${{ vars.DEPLOYMENT_PROFILE }}
       SITE_URL: ${{ vars.SITE_URL }}
       WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
       WIX_HEADLESS_ENABLED: ${{ vars.WIX_HEADLESS_ENABLED }}

@@ -400,12 +400,12 @@ Before changing the live domain:
    **Wix pages domain** configured appropriately. The **frontend link** used
    by notifications/return flows is a separate setting. A DNS CNAME change
    alone is not the complete migration.
-4. Check the implementation against that strategy: the current
-   [`validateRedirect`](../src/wix-visitor-api.mjs) permits specific Wix-branded
-   hosts, but **does not yet allow a custom checkout subdomain**. Do not claim
-   that example domain works today. If needed, add a narrowly validated,
-   explicitly approved checkout origin with regression coverage; never allow
-   arbitrary destinations or the current frontend origin.
+4. Check the implementation against that strategy:
+   [`validateRedirect`](../src/wix-visitor-api.mjs) permits the exact approved
+   `https://checkout.montlakepta.org` origin plus specific Wix-owned hosts.
+   It still rejects the public frontend, lookalike domains, credentials,
+   non-default ports and malformed URLs. Code support does not prove DNS,
+   certificate readiness or the final redirect chain.
 5. Check event/product features. Member-only registration, structured
    `ADDRESS` form controls and assigned-seat ticket selection are not currently
    supported. Server-authorized form reads and mock tests do not prove visitor
@@ -457,6 +457,73 @@ Re-read the current form rather than assuming those names for every event.
 The browser fixture seam is `initializeTransactions(config, document,
 { api, navigate })`; `data-wix-manual-init` prevents auto-bootstrap in a local
 fixture. Fixtures must not call production mutation APIs.
+
+### Repeatable launch preparation
+
+`src/deployment.mjs` owns the preview and launch URL/mode presets. Optional
+`DEPLOYMENT_PROFILE` selects all three values together:
+
+| Profile | Site base | Visitor mode |
+| --- | --- | --- |
+| `preview` | `https://montlake-pta.github.io/website/` | `enabled=false`, `readOnly=true` |
+| `launch` | `https://www.montlakepta.org/` | `enabled=true`, `readOnly=false` |
+
+When no profile is set, the existing source defaults and individual environment
+overrides retain their behavior. When a profile is selected, nonblank
+conflicting individual overrides are rejected rather than silently mixed.
+Profile selection does not change GitHub's Pages custom domain, Wix domain
+assignments, DNS, certificates or OAuth settings. The rollback profile restores
+only application build settings; domain rollback remains coordinated.
+
+The build inventories actual `src/assets/` files and rewrites references to
+those files on the exact GitHub preview origin into deployment-relative URLs.
+It preserves query/fragment bytes and supports nested pages and `srcset`.
+Other repositories, lookalikes, unknown files and unsafe paths do not gain
+access to this mapping. CMS source values remain unchanged, while the emitted
+HTML and fundraising capture inputs no longer depend on the preview asset host.
+Archive asset-host restrictions are not broadened.
+
+The **Rehearse official-domain launch** workflow uses an isolated temporary
+source copy and the launch preset. It performs build, generated-file checks,
+all unit tests, the offline strict cutover check, final-domain asset/canonical/
+callback inspection, desktop/mobile browser checks and fundraising PNG/PDF
+capture. It never deploys, writes the archive branch or changes settings.
+Manual `refresh_public_content=true` reads normalized Wix content before
+rehearsal; PR and push runs require no Wix credentials.
+
+```sh
+gh workflow run rehearse-cutover.yml --repo montlake-pta/website --ref main \
+  -f refresh_public_content=true
+```
+
+Use the `cutover-rehearsal-RUN_ID-RUN_ATTEMPT` artifact's `report.json` and
+screenshots. These are rehearsal artifacts, not successful deployment inputs:
+the automatic fundraising archive must never ingest them.
+
+The browser intercepts the official frontend origin and serves files from
+the isolated build. It blocks live Wix API/provider requests and permits only
+public Wix media GETs. Alias stubs are exercised through their own navigation;
+it does not simulate an external host's HTTP redirect implementation.
+No OAuth session, RSVP, cart mutation, ticket reservation or checkout is
+created. Rehearsal can pass before DNS switches, but cannot verify the new
+checkout host or its real callback behavior.
+
+**Check public launch readiness** is a separate read-only DNS/HTTPS/Pages
+inspection. It supports `preview` and `launch`; a launch failure before the
+switch is expected and must not be "fixed" by changing settings without launch
+approval. The JSON report distinguishes failed and unverified checks. An
+unverified GitHub settings check requires an authorized read, not relaxed
+criteria.
+
+```sh
+npm run check:launch -- --profile preview --output /tmp/preview-readiness.json
+npm run check:launch -- --profile launch --output /tmp/launch-readiness.json
+```
+
+The check inspects mail-host compatibility, not mail delivery, and a checkout
+homepage response does not prove the correct Wix account or transaction flow.
+Actual DNS/primary-domain setup, controlled hosted-flow verification and the
+maintainer's go/no-go decision remain required.
 
 ## Evidence pitfalls and local inspection
 

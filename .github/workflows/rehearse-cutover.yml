@@ -1,0 +1,71 @@
+name: Rehearse official-domain launch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "scripts/**"
+      - "package*.json"
+      - ".github/workflows/rehearse-cutover.yml"
+      - ".github/workflows/pages.yml"
+  pull_request:
+    paths:
+      - "src/**"
+      - "scripts/**"
+      - "package*.json"
+      - ".github/workflows/rehearse-cutover.yml"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+    inputs:
+      refresh_public_content:
+        description: Read current public Wix content before rehearsal; never write Wix or deploy
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cutover-rehearsal-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rehearse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx --no-install playwright install --with-deps chromium
+      - name: Refresh only normalized public Wix content
+        if: github.event_name == 'workflow_dispatch' && inputs.refresh_public_content
+        env:
+          WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
+          WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
+        run: npm run sync:wix
+      - name: Run isolated launch rehearsal
+        run: node scripts/rehearse-cutover.mjs --output-dir "$RUNNER_TEMP/cutover-rehearsal"
+      - name: Save public rehearsal evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cutover-rehearsal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cutover-rehearsal/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Explain readiness boundaries
+        if: always()
+        run: |
+          {
+            echo "## Official-domain rehearsal"
+            echo "This workflow never deploys or changes DNS, Wix domains or production settings."
+            echo "Open report.json in the artifact for results."
+            echo "A pass does not verify live checkout hosting, certificates or transaction completion."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -4,6 +4,7 @@ import { dirname, join, resolve } from "node:path";
 import { parseDocument } from "htmlparser2";
 import { getOuterHTML } from "domutils";
 import { resolveLegacyEventAlias } from "./legacy-event-aliases.mjs";
+import { PREVIEW_SITE_URL } from "../src/deployment.mjs";
 
 const retiringHosts = new Set(["montlakepta.org", "www.montlakepta.org"]);
 const untouchedText = new Set(["script", "style", "noscript", "svg", "textarea", "template"]);
@@ -50,9 +51,10 @@ const documents = new Map(legacyDocuments.map(({ source, asset }) => [source, as
  * Visible body URL text becomes an absolute deployment URL for copy/paste.
  * Missing routes and old-host same-page handoffs are build errors, not "#".
  */
-export function rewriteCutoverLinks(html, { slug = "", routes, baseUrl, allowLegacyTransactions = false } = {}) {
+export function rewriteCutoverLinks(html, { slug = "", routes, baseUrl, assetPaths, allowLegacyTransactions = false } = {}) {
   if (typeof html !== "string") throw new Error("Cutover HTML must be a string");
   if (!(routes instanceof Set)) throw new Error("Cutover routes must be a Set");
+  if (assetPaths !== undefined && !(assetPaths instanceof Set)) throw new Error("Repository asset paths must be a Set.");
   if (typeof allowLegacyTransactions !== "boolean") throw new Error("allowLegacyTransactions must be a boolean");
   const canonical = new Set([...routes].map(routeKey));
   const current = routeKey(slug);
@@ -76,6 +78,20 @@ export function rewriteCutoverLinks(html, { slug = "", routes, baseUrl, allowLeg
     const absolute = /^(?:https?:)?\/\//i.test(value);
     const retired = retiringHosts.has(parsed.hostname);
     const ownOrigin = parsed.origin === base.origin;
+    const preview = new URL(PREVIEW_SITE_URL);
+    if (assetPaths && absolute && parsed.hostname === preview.hostname
+      && (parsed.pathname.startsWith(`${preview.pathname}assets/`) || pathOnly(value).startsWith(`${preview.pathname}assets/`))) {
+      if (parsed.protocol !== "https:" || parsed.username || parsed.password || parsed.port
+        || /[\u0000-\u0020\u007f\\]/u.test(value)) fail("Unsafe repository asset URL", value);
+      const rawPath = pathOnly(value);
+      const decodedRaw = decodePath(rawPath, value, true);
+      if (hasDotSegment(decodedRaw) || decodedRaw.includes("//")) fail("Unsafe repository asset path", value);
+      const local = decodedRaw.slice(preview.pathname.length);
+      if (!assetPaths.has(local)) fail("Unknown repository asset", value);
+      const suffix = value.slice(value.search(/[?#]/) < 0 ? value.length : value.search(/[?#]/));
+      const encoded = rawPath.slice(preview.pathname.length);
+      return literal ? `${base.href}${encoded}${suffix}` : `${prefix}${encoded}${suffix}`;
+    }
     if (absolute && !retired && !ownOrigin) return null;
     if (!["http:", "https:"].includes(parsed.protocol)) return null;
     if (parsed.username || parsed.password || (retired && parsed.port)) fail("Unsafe internal authority", value);
@@ -164,7 +180,7 @@ export function rewriteCutoverLinks(html, { slug = "", routes, baseUrl, allowLeg
         } else if (attribute === "srcset") {
           // Wix CDN/data URLs are not parsed or reserialized. Replace only
           // retiring-host candidates, keeping all descriptors and separators.
-          const next = value.replace(/(?:https?:)?\/\/(?:www\.)?montlakepta\.org(?=[:/])[^\s,]+/gi,
+          const next = value.replace(/(?:https?:)?\/\/(?:(?:www\.)?montlakepta\.org|montlake-pta\.github\.io)(?=[:/])[^\s,]+/gi,
             (url) => destination(url) ?? url);
           if (next !== value) { node.attribs[attribute] = next; changed = true; }
         }

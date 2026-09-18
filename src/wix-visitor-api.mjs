@@ -3,6 +3,7 @@ import { products } from '@wix/stores';
 import { currentCart, checkout } from '@wix/ecom';
 import { wixEventsV2, forms, rsvpV2, orders, ticketReservations, policies } from '@wix/events';
 import { redirects } from '@wix/redirects';
+import { CHECKOUT_ORIGIN } from './deployment.mjs';
 
 // Official Catalog V1 eCommerce integration:
 // https://dev.wix.com/docs/api-reference/business-solutions/stores/catalog-v1/catalog/e-commerce-integration.md
@@ -39,6 +40,8 @@ export function callbackUrls(config) {
   };
 }
 export function validateRedirect(value, config, frontendOrigin) {
+  requireValue(typeof value === 'string' && !/[\u0000-\u0020\u007f\\]/.test(value),
+    'Secure checkout could not be opened. Please try again later.', 'UNSAFE_REDIRECT');
   let url;
   try { url = new URL(value); } catch { /* reject below */ }
   const base = new URL(validateConfig(config).baseUrl);
@@ -47,7 +50,7 @@ export function validateRedirect(value, config, frontendOrigin) {
   requireValue(!LEGACY_HOSTS.has(url.hostname) && url.origin !== base.origin && url.origin !== frontendOrigin,
     'Checkout is temporarily unavailable. Your cart has been kept; please try again later.', 'LEGACY_CHECKOUT_DOMAIN');
   // Only API-created redirect sessions reach this function, never URL query parameters.
-  const hosted = url.hostname === 'www.wix.com' || url.hostname === 'checkout.wix.com' ||
+  const hosted = url.origin === CHECKOUT_ORIGIN || url.hostname === 'www.wix.com' || url.hostname === 'checkout.wix.com' ||
     url.hostname === 'www.checkout.wix.com' || url.hostname === 'accounts.wix.com' ||
     /^[a-z0-9-]+\.wixsite\.com$/.test(url.hostname) ||
     /^[a-z0-9-]+\.wixstudio\.com$/.test(url.hostname);

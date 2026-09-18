@@ -80,6 +80,35 @@ test("root-relative legacy content gets the Pages base without changing already-
   assert.equal(href(link("/assets/documents/enrichment-pickup-map.pdf")), "../../../assets/documents/enrichment-pickup-map.pdf");
 });
 
+test("only inventoried repository assets on the exact preview origin migrate to either deployment base", () => {
+  const assetPaths = new Set(["assets/photo.png", "assets/class photo.jpg"]);
+  const source = "https://montlake-pta.github.io/website/assets/photo.png?version=1&keep=%2F#crop";
+  for (const baseUrl of ["https://montlake-pta.github.io/website/", "https://www.montlakepta.org/"]) {
+    const config = { ...options, baseUrl, assetPaths };
+    const document = rewrite(`<img src="${escape(source)}"><img srcset="${escape(source)} 1x, https://static.wixstatic.com/media/photo.png 2x">${link(source)}`, config);
+    assert.equal(selectOne("img", document).attribs.src, "../../../assets/photo.png?version=1&keep=%2F#crop");
+    assert.match(selectAll("img", document)[1].attribs.srcset, /^\.\.\/\.\.\/\.\.\/assets\/photo.png/);
+    assert.equal(selectOne("a", document).attribs.href, "../../../assets/photo.png?version=1&keep=%2F#crop");
+    assert.equal(href(link("https://montlake-pta.github.io/website/assets/class%20photo.jpg"), config), "../../../assets/class%20photo.jpg");
+    if (baseUrl === "https://www.montlakepta.org/") {
+      assert.equal(href(link("https://montlake-pta.github.io/other-repository/assets/photo.png"), config),
+        "https://montlake-pta.github.io/other-repository/assets/photo.png");
+    } else assert.throws(() => href(link("https://montlake-pta.github.io/other-repository/assets/photo.png"), config), /Unknown cutover target/);
+    assert.equal(href(link("https://montlake-pta.github.io.evil.example/website/assets/photo.png"), config),
+      "https://montlake-pta.github.io.evil.example/website/assets/photo.png");
+  }
+  for (const value of [
+    "https://montlake-pta.github.io/website/assets/not-in-repository.png",
+    "https://montlake-pta.github.io/website/assets/../private.png",
+    "https://montlake-pta.github.io/website/assets/%2e%2e/private.png",
+    "https://montlake-pta.github.io/website/assets/%2fphoto.png",
+    "https://montlake-pta.github.io/website/assets/%252e%252e/private.png",
+    "http://montlake-pta.github.io/website/assets/photo.png",
+    "https://user:secret@montlake-pta.github.io/website/assets/photo.png",
+    "https://montlake-pta.github.io:444/website/assets/photo.png",
+  ]) assert.throws(() => href(link(value), { ...options, assetPaths }), /repository asset|internal path encoding/);
+});
+
 test("all reviewed /events-1 aliases retain exact identity at arbitrary page depth", () => {
   for (const { source, target } of legacyEventAliases) {
     const decoded = decodeURIComponent(source);

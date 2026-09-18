@@ -1,8 +1,9 @@
 import defaults from "../src/wix-client.config.json" with { type: "json" };
 import wix from "../src/wix.config.json" with { type: "json" };
-import { site } from "../src/site.mjs";
+import { deploymentBaseUrl, deploymentEnvironment } from "../src/deployment.mjs";
 
 export function visitorConfiguration(env = process.env, settings = defaults) {
+  env = deploymentEnvironment(env);
   const flag = env.WIX_HEADLESS_ENABLED || String(settings.enabled);
   if (!["true", "false"].includes(flag)) throw new Error("WIX_HEADLESS_ENABLED must be true or false.");
   const enabled = flag === "true";
@@ -14,5 +15,5 @@ export function visitorConfiguration(env = process.env, settings = defaults) {
   if ((enabled || readOnly || clientId) && !/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(clientId || "")) {
     throw new Error("Configure a valid public Wix Headless client ID before enabling visitor services.");
   }
-  return { enabled, readOnly, clientId, siteId: env.WIX_SITE_ID || wix.siteId, baseUrl: site.previewUrl };
+  return { enabled, readOnly, clientId, siteId: env.WIX_SITE_ID || wix.siteId, baseUrl: deploymentBaseUrl(env) };
 }
