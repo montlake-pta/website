@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "receipts": {
+    "35310289750-1": {
+      "runId": "35310289750",
+      "runAttempt": 1,
+      "sourceCommit": "8368856f6758f9d50853d43f552d7c17f47a46b8",
+      "deployedAt": "2026-09-18T05:19:09.000Z",
+      "runUrl": "https://github.com/montlake-pta/website/actions/runs/35310289750",
+      "preparedAt": "2026-09-18T05:18:55.033Z",
+      "snapshotsAdded": 3
+    }
+  },
+  "pages": {
+    "annual-fund": {
+      "title": "Annual Fund",
+      "latestFingerprint": "5b4eddc6badf6d0624992a9c84cf371b75c5af5d43ab0e9eb50a8979feecccf7",
+      "snapshots": [
+        {
+          "directory": "snapshots/annual-fund/year-not-specified/2026-09-18T05-19-09-000Z-35310289750-1",
+          "fingerprint": "5b4eddc6badf6d0624992a9c84cf371b75c5af5d43ab0e9eb50a8979feecccf7",
+          "schoolYear": "",
+          "campaignStatus": "upcoming",
+          "deployedAt": "2026-09-18T05:19:09.000Z",
+          "runId": "35310289750"
+        }
+      ]
+    },
+    "donate": {
+      "title": "Donate",
+      "latestFingerprint": "5b88460ce2e2c1b2aea8678f1618e9caa6d8b0da8998bf9d66466cadf8d554a1",
+      "snapshots": [
+        {
+          "directory": "snapshots/donate/year-not-specified/2026-09-18T05-19-09-000Z-35310289750-1",
+          "fingerprint": "5b88460ce2e2c1b2aea8678f1618e9caa6d8b0da8998bf9d66466cadf8d554a1",
+          "schoolYear": "",
+          "campaignStatus": "evergreen",
+          "deployedAt": "2026-09-18T05:19:09.000Z",
+          "runId": "35310289750"
+        }
+      ]
+    },
+    "spring-auction": {
+      "title": "Spring Auction",
+      "latestFingerprint": "170803b1db942aa69e81a92a6c57498d09963417e1265aaf11f1bae7dae1a187",
+      "snapshots": [
+        {
+          "directory": "snapshots/spring-auction/2025-2026/2026-09-18T05-19-09-000Z-35310289750-1",
+          "fingerprint": "170803b1db942aa69e81a92a6c57498d09963417e1265aaf11f1bae7dae1a187",
+          "schoolYear": "2025–2026",
+          "campaignStatus": "closed",
+          "deployedAt": "2026-09-18T05:19:09.000Z",
+          "runId": "35310289750"
+        }
+      ]
+    }
+  }
+}

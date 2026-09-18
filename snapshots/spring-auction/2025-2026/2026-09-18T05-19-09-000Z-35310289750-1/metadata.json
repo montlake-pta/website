@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "slug": "spring-auction",
+  "title": "Spring Auction",
+  "schoolYear": "2025–2026",
+  "campaignStatus": "closed",
+  "source": "cms",
+  "sourceUrl": "https://montlake-pta.github.io/website/spring-auction/",
+  "fingerprint": "170803b1db942aa69e81a92a6c57498d09963417e1265aaf11f1bae7dae1a187",
+  "sourceHtmlSha256": "ce83186653a14a62843da9ac0cab74e6026354924de7c423941f55cc11ff3fc3",
+  "sourceCommit": "8368856f6758f9d50853d43f552d7c17f47a46b8",
+  "sourceRunId": "35310289750",
+  "sourceRunAttempt": 1,
+  "runUrl": "https://github.com/montlake-pta/website/actions/runs/35310289750",
+  "preparedAt": "2026-09-18T05:18:55.033Z",
+  "deployedAt": "2026-09-18T05:19:09.000Z",
+  "capturedAt": "2026-09-18T05:19:57.158Z",
+  "capture": {
+    "browser": "153.0.8010.12",
+    "viewports": {
+      "desktop": [
+        1440,
+        1000
+      ],
+      "mobile": [
+        390,
+        1000
+      ]
+    },
+    "pdf": "A4 / screen media"
+  },
+  "files": [
+    {
+      "path": "assets/1e4cea71d75ec427581d6259fc07148a2e60d60d16cabf4b4f5360487b3f9dc3.woff2",
+      "sha256": "1e4cea71d75ec427581d6259fc07148a2e60d60d16cabf4b4f5360487b3f9dc3",
+      "bytes": 34024
+    },
+    {
+      "path": "assets/33b49c485e21a38bbfe68de764cc5b329b82c74e6ae4dc0cd9ace5b349da25fe.woff2",
+      "sha256": "33b49c485e21a38bbfe68de764cc5b329b82c74e6ae4dc0cd9ace5b349da25fe",
+      "bytes": 85780
+    },
+    {
+      "path": "assets/b031852c13763345bf8048335d24651e8c75826fe52482c1fa3e91ab996f653c.png",
+      "sha256": "b031852c13763345bf8048335d24651e8c75826fe52482c1fa3e91ab996f653c",
+      "bytes": 71011
+    },
+    {
+      "path": "assets/f5f123d7fc986eaa066e9008becae9307faae6061b74b16ccdb4756e5f33c10c.css",
+      "sha256": "f5f123d7fc986eaa066e9008becae9307faae6061b74b16ccdb4756e5f33c10c",
+      "bytes": 28292
+    },
+    {
+      "path": "index.html",
+      "sha256": "f968a77e3f183c5b00125ea6d568f70feb3b9f7810313906b643b9908fe97ad6",
+      "bytes": 7787
+    },
+    {
+      "path": "page.json",
+      "sha256": "b3704129312e48367e291d50a5d4342582fbbe9335f0f0e9625c592b259be86d",
+      "bytes": 4728
+    },
+    {
+      "path": "desktop.png",
+      "sha256": "9964073dbd7da27af0f16561856fe221a5b8cc3f0ef3c1317672ad99c400d058",
+      "bytes": 253785
+    },
+    {
+      "path": "mobile.png",
+      "sha256": "a775d65cdefa3c611810b93b0a07226c1fd62f7549da2baa060c1c25d84e580a",
+      "bytes": 214948
+    },
+    {
+      "path": "page.pdf",
+      "sha256": "a6bec36394b0d10970241912d77949f49f400c57d4dcef8254646abe05504466",
+      "bytes": 243068
+    }
+  ]
+}
