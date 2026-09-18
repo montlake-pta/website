@@ -378,6 +378,12 @@ These are completed rollout checks, not steps content editors need to repeat.
 
 ## Finish cutover without breaking checkout
 
+For the nontechnical domain and Wix operators, use the
+[maintainer handoff](domain-migration.md). It records the September 18 public
+DNS baseline, separates preparation from live changes, and explains how to
+preserve mail and coordinate rollback. Do not treat that procedure as evidence
+that the checkout-domain code change or live migration has already happened.
+
 Before changing the live domain:
 
 1. Recheck the provisioned Headless client and approve the preview and intended
@@ -410,7 +416,11 @@ Before changing the live domain:
    Preserve `data-legacy-transaction` handoffs until working replacements exist.
    Do not use a self-link or an unavailable widget to produce a zero-link count.
 7. Coordinate Wix primary/pages-domain changes, GitHub Pages custom-domain
-   setup and public DNS as one planned launch. Preserve MX/SPF/DKIM/DMARC and
+   setup and public DNS as one planned launch. Verify domain ownership first,
+   assign the GitHub custom domain before changing public DNS, then follow
+   Wix's documented switch order: main-domain DNS to the external host before
+   changing Wix's primary domain to checkout and unassigning the main domain.
+   Preserve MX/SPF/DKIM/DMARC and
    other unrelated records. Verify frontend routes, checkout/login returns,
    provider email links and old inbound URLs. Keep Wix backend apps/media
    running and retain a reviewed rollback plan.

@@ -10,6 +10,12 @@ source.
 use [content authoring](docs/content-authoring.md); the
 [parity report](docs/content-parity.md) records historical findings and repairs.
 
+**Domain and Wix maintainers:** use the
+[step-by-step domain migration handoff](docs/domain-migration.md) for the
+coordinated move to the official PTA domain. It includes preparation, exact
+GitHub DNS values, Wix checkout-domain steps, email safeguards and rollback.
+The live switch still requires the website maintainer's readiness approval.
+
 ## Edit the site
 
 - Routine page copy: Wix CMS → `CommonPages` or `FundraisingPages` (match by `slug`)
