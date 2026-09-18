@@ -65,11 +65,20 @@ jobs:
         if: vars.WIX_SYNC_ENABLED != 'true'
         run: echo "::notice::Wix sync is not enabled; building the checked-in content snapshot."
       - name: Build site
+        env:
+          FUNDRAISING_ARCHIVE_INPUT_DIR: ${{ runner.temp }}/fundraising-archive-input
         run: npm run build
       - name: Check generated site
         run: npm test
       - name: Require cutover readiness when activating the new domain or transactions
         run: npm run check:cutover -- --if-enabled
+      - name: Preserve exact fundraising archive inputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: fundraising-archive-input-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/fundraising-archive-input/
+          if-no-files-found: error
+          retention-days: 90
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site

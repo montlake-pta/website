@@ -290,6 +290,75 @@ probe, or substitute for testing RSVP/payment. If interrupted, inspect for its
 `publishing-probe-` records before rerunning; clean up only confirmed probe
 records. Existing live verification links are in the README.
 
+## Automatic fundraising archive
+
+The Pages build prepares archival inputs **outside `dist/`** from the same
+rendered page objects and HTML it is about to deploy. CSS, fonts and images
+are frozen at that point. It uploads
+`fundraising-archive-input-RUN_ID-RUN_ATTEMPT` before the Deploy step, with
+90-day retention. Failed preparation stops that deployment rather than
+publishing a version that cannot be recovered faithfully.
+
+**Archive fundraising deployments** runs after the Pages workflow completes
+and hourly at minute 43 for automatic recovery. It verifies the same repository,
+`main`, the Pages workflow path, exact run attempt, source SHA and successful
+Deploy step before downloading any matching artifact. It never reads fresh
+Wix content or executes scripts from the artifact.
+
+The writer creates an orphan `fundraising-archive` branch on its first run.
+Only README.md, index.json and `snapshots/` belong there. It records receipts
+for checked deployments and appends captures only when a page's content/style/
+asset fingerprint differs from its last archived state. Browser captures run
+offline with scripts disabled, without passing the job token into Chromium.
+All new captures must succeed before a batch is committed. Push races restart
+from a fresh remote checkout; there is no force push or history replacement.
+
+The archive branch is public and may be downloaded by anyone. It is purposely
+absent from public website routing, navigation and sitemap. Do not merge it
+into `main`, enable Pages deployment from it, or store raw CMS/donor/private
+data there. The archive writer alone has `contents: write`; the live Wix
+publishing App remains Actions-write only.
+
+Local/repository assets and HTTPS images/PDFs on `static.wixstatic.com` or
+`images.wixstatic.com` are supported. Assets are stored by content hash and
+verified before replay. Remote redirects, credentials, unapproved media hosts,
+CSS imports and unsupported embedded media fail explicitly. Copy such media
+into approved local/public assets or add reviewed support; do not silently
+drop it or bypass the host checks. Third-party web pages and access-controlled
+documents linked from the campaign are not crawled.
+
+### Archive recovery
+
+An archive failure does not undo an already successful deployment. Its failed
+Actions run is the notification; keep workflow-failure notifications enabled
+for maintainers. The hourly workflow reconciles retained input artifacts in
+deployment order, including an older run attempt completed after newer run IDs.
+Transient asset download failures are retried during preparation; concurrent
+archive-branch updates receive bounded retries. Persistent failures still need
+an operator to fix the underlying error, not a content manager to archive
+campaigns manually.
+
+```sh
+gh run list --repo montlake-pta/website --workflow archive-fundraising.yml --limit 5
+gh workflow run archive-fundraising.yml --repo montlake-pta/website --ref main
+```
+
+The manual dispatch is recovery only, not the normal archival process. Do not
+delete unprocessed input artifacts; GitHub retention limits apply to the
+90-day recovery buffer, not to committed snapshots. An expired unprocessed
+artifact is reported as an unrecoverable gap; never manufacture a historical
+capture by rebuilding old code against today's Wix content. Interruptions
+longer than artifact retention cannot guarantee complete deployment history.
+
+For local capture development, install the pinned browser with
+`npx playwright install chromium`, then set `FUNDRAISING_ARCHIVE_INPUT_DIR` to
+a new temporary directory and provide `GITHUB_SHA`, `GITHUB_RUN_ID` and
+`GITHUB_RUN_ATTEMPT` when running the build. Normal `npm run build && npm test`
+does not need browser binaries; unit tests inject a capture fixture.
+Use `appendArchive()` from `scripts/archive-fundraising.mjs` for local replay
+with verified input/deployment provenance. Keep generated captures outside
+the working tree.
+
 ## Finish cutover without breaking checkout
 
 Before changing the live domain:

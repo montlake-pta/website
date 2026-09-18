@@ -236,10 +236,10 @@ accurately and remove obsolete donation asks there as well.
 
 ### Rolling over a campaign
 
-1. Set the current campaign to `upcoming` while preparing new copy. Preserve
-   the old facts in a dated CMS archive record before replacing them; for
-   example, a new `spring-auction-2026` record can use `archived` status and the
-   same fundraising fields without a new template.
+1. Set the current campaign to `upcoming` while preparing new copy. Continue
+   editing the same stable record; the automatic archive preserves previously
+   deployed versions. No archive button, duplicate record or public history
+   page is needed.
 2. Update the heading, summary and full body, including FAQs, historical
    references and links. Clear old goals, school years, deadlines and images
    that no longer apply. Do not carry forward staffing percentages or
@@ -250,6 +250,48 @@ accurately and remove obsolete donation asks there as well.
 4. Set `active` only when the campaign and destination are ready. After the
    automatic deployment, inspect the campaign page, Donate hub and homepage.
    Updating one field does not rewrite historical prose in other CMS records.
+
+### Automatic fundraising snapshots
+
+Fundraising pages are archived automatically to the
+[`fundraising-archive` branch](https://github.com/montlake-pta/website/tree/fundraising-archive).
+Its README is the board's reference index. **The branch is public**, but none
+of its files are deployed to GitHub Pages, linked in the website or listed in
+the sitemap. GitHub access restrictions were deliberately not requested.
+
+Every successful deployment is checked for changes to the rendered fundraising
+pages, including the shared header/footer, CSS, fonts, images and public page
+data. Unchanged hourly builds do not create duplicate screenshots or PDFs.
+Content changes, campaign-year changes and redesigns create new snapshots;
+reverting to an older appearance is recorded as a new point in history.
+If a fundraising route disappears, earlier snapshots remain available.
+
+Each snapshot contains full-page desktop (1440px) and mobile (390px) PNGs, an
+A4 PDF for sharing, passive HTML with local assets, public campaign JSON and
+metadata linking it to the exact source commit and deployment. Screen captures
+record appearance; the PDF is paginated and is not a pixel-identical substitute.
+School-year groups use the authored value; an unset year is labeled as such,
+not guessed from the current date.
+
+The snapshots cannot accept donations or submit forms. Live scripts, embeds
+and external navigation are removed from the saved HTML; visual button labels
+remain as historical evidence. Local captured PDF links and on-page anchors
+remain usable. Download the archive branch as a ZIP and extract it to view the
+HTML with its adjacent assets; screenshots/PDFs can also be opened directly
+through GitHub.
+
+Only **versions actually deployed after archival was enabled** are covered.
+Rapid edits may be combined into one deployment; intermediate Wix saves,
+unpublished drafts, donor records and external payment/catalog pages are not
+archived. Existing public historical pages remain unchanged, but no new public
+archive pages are created. The three current fundraising destinations and any
+future page using the fundraising renderer are included automatically.
+
+Normal authoring requires no archive maintenance. Failures appear in Actions
+and are retried by the hourly recovery workflow. Frozen input artifacts are
+kept for 90 days as a recovery buffer; the Git archive itself has no automatic
+expiration. See [archive operations](operations.md#automatic-fundraising-archive)
+for recovery and supported asset rules.
 
 ### Earlier fundraising migration (historical)
 

@@ -9,6 +9,7 @@
     "build:wix-publisher": "esbuild wix/backend/github-publish.js --bundle --platform=node --format=esm --target=node18 --external:crypto --external:wix-*",
     "check:agents": "node scripts/check-agent-harness.mjs",
     "check:cutover": "node scripts/check-cutover.mjs",
+    "archive:fundraising": "node scripts/publish-fundraising-archive.mjs",
     "migrate:fundraising": "node scripts/migrate-fundraising.mjs",
     "migrate:page-collections": "node scripts/migrate-page-collections.mjs",
     "setup:wix-cms": "node scripts/setup-wix-cms.mjs",
@@ -36,6 +37,7 @@
     "css-tree": "^3.2.1",
     "domutils": "^4.0.2",
     "esbuild": "^0.28.2",
-    "htmlparser2": "^12.0.0"
+    "htmlparser2": "^12.0.0",
+    "playwright": "1.63.0"
   }
 }

@@ -11,6 +11,7 @@ import { emitLegacyDocuments, rewriteCutoverLinks } from "./cutover-links.mjs";
 import { renderFundraisingOverview, renderFundraisingPage } from "./render-fundraising.mjs";
 import { escapeAttribute, prepareContent } from "./page-content.mjs";
 import { renderBlogArticle } from "./render-blog.mjs";
+import { prepareFundraisingArchive } from "./archive-fundraising.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
@@ -67,6 +68,15 @@ await writeFile(join(output, "404.html"), rewriteCutoverLinks(renderNotFound(), 
 }));
 await writeFile(join(output, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${site.previewUrl}sitemap.xml\n`);
 await writeFile(join(output, "sitemap.xml"), renderSitemap());
+
+if (process.env.FUNDRAISING_ARCHIVE_INPUT_DIR) {
+  await prepareFundraisingArchive({
+    pages: renderedPages, cmsPages: wixContent.cms.pages, baseUrl: site.previewUrl,
+    distDir: output, outputDir: process.env.FUNDRAISING_ARCHIVE_INPUT_DIR,
+    sourceCommit: process.env.GITHUB_SHA, sourceRunId: process.env.GITHUB_RUN_ID,
+    sourceRunAttempt: Number(process.env.GITHUB_RUN_ATTEMPT),
+  });
+}
 
 console.log(`Built ${renderedPages.length} pages in dist/ using ${wixContent.source} content`);
 

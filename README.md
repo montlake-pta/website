@@ -138,6 +138,16 @@ The deployed site reads Blog posts, Events, Store products and categories, PTA
 board members, and CMS-managed pages from Wix during the GitHub Actions build.
 The result is static HTML, so Wix credentials are never sent to visitors.
 
+Fundraising appearance and content are also preserved automatically after
+successful deployments on the public
+[`fundraising-archive` branch](https://github.com/montlake-pta/website/tree/fundraising-archive).
+Its README indexes dated desktop/mobile screenshots, PDFs and passive HTML
+copies with frozen assets. Unchanged pages are deduplicated; older captures
+are never overwritten. Editors keep using the same CMS records—there is no
+manual archive step or new public archive page.
+See [the board's archive guide](docs/content-authoring.md#automatic-fundraising-snapshots)
+and [automatic recovery](docs/operations.md#automatic-fundraising-archive).
+
 Supported Blog and Event rich content retains links, lists and inline images
 through the same explicit HTML allowlist used for CMS pages. Normalized
 snapshots contain public fields only, with conferencing access details

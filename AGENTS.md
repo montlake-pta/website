@@ -72,12 +72,16 @@ the documented `user-invocable: false` agent-profile override.
 | Offline newsletter snapshot | `src/data/newsletters.json` |
 | Offline public calendar snapshot | `src/data/calendar-events.json` |
 | Deployment | `.github/workflows/pages.yml` |
+| Automatic fundraising history | `scripts/archive-fundraising*.mjs`, `scripts/publish-fundraising-archive.mjs`, `.github/workflows/archive-fundraising.yml` |
 | Wix mutation-to-GitHub publishing | `wix/backend/`, `.github/workflows/check-wix-publishing.yml` |
 | Native typed-page publishing automations | `wix/page-publishing.mjs`, `wix/page-publishing.config.json`, `scripts/setup-page-publishing.mjs` |
 | Headless client provisioning | `scripts/setup-wix-headless.mjs`, `.github/workflows/setup-wix-headless.yml` |
 | Operational handoff and recovery | `docs/operations.md`, `docs/content-authoring.md` |
 
 `dist/` is generated output. Never edit or commit it.
+Frozen archival copies belong only in `snapshots/` on the orphan
+`fundraising-archive` branch, never in `main` or the Pages output. That branch is
+public reference storage, not an additional website.
 
 ## Standard Workflow
 
@@ -145,6 +149,10 @@ python3 -m http.server 4173 --directory dist
 - Page renderers are selected by collection, not by a record's campaign status.
   Keep slugs unique across typed collections and keep generated routes out of
   CommonPages/FundraisingPages. Do not add fields unsupported by that renderer.
+- Fundraising history is automatic; do not require editors to duplicate CMS
+  records, click an archive button or maintain public archive links. Capture
+  exact prepared deployment inputs, not a later reread of Wix or the live site.
+  Keep earlier snapshots immutable and do not store drafts or donor data.
 
 ### Wix integration
 
@@ -246,6 +254,10 @@ python3 -m http.server 4173 --directory dist
   typed data hooks or take over another operator's Editor session to configure
   them. Validate automation configurations before activation and retain the
   collection-specific deletion payload path from `wix/page-publishing.mjs`.
+- Only the archive writer job receives `contents: write`. It may append to
+  `fundraising-archive`, never force-push, merge that branch into main or expand
+  the Wix publishing App's permissions. Validate exact successful deployment
+  attempts and frozen artifact provenance before capturing or committing.
 - The Copilot setup workflow must contain exactly one job named
   `copilot-setup-steps`.
 
