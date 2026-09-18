@@ -359,6 +359,23 @@ Use `appendArchive()` from `scripts/archive-fundraising.mjs` for local replay
 with verified input/deployment provenance. Keep generated captures outside
 the working tree.
 
+### Archive rollout evidence
+
+Archival began with source commit `8368856`. The
+[first automatic run](https://github.com/montlake-pta/website/actions/runs/35310336401)
+created the orphan branch and captured Donate, Annual Fund and Spring Auction
+from [deployment 35310289750](https://github.com/montlake-pta/website/actions/runs/35310289750).
+The root archive commit had no parent, and each snapshot's asset/capture
+checksums, desktop/mobile dimensions and PDF header were verified. Downloaded
+HTML also opened offline with both local fonts and all images, with no scripts
+or external action links.
+
+A second unchanged deployment triggered
+[automatic archival run 35310472739](https://github.com/montlake-pta/website/actions/runs/35310472739):
+it recorded the new deployment receipt and added **zero** new snapshots.
+The three existing capture directories and metadata remained unchanged.
+These are completed rollout checks, not steps content editors need to repeat.
+
 ## Finish cutover without breaking checkout
 
 Before changing the live domain:
