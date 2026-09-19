@@ -525,6 +525,23 @@ homepage response does not prove the correct Wix account or transaction flow.
 Actual DNS/primary-domain setup, controlled hosted-flow verification and the
 maintainer's go/no-go decision remain required.
 
+The initial preparation release is `11cee24`. The
+[snapshot-based CI rehearsal](https://github.com/montlake-pta/website/actions/runs/35407713532)
+passed, followed by a
+[manual rehearsal with freshly read public Wix content](https://github.com/montlake-pta/website/actions/runs/35407801403).
+The latter checked 90 canonical pages, 21 compatibility stubs and all three
+fundraising captures without deployment or live transaction calls. These
+counts describe that run, not permanent route constraints.
+
+The [read-only preview readiness workflow](https://github.com/montlake-pta/website/actions/runs/35407727336)
+also passed. The launch-profile check correctly reported the still-Wix DNS,
+missing checkout CNAME and unset GitHub custom domain as **NOT READY**.
+Production remained read-only on the GitHub preview; no profile variable,
+DNS entry or Wix domain assignment was changed. The
+[normal Pages release](https://github.com/montlake-pta/website/actions/runs/35407713507)
+and its [automatic archive run](https://github.com/montlake-pta/website/actions/runs/35407766105)
+both succeeded.
+
 ## Evidence pitfalls and local inspection
 
 - Compare **live deployed content with live Wix content** when diagnosing
