@@ -20,6 +20,7 @@ Only versions actually deployed after archival was enabled are covered; this is 
 
 | Campaign year | Deployed (UTC) | Capture | Files |
 | --- | --- | --- | --- |
+| Not specified | 2026-09-18T23:59:41.000Z | evergreen | [Desktop](snapshots/donate/year-not-specified/2026-09-18T23-59-41-000Z-35407713507-1/desktop.png) · [Mobile](snapshots/donate/year-not-specified/2026-09-18T23-59-41-000Z-35407713507-1/mobile.png) · [PDF](snapshots/donate/year-not-specified/2026-09-18T23-59-41-000Z-35407713507-1/page.pdf) · [HTML](snapshots/donate/year-not-specified/2026-09-18T23-59-41-000Z-35407713507-1/index.html) · [Metadata](snapshots/donate/year-not-specified/2026-09-18T23-59-41-000Z-35407713507-1/metadata.json) |
 | Not specified | 2026-09-18T05:19:09.000Z | evergreen | [Desktop](snapshots/donate/year-not-specified/2026-09-18T05-19-09-000Z-35310289750-1/desktop.png) · [Mobile](snapshots/donate/year-not-specified/2026-09-18T05-19-09-000Z-35310289750-1/mobile.png) · [PDF](snapshots/donate/year-not-specified/2026-09-18T05-19-09-000Z-35310289750-1/page.pdf) · [HTML](snapshots/donate/year-not-specified/2026-09-18T05-19-09-000Z-35310289750-1/index.html) · [Metadata](snapshots/donate/year-not-specified/2026-09-18T05-19-09-000Z-35310289750-1/metadata.json) |
 
 ## Spring Auction (spring-auction)

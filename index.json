@@ -81,6 +81,15 @@
       "runUrl": "https://github.com/montlake-pta/website/actions/runs/35406321941",
       "preparedAt": "2026-09-18T23:36:39.170Z",
       "snapshotsAdded": 0
+    },
+    "35407713507-1": {
+      "runId": "35407713507",
+      "runAttempt": 1,
+      "sourceCommit": "11cee245bb774f283ad0f438467683e333315c11",
+      "deployedAt": "2026-09-18T23:59:41.000Z",
+      "runUrl": "https://github.com/montlake-pta/website/actions/runs/35407713507",
+      "preparedAt": "2026-09-18T23:59:22.766Z",
+      "snapshotsAdded": 1
     }
   },
   "pages": {
@@ -100,7 +109,7 @@
     },
     "donate": {
       "title": "Donate",
-      "latestFingerprint": "5b88460ce2e2c1b2aea8678f1618e9caa6d8b0da8998bf9d66466cadf8d554a1",
+      "latestFingerprint": "31e95a826d9f8e508ffb65cd0fe374d40567c91ee7e61fc8b55e281631119428",
       "snapshots": [
         {
           "directory": "snapshots/donate/year-not-specified/2026-09-18T05-19-09-000Z-35310289750-1",
@@ -109,6 +118,14 @@
           "campaignStatus": "evergreen",
           "deployedAt": "2026-09-18T05:19:09.000Z",
           "runId": "35310289750"
+        },
+        {
+          "directory": "snapshots/donate/year-not-specified/2026-09-18T23-59-41-000Z-35407713507-1",
+          "fingerprint": "31e95a826d9f8e508ffb65cd0fe374d40567c91ee7e61fc8b55e281631119428",
+          "schoolYear": "",
+          "campaignStatus": "evergreen",
+          "deployedAt": "2026-09-18T23:59:41.000Z",
+          "runId": "35407713507"
         }
       ]
     },

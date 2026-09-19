@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "slug": "donate",
+  "title": "Donate",
+  "schoolYear": "",
+  "campaignStatus": "evergreen",
+  "source": "cms",
+  "sourceUrl": "https://montlake-pta.github.io/website/donate/",
+  "fingerprint": "31e95a826d9f8e508ffb65cd0fe374d40567c91ee7e61fc8b55e281631119428",
+  "sourceHtmlSha256": "41777c175632400cb46f251e0fc9fa0fa5ed9deae6dc6b94416e899b34ec001e",
+  "sourceCommit": "11cee245bb774f283ad0f438467683e333315c11",
+  "sourceRunId": "35407713507",
+  "sourceRunAttempt": 1,
+  "runUrl": "https://github.com/montlake-pta/website/actions/runs/35407713507",
+  "preparedAt": "2026-09-18T23:59:22.766Z",
+  "deployedAt": "2026-09-18T23:59:41.000Z",
+  "capturedAt": "2026-09-19T00:00:41.973Z",
+  "capture": {
+    "browser": "153.0.8010.12",
+    "viewports": {
+      "desktop": [
+        1440,
+        1000
+      ],
+      "mobile": [
+        390,
+        1000
+      ]
+    },
+    "pdf": "A4 / screen media"
+  },
+  "files": [
+    {
+      "path": "assets/1e4cea71d75ec427581d6259fc07148a2e60d60d16cabf4b4f5360487b3f9dc3.woff2",
+      "sha256": "1e4cea71d75ec427581d6259fc07148a2e60d60d16cabf4b4f5360487b3f9dc3",
+      "bytes": 34024
+    },
+    {
+      "path": "assets/33b49c485e21a38bbfe68de764cc5b329b82c74e6ae4dc0cd9ace5b349da25fe.woff2",
+      "sha256": "33b49c485e21a38bbfe68de764cc5b329b82c74e6ae4dc0cd9ace5b349da25fe",
+      "bytes": 85780
+    },
+    {
+      "path": "assets/b031852c13763345bf8048335d24651e8c75826fe52482c1fa3e91ab996f653c.png",
+      "sha256": "b031852c13763345bf8048335d24651e8c75826fe52482c1fa3e91ab996f653c",
+      "bytes": 71011
+    },
+    {
+      "path": "assets/cedb67882226c7d4f3abd6c2b48fd50f8e447a71492180dc3b3ff025017e16d7.jpg",
+      "sha256": "cedb67882226c7d4f3abd6c2b48fd50f8e447a71492180dc3b3ff025017e16d7",
+      "bytes": 439491
+    },
+    {
+      "path": "assets/f5f123d7fc986eaa066e9008becae9307faae6061b74b16ccdb4756e5f33c10c.css",
+      "sha256": "f5f123d7fc986eaa066e9008becae9307faae6061b74b16ccdb4756e5f33c10c",
+      "bytes": 28292
+    },
+    {
+      "path": "index.html",
+      "sha256": "de96353534ccf3578836ca1f5bc93bfc3162309b6a51f7a1fdb93c56e88886d9",
+      "bytes": 10581
+    },
+    {
+      "path": "page.json",
+      "sha256": "9abe3a85bd4d226d93191836bfa10d6474ca21112bc68b7f8fdac3c4d40bcd72",
+      "bytes": 7060
+    },
+    {
+      "path": "desktop.png",
+      "sha256": "1e1faad8ad7c10a6d0b34492fa7ad8269ba3f4325bf120e7466d3c10169a8ae6",
+      "bytes": 733699
+    },
+    {
+      "path": "mobile.png",
+      "sha256": "66ad45d4b7bcdd836c49cf326ab1c4ad22a1b913eb0ad52684823483552037ff",
+      "bytes": 449753
+    },
+    {
+      "path": "page.pdf",
+      "sha256": "91affd15acb588d5d5646b3a55832d9660d4783b3ab6c04122cb90e2d6b0c213",
+      "bytes": 829501
+    }
+  ]
+}
