@@ -1116,12 +1116,30 @@
       "runUrl": "https://github.com/montlake-pta/website/actions/runs/37712211697",
       "preparedAt": "2026-10-08T01:19:31.739Z",
       "snapshotsAdded": 3
+    },
+    "37712406321-1": {
+      "runId": "37712406321",
+      "runAttempt": 1,
+      "sourceCommit": "2b9500867800e921d642edc22bd882661270cd38",
+      "deployedAt": "2026-10-08T01:23:04.000Z",
+      "runUrl": "https://github.com/montlake-pta/website/actions/runs/37712406321",
+      "preparedAt": "2026-10-08T01:21:33.608Z",
+      "snapshotsAdded": 0
+    },
+    "37713369171-1": {
+      "runId": "37713369171",
+      "runAttempt": 1,
+      "sourceCommit": "c4fd44eb0f80e3d1f817bce9d1283bd060a23bea",
+      "deployedAt": "2026-10-08T01:34:37.000Z",
+      "runUrl": "https://github.com/montlake-pta/website/actions/runs/37713369171",
+      "preparedAt": "2026-10-08T01:32:07.338Z",
+      "snapshotsAdded": 3
     }
   },
   "pages": {
     "annual-fund": {
       "title": "Annual Fund",
-      "latestFingerprint": "d723b95e7a2963f9d5feac4e6e7398c6894d214a93092c555639a57dea159320",
+      "latestFingerprint": "08a7b80e7d2ea03addf36e2fad5b07ac819068d629bc87fcf83fd0cab4f3a556",
       "snapshots": [
         {
           "directory": "snapshots/annual-fund/year-not-specified/2026-09-18T05-19-09-000Z-35310289750-1",
@@ -1146,12 +1164,20 @@
           "campaignStatus": "upcoming",
           "deployedAt": "2026-10-08T01:21:02.000Z",
           "runId": "37712211697"
+        },
+        {
+          "directory": "snapshots/annual-fund/year-not-specified/2026-10-08T01-34-37-000Z-37713369171-1",
+          "fingerprint": "08a7b80e7d2ea03addf36e2fad5b07ac819068d629bc87fcf83fd0cab4f3a556",
+          "schoolYear": "",
+          "campaignStatus": "upcoming",
+          "deployedAt": "2026-10-08T01:34:37.000Z",
+          "runId": "37713369171"
         }
       ]
     },
     "donate": {
       "title": "Donate",
-      "latestFingerprint": "e67b354f25fa063fc7b07e920ae407b5bee59d8c6ac5d8a7f146a590cd9adde4",
+      "latestFingerprint": "44c84b01989d1e87e4e3f68d04c32aea75352a9c9e0b60c63852cf9615081159",
       "snapshots": [
         {
           "directory": "snapshots/donate/year-not-specified/2026-09-18T05-19-09-000Z-35310289750-1",
@@ -1184,12 +1210,20 @@
           "campaignStatus": "evergreen",
           "deployedAt": "2026-10-08T01:21:02.000Z",
           "runId": "37712211697"
+        },
+        {
+          "directory": "snapshots/donate/year-not-specified/2026-10-08T01-34-37-000Z-37713369171-1",
+          "fingerprint": "44c84b01989d1e87e4e3f68d04c32aea75352a9c9e0b60c63852cf9615081159",
+          "schoolYear": "",
+          "campaignStatus": "evergreen",
+          "deployedAt": "2026-10-08T01:34:37.000Z",
+          "runId": "37713369171"
         }
       ]
     },
     "spring-auction": {
       "title": "Spring Auction",
-      "latestFingerprint": "090c3db1774e5f3a34f615bb2787a0ae1052f51ee8d005fe3335eaf2963de23e",
+      "latestFingerprint": "4cb9f225fc698294d8ec18020beb5c206da7dafda065d2ee811b66854d1ec252",
       "snapshots": [
         {
           "directory": "snapshots/spring-auction/2025-2026/2026-09-18T05-19-09-000Z-35310289750-1",
@@ -1214,6 +1248,14 @@
           "campaignStatus": "closed",
           "deployedAt": "2026-10-08T01:21:02.000Z",
           "runId": "37712211697"
+        },
+        {
+          "directory": "snapshots/spring-auction/2025-2026/2026-10-08T01-34-37-000Z-37713369171-1",
+          "fingerprint": "4cb9f225fc698294d8ec18020beb5c206da7dafda065d2ee811b66854d1ec252",
+          "schoolYear": "2025–2026",
+          "campaignStatus": "closed",
+          "deployedAt": "2026-10-08T01:34:37.000Z",
+          "runId": "37713369171"
         }
       ]
     }
