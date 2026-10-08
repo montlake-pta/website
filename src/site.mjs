@@ -586,14 +586,31 @@ export const pages = [
   {
     slug: "evergreens",
     title: "Evergreens Sale",
-    heading: "A festive tradition that gives back.",
+    heading: "Montlake PTA 2026 Evergreens Sale!",
     kicker: "Seasonal fundraiser",
-    description: "Order holiday evergreens and help with the annual pickup event supporting Montlake Elementary.",
+    description: "Deck the halls. Fund the arts. Skip the parking lot tree hunt.",
     accent: "blue",
     content: `
-      <p class="lead">The annual evergreens sale is a community tradition and seasonal fundraiser for Montlake Elementary.</p>
-      <p><a href="https://www.signupgenius.com/go/10C044DAAAF2AA4FCCF8-60124101-montlake">Volunteer for pickup</a></p>
-      <p>Ordering and pickup details are announced in the PTA newsletter each fall. Questions can be sent to <a href="mailto:evergreens@montlakepta.org?subject=Evergreens%20Sale%20Question">evergreens@montlakepta.org</a>.</p>`,
+      <p class="lead">Every year our PTA hosts a holiday sale to support the Montlake Elementary community, and every year you show up in a big way.</p>
+      <p>Last year we raised over $9K, and this year we're aiming for $10K. Every dollar goes straight back to our kids, funding art instruction, music education, academic intervention, and the other resources that help our students thrive.</p>
+      <div class="button-row">
+        <a class="button button-primary" href="../category/evergreens/">Order now</a>
+      </div>
+      <h2>Order by November 24th</h2>
+      <p>Supplies are limited, and we will sell out of the popular stuff. Every year someone tells us they meant to order. Don't let that be you this year. 🎄</p>
+      <h2>Pickup details</h2>
+      <ul>
+        <li><strong>Where:</strong> Montlake Elementary School, 2025 E Calhoun St</li>
+        <li><strong>When:</strong> Saturday, December 5th, 9am to noon</li>
+        <li><strong>What:</strong> Tree trimming, a bake sale, festive tunes, and a jolly good time with your neighbors</li>
+      </ul>
+      <h2>What's on the menu</h2>
+      <p>Fresh trees and garlands straight from the Olympic Peninsula, plus Hanukkah and Kwanzaa candles, and homemade baked goods at pickup. Whether you light candles, trim a tree, hang a wreath, or just want your house to smell like a forest, there's something here for you. (And the cookies are nondenominational.)</p>
+      <h2>Future You will thank you</h2>
+      <p>December has a way of disappearing. Between concerts, parties, and the annual search for the tape, why not knock one thing off the list now? <a href="../category/evergreens/">Order today</a>, show up on pickup day, and enjoy the smug glow of someone who planned ahead.</p>
+      <h2>Want to be one of our elves?</h2>
+      <p>We'd love extra hands on pickup day hauling trees, running the bake sale, and spreading cheer. No experience needed, just enthusiasm (and maybe gloves).</p>
+      <p>Questions or want to volunteer day of pick-up? Contact us: <a href="mailto:evergreens@montlakepta.org?subject=Evergreens%20Sale%20Question">evergreens@montlakepta.org</a></p>`,
   },
   {
     slug: "blog",
