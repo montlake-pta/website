@@ -1,7 +1,7 @@
 {
   "schemaVersion": 3,
   "source": "wix-headless",
-  "syncedAt": "2026-09-12T15:20:13.918Z",
+  "syncedAt": "2026-10-08T02:03:38.355Z",
   "cms": {
     "boardMembers": [
       {
@@ -244,11 +244,11 @@
         "pageType": "common",
         "slug": "evergreens",
         "title": "Evergreens Sale",
-        "heading": "A festive tradition that gives back.",
-        "description": "Order holiday evergreens and help with the annual pickup event supporting Montlake Elementary.",
+        "heading": "Montlake PTA 2026 Evergreens Sale!",
+        "description": "Deck the halls. Fund the arts. Skip the parking lot tree hunt.",
         "published": true,
         "accent": "blue",
-        "body": "\n      <p class=\"lead\">The annual evergreens sale is a community tradition and seasonal fundraiser for Montlake Elementary.</p>\n      <p><a href=\"https://www.signupgenius.com/go/10C044DAAAF2AA4FCCF8-60124101-montlake\">Volunteer for pickup</a></p>\n      <p>Ordering and pickup details are announced in the PTA newsletter each fall. Questions can be sent to <a href=\"mailto:evergreens@montlakepta.org?subject=Evergreens%20Sale%20Question\">evergreens@montlakepta.org</a>.</p>"
+        "body": "\n      <p class=\"lead\">Every year our PTA hosts a holiday sale to support the Montlake Elementary community, and every year you show up in a big way.</p>\n      <p>Last year we raised over $9K, and this year we're aiming for $10K. Every dollar goes straight back to our kids, funding art instruction, music education, academic intervention, and the other resources that help our students thrive.</p>\n      <div class=\"button-row\">\n        <a class=\"button button-primary\" href=\"../category/evergreens/\">Order now</a>\n      </div>\n      <h2>Order by November 24th</h2>\n      <p>Supplies are limited, and we will sell out of the popular stuff. Every year someone tells us they meant to order. Don't let that be you this year. 🎄</p>\n      <h2>Pickup details</h2>\n      <ul>\n        <li><strong>Where:</strong> Montlake Elementary School, 2025 E Calhoun St</li>\n        <li><strong>When:</strong> Saturday, December 5th, 9am to noon</li>\n        <li><strong>What:</strong> Tree trimming, a bake sale, festive tunes, and a jolly good time with your neighbors</li>\n      </ul>\n      <h2>What's on the menu</h2>\n      <p>Fresh trees and garlands straight from the Olympic Peninsula, plus Hanukkah and Kwanzaa candles, and homemade baked goods at pickup. Whether you light candles, trim a tree, hang a wreath, or just want your house to smell like a forest, there's something here for you. (And the cookies are nondenominational.)</p>\n      <h2>Future You will thank you</h2>\n      <p>December has a way of disappearing. Between concerts, parties, and the annual search for the tape, why not knock one thing off the list now? <a href=\"../category/evergreens/\">Order today</a>, show up on pickup day, and enjoy the smug glow of someone who planned ahead.</p>\n      <h2>Want to be one of our elves?</h2>\n      <p>We'd love extra hands on pickup day hauling trees, running the bake sale, and spreading cheer. No experience needed, just enthusiasm (and maybe gloves).</p>\n      <p>Questions or want to volunteer day of pick-up? Contact us: <a href=\"mailto:evergreens@montlakepta.org?subject=Evergreens%20Sale%20Question\">evergreens@montlakepta.org</a></p>"
       },
       {
         "pageType": "common",
@@ -551,11 +551,11 @@
       "slug": "start-of-school-to-do-list-1",
       "title": "Start of School To Do List",
       "excerpt": "A family checklist for school forms, supplies, volunteering, PTA membership, and communications, with links and step-by-step instructions.",
-      "contentText": "Welcome to Montlake Elementary! Welcome new families, and welcome back returning families! We are looking forward to a great year ahead! At the start of each school year, parents and guardians need to fill out forms and pay fees.  Here is the checklist of tasks to do. Full list of forms is available here: https://www.seattleschools.org/news/start-of-school-forms/ Start-of-school checklist Set up Source Account. Parents and guardians of new SPS students:  set up your Source account.  The Source is where you will find important information for your student and links to pay and complete forms. This is also where you will find your student’s quarterly progress reports from their teachers as the year progresses. You will need an active account in the Source to complete the steps below. Note Student ID. Locate your student's ID number by logging in to the Source. Their student ID number is at the top of the page. You will need the student ID number in some of the forms and for lunch payment set up. Change of Address. Have you moved?  Please update your address with the school district. Data Verification.  Complete the data verification form for each student. You can access this form in the Source. Once logged into the Source, click on Data Verification in the menu on the left side of the page.  Please complete this step for each student.  This form is submitted online and must be completed in addition to the forms listed in the next step below. (This is a point of confusion for parents. Only completing the data verification form is not sufficient. You must also complete the list of forms listed in the next step.) Seattle Public Schools Forms.  To access the forms in languages other than English, please visit this site. List of required forms to complete. These forms must be completed and emailed to the Montlake office. Everyone must complete these forms. Emergency Information and Student Release Form FERPA Device Agreements:  Please complete one for each student, according to grade.    IPad Agreement for grades K-2 Laptop Agreement for grades 3-5 School Supply Fee.  Parents and guardians do not need to purchase school supplies.  Instead, pay the $35 per student donation by logging into the Source and clicking on the School Pay link on the left side menu.  Once in School Pay, choose the 2025-2026 School Supply and Online Subscriptions item and pay the $35. SPS Volunteer Application.  If you wish to volunteer in the school building or chaperone field trips, please check your volunteer approval status if you've volunteered in past years or complete an application and background check if you are new to volunteering at Montlake. Go to the SPS volunteer page to check status or to renew or apply. Montlake Volunteer Survey. Our small school relies heavily on volunteers and we hope that all parents and guardians can find a way to help.  There are many ways to volunteer.  Take this PTA Volunteer Survey to learn about volunteer opportunities and to indicate your volunteer interest.  Note:  Completing this survey does not commit you to any volunteer job.  You will be contacted to learn more and decide how much time you can commit. Join the PTA.  Join or renew your membership in the PTA. Everyone must renew their membership annually.  To join the PTA for free for any reason, please reach out to president@montlakepta.org. Subscribe to the PTA Communications!  If you are new to Montlake or if you did not receive the school newsletter last year, please subscribe to our communications. No need to subscribe if you received the newsletter last year. While we won't be running our newsletter as frequently as last year, please do subscribe to receive important updates and communications from us! Also note that if you use a gmail address, the newsletter may end up in your promotions tab.",
-      "bodyHtml": "<figure><img src=\"https://static.wixstatic.com/media/0834d6_86abe30325a44195a89dbfcca0a08ed8~mv2.jpg\" alt=\"Entrance to Montlake Elementary School, with the school name on the concrete wall.\" loading=\"lazy\" /><figcaption>Welcome to Montlake Elementary!</figcaption></figure><p>Welcome new families, and welcome back returning families! We are looking forward to a great year ahead!</p><p>At the start of each school year, parents and guardians need to fill out forms and pay fees.  Here is the checklist of tasks to do. Full list of forms is available here: <u><a href=\"https://www.seattleschools.org/news/start-of-school-forms/\" target=\"_blank\" rel=\"noopener noreferrer\">https://www.seattleschools.org/news/start-of-school-forms/</a></u></p><h2>Start-of-school checklist</h2><ol><li><p><strong>Set up Source Account.</strong> Parents and guardians of new SPS students:  <u><a href=\"https://www.seattleschools.org/departments/dots/support-training-forms/source/\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>set up your Source account</strong></a></u><u>.</u>  The Source is where you will find important information for your student and links to pay and complete forms. This is also where you will find your student’s quarterly progress reports from their teachers as the year progresses. You will need an active account in the Source to complete the steps below.</p></li><li><p><strong>Note Student ID</strong>. Locate your student's ID number by logging in to the <u><a href=\"https://ps.seattleschools.org/public/\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Source</strong></a></u>. Their student ID number is at the top of the page. You will need the student ID number in some of the forms and for lunch payment set up.</p></li><li><p><strong>Change of Address.</strong> Have you moved?  Please <u><a href=\"https://www.k12insight.com/Lets-Talk/Dialogue.aspx?k=PR2T88N4B9LT@WF7G2YLT@DY6F2N7LT\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>update your address</strong></a></u> with the school district.</p></li><li><p><strong>Data Verification.</strong>  Complete the data verification form for each student. You can access this form in the <u><a href=\"https://ps.seattleschools.org/public/\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Source</strong></a></u>. Once logged into the Source, click on Data Verification in the menu on the left side of the page.  Please complete this step for each student.  This form is submitted online and must be completed in addition to the forms listed in the next step below. (This is a point of confusion for parents. Only completing the data verification form is not sufficient. You must also complete the list of forms listed in the next step.)</p></li><li><p><strong>Seattle Public Schools Forms</strong>.  To access the forms in languages other than English, please visit this <u><a href=\"https://www.seattleschools.org/news/start-of-school-forms/\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>site</strong></a></u>. </p><p>List of <strong>required</strong> forms to complete. These forms must be completed and emailed to the Montlake office. <strong>Everyone must complete these forms</strong>.</p><ol><li><p><u><a href=\"https://www.seattleschools.org/wp-content/uploads/2021/08/emergency_release_form_english-fillable.pdf?ver=1784147904\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Emergency Information and Student Release Form</strong></a></u></p></li><li><p><u><a href=\"https://www.seattleschools.org/wp-content/uploads/2021/08/FERPA-PreK-8-English.pdf?ver=1783969124\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>FERPA</strong></a></u><u><strong> </strong></u></p></li><li><p>Device Agreements:  Please complete one for each student, according to grade.</p><ol><li><p><u>  </u><u> </u><u><a href=\"https://www.seattleschools.org/wp-content/uploads/2021/08/iPad-Packet.pdf?ver=1784063795\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>IPad Agreement</strong></a></u><u> </u>for grades K-2</p></li><li><p><u><a href=\"https://www.seattleschools.org/wp-content/uploads/2021/08/Laptop-Packet.pdf?ver=1784064376\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Laptop Agreement</strong></a></u><u> </u>for grades 3-5</p></li></ol></li></ol></li><li><p><strong>School Supply Fee.</strong>  Parents and guardians do not need to purchase school supplies.  Instead, pay the $35 per student donation by logging into the <u><a href=\"https://ps.seattleschools.org/public/\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Source</strong></a></u> and clicking on the School Pay link on the left side menu.  Once in School Pay, choose the 2025-2026 School Supply and Online Subscriptions item and pay the $35.</p></li><li><p><strong>SPS Volunteer Application.</strong>  If you wish to volunteer in the school building or chaperone field trips, please check your volunteer approval status if you've volunteered in past years or complete an application and background check if you are new to volunteering at Montlake. Go to the <u><a href=\"https://www.seattleschools.org/departments/volunteer/\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>SPS volunteer page</strong></a></u> to check status or to renew or apply.</p></li><li><p><strong>Montlake Volunteer Survey. </strong>Our small school relies heavily on volunteers and we hope that all parents and guardians can find a way to help.  There are many ways to volunteer.  Take this <u><a href=\"https://docs.google.com/forms/d/e/1FAIpQLScaRl6Es0TiDzNxTKqR9N6CY4TV73rxZuzLXoz8fTvp4kjONg/viewform?usp=publish-editor\" target=\"_blank\" rel=\"noopener noreferrer\">PTA </a></u><u><a href=\"https://docs.google.com/forms/d/e/1FAIpQLScaRl6Es0TiDzNxTKqR9N6CY4TV73rxZuzLXoz8fTvp4kjONg/viewform?usp=publish-editor\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Volunteer Survey</strong></a></u><u><strong> </strong></u>to learn about volunteer opportunities and to indicate your volunteer interest.  Note:  Completing this survey does not commit you to any volunteer job.  You will be contacted to learn more and decide how much time you can commit.</p></li><li><p><strong>Join the PTA.</strong>  <u><a href=\"https://montlakepta.givebacks.com/store\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Join or renew</strong></a></u> your membership in the PTA. Everyone must renew their membership annually.  To join the PTA for free for any reason, please reach out to <u><a href=\"mailto:president@montlakepta.org\" target=\"_blank\" rel=\"noopener noreferrer\">president@montlakepta.org</a></u>.</p></li><li><p><strong>Subscribe to the PTA Communications!</strong>  If you are new to Montlake or if you did not receive the school newsletter last year, please<u> </u><u><a href=\"https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>subscribe to our communications</strong></a></u><u><a href=\"https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp\" target=\"_blank\" rel=\"noopener noreferrer\">.</a></u> No need to subscribe if you received the newsletter last year. While we won't be running our newsletter as frequently as last year, please do subscribe to receive important updates and communications from us! Also note that if you use a gmail address, the newsletter may end up in your promotions tab.</p></li></ol>",
+      "contentText": "Welcome to Montlake Elementary! Welcome new families, and welcome back returning families! We are looking forward to a great year ahead! At the start of each school year, parents and guardians need to fill out forms and pay fees.  Here is the checklist of tasks to do. Full list of forms is available here: https://www.seattleschools.org/news/start-of-school-forms/ Start-of-school checklist Set up Source Account. Parents and guardians of new SPS students:  set up your Source account.  The Source is where you will find important information for your student and links to pay and complete forms. This is also where you will find your student’s quarterly progress reports from their teachers as the year progresses. You will need an active account in the Source to complete the steps below. Note Student ID. Locate your student's ID number by logging in to the Source. Their student ID number is at the top of the page. You will need the student ID number in some of the forms and for lunch payment set up. Change of Address. Have you moved?  Please update your address with the school district. Data Verification.  Complete the data verification form for each student. You can access this form in the Source. Once logged into the Source, click on Data Verification in the menu on the left side of the page.  Please complete this step for each student.  This form is submitted online and must be completed in addition to the forms listed in the next step below. (This is a point of confusion for parents. Only completing the data verification form is not sufficient. You must also complete the list of forms listed in the next step.) Seattle Public Schools Forms.  To access the forms in languages other than English, please visit this site. List of required forms to complete. These forms must be completed and emailed to  Miriam De Leon at mrdeleon@seattleschools.org the Montlake office. Everyone must complete these forms. Emergency Information and Student Release Form FERPA Device Agreements:  Please complete one for each student, according to grade.    IPad Agreement for grades K-2 Laptop Agreement for grades 3-5 School Supply Fee.  Parents and guardians do not need to purchase school supplies.  Instead, pay the $35 per student donation by logging into the Source and clicking on the School Pay link on the left side menu.  Once in School Pay, choose the 2025-2026 School Supply and Online Subscriptions item and pay the $35. SPS Volunteer Application.  If you wish to volunteer in the school building or chaperone field trips, please check your volunteer approval status if you've volunteered in past years or complete an application and background check if you are new to volunteering at Montlake. Go to the SPS volunteer page to check status or to renew or apply. Montlake Volunteer Survey. Our small school relies heavily on volunteers and we hope that all parents and guardians can find a way to help.  There are many ways to volunteer.  Take this PTA Volunteer Survey to learn about volunteer opportunities and to indicate your volunteer interest.  Note:  Completing this survey does not commit you to any volunteer job.  You will be contacted to learn more and decide how much time you can commit. Join the PTA.  Join or renew your membership in the PTA. Everyone must renew their membership annually.  To join the PTA for free for any reason, please reach out to president@montlakepta.org. Subscribe to the PTA Communications!  If you are new to Montlake or if you did not receive the school newsletter last year, please subscribe to our communications. No need to subscribe if you received the newsletter last year. While we won't be running our newsletter as frequently as last year, please do subscribe to receive important updates and communications from us! Also note that if you use a gmail address, the newsletter may end up in your promotions tab.",
+      "bodyHtml": "<figure><img src=\"https://static.wixstatic.com/media/0834d6_86abe30325a44195a89dbfcca0a08ed8~mv2.jpg\" alt=\"Entrance to Montlake Elementary School, with the school name on the concrete wall.\" loading=\"lazy\" /><figcaption>Welcome to Montlake Elementary!</figcaption></figure><p>Welcome new families, and welcome back returning families! We are looking forward to a great year ahead!</p><p>At the start of each school year, parents and guardians need to fill out forms and pay fees.  Here is the checklist of tasks to do. Full list of forms is available here: <u><a href=\"https://www.seattleschools.org/news/start-of-school-forms/\" target=\"_blank\" rel=\"noopener noreferrer\">https://www.seattleschools.org/news/start-of-school-forms/</a></u></p><h2>Start-of-school checklist</h2><ol><li><p><strong>Set up Source Account.</strong> Parents and guardians of new SPS students:  <u><a href=\"https://www.seattleschools.org/departments/dots/support-training-forms/source/\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>set up your Source account</strong></a></u><u>.</u>  The Source is where you will find important information for your student and links to pay and complete forms. This is also where you will find your student’s quarterly progress reports from their teachers as the year progresses. You will need an active account in the Source to complete the steps below.</p></li><li><p><strong>Note Student ID</strong>. Locate your student's ID number by logging in to the <u><a href=\"https://ps.seattleschools.org/public/\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Source</strong></a></u>. Their student ID number is at the top of the page. You will need the student ID number in some of the forms and for lunch payment set up.</p></li><li><p><strong>Change of Address.</strong> Have you moved?  Please <u><a href=\"https://www.k12insight.com/Lets-Talk/Dialogue.aspx?k=PR2T88N4B9LT@WF7G2YLT@DY6F2N7LT\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>update your address</strong></a></u> with the school district.</p></li><li><p><strong>Data Verification.</strong>  Complete the data verification form for each student. You can access this form in the <u><a href=\"https://ps.seattleschools.org/public/\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Source</strong></a></u>. Once logged into the Source, click on Data Verification in the menu on the left side of the page.  Please complete this step for each student.  This form is submitted online and must be completed in addition to the forms listed in the next step below. (This is a point of confusion for parents. Only completing the data verification form is not sufficient. You must also complete the list of forms listed in the next step.)</p></li><li><p><strong>Seattle Public Schools Forms</strong>.  To access the forms in languages other than English, please visit this <u><a href=\"https://www.seattleschools.org/news/start-of-school-forms/\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>site</strong></a></u>. </p><p></p><p>List of <strong>required</strong> forms to complete. These forms must be completed and emailed to  <strong>Miriam De Leon</strong> at <u><a href=\"mailto:mrdeleon@seattleschools.org\" target=\"_blank\" rel=\"noopener noreferrer\">mrdeleon@seattleschools.org</a></u><u> </u>the Montlake office. <strong>Everyone must complete these forms</strong>.</p><ol><li><p><u><a href=\"https://www.seattleschools.org/wp-content/uploads/2021/08/emergency_release_form_english-fillable.pdf?ver=1784147904\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Emergency Information and Student Release Form</strong></a></u></p></li><li><p><u><a href=\"https://www.seattleschools.org/wp-content/uploads/2021/08/FERPA-PreK-8-English.pdf?ver=1783969124\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>FERPA</strong></a></u><u><strong> </strong></u></p></li><li><p>Device Agreements:  Please complete one for each student, according to grade.</p><ol><li><p><u>  </u><u> </u><u><a href=\"https://www.seattleschools.org/wp-content/uploads/2021/08/iPad-Packet.pdf?ver=1784063795\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>IPad Agreement</strong></a></u><u> </u>for grades K-2</p></li><li><p><u><a href=\"https://www.seattleschools.org/wp-content/uploads/2021/08/Laptop-Packet.pdf?ver=1784064376\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Laptop Agreement</strong></a></u><u> </u>for grades 3-5</p></li></ol></li></ol></li><li><p><strong>School Supply Fee.</strong>  Parents and guardians do not need to purchase school supplies.  Instead, pay the $35 per student donation by logging into the <u><a href=\"https://ps.seattleschools.org/public/\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Source</strong></a></u> and clicking on the School Pay link on the left side menu.  Once in School Pay, choose the 2025-2026 School Supply and Online Subscriptions item and pay the $35.</p></li><li><p><strong>SPS Volunteer Application.</strong>  If you wish to volunteer in the school building or chaperone field trips, please check your volunteer approval status if you've volunteered in past years or complete an application and background check if you are new to volunteering at Montlake. Go to the <u><a href=\"https://www.seattleschools.org/departments/volunteer/\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>SPS volunteer page</strong></a></u> to check status or to renew or apply.</p></li><li><p><strong>Montlake Volunteer Survey. </strong>Our small school relies heavily on volunteers and we hope that all parents and guardians can find a way to help.  There are many ways to volunteer.  Take this <u><a href=\"https://docs.google.com/forms/d/e/1FAIpQLScaRl6Es0TiDzNxTKqR9N6CY4TV73rxZuzLXoz8fTvp4kjONg/viewform?usp=publish-editor\" target=\"_blank\" rel=\"noopener noreferrer\">PTA </a></u><u><a href=\"https://docs.google.com/forms/d/e/1FAIpQLScaRl6Es0TiDzNxTKqR9N6CY4TV73rxZuzLXoz8fTvp4kjONg/viewform?usp=publish-editor\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Volunteer Survey</strong></a></u><u><strong> </strong></u>to learn about volunteer opportunities and to indicate your volunteer interest.  Note:  Completing this survey does not commit you to any volunteer job.  You will be contacted to learn more and decide how much time you can commit.</p></li><li><p><strong>Join the PTA.</strong>  <u><a href=\"https://montlakepta.givebacks.com/store\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>Join or renew</strong></a></u> your membership in the PTA. Everyone must renew their membership annually.  To join the PTA for free for any reason, please reach out to <u><a href=\"mailto:president@montlakepta.org\" target=\"_blank\" rel=\"noopener noreferrer\">president@montlakepta.org</a></u>.</p></li><li><p><strong>Subscribe to the PTA Communications!</strong>  If you are new to Montlake or if you did not receive the school newsletter last year, please<u> </u><u><a href=\"https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>subscribe to our communications</strong></a></u><u><a href=\"https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp\" target=\"_blank\" rel=\"noopener noreferrer\">.</a></u> No need to subscribe if you received the newsletter last year. While we won't be running our newsletter as frequently as last year, please do subscribe to receive important updates and communications from us! Also note that if you use a gmail address, the newsletter may end up in your promotions tab.</p></li></ol>",
       "publishedAt": "2026-09-09T03:07:40.000Z",
-      "updatedAt": "2026-09-12T15:15:43.617Z",
-      "image": null,
+      "updatedAt": "2026-09-18T23:35:51.228Z",
+      "image": "https://static.wixstatic.com/media/0834d6_86abe30325a44195a89dbfcca0a08ed8~mv2.jpg",
       "sourceUrl": "https://www.montlakepta.org/post/start-of-school-to-do-list-1"
     },
     {
@@ -693,6 +693,36 @@
       "sourceUrl": "https://www.montlakepta.org/event-details/evergreens-sale-pick-up"
     },
     {
+      "id": "a5ca5e27-297c-4cec-8365-9b8a66418a3f",
+      "slug": "fall-after-school-enrichment-registration",
+      "title": "Fall After School Enrichment Registration!",
+      "summary": "ASE registration opens 9/15 and runs through 9/22 at 11:59PM. Register today!",
+      "descriptionText": "Registration for our Fall After-School Enrichment opens tomorrow at 12:00 PM! Please visit 6crickets for course descriptions and registration.\n\nScholarships are available -- please reach out if cost is a barrier to participation. We want every child to have the opportunity to participate.\n\nKey Dates & Registration Window\n\nYou have one week to register for classes!\n\nRegistration Opens: Tuesday, September 15 at 12:00 PM\n\nRegistration Closes: Tuesday, September 22 at 11:59 PM\n\nSession Dates: October 7 - December 18\n\nNo classes: October 9, November 11, November 23-27\n\nProgram Costs & Fees\n\nClass pricing varies by provider, curriculum, and the number of class days offered. Each transaction also includes management fees that help the PTA offset the cost of onsite coordination, provide financial aid, and support other costs involved in running the program. Also note that sales tax may appear at checkout, in accordance with Washington state law for certain instructional programs.\n\nNavigating After-School: Read Our New FAQ\n\nWe know how critical after-school planning is for families, as well as the questions that arise around scheduling and how enrichment works alongside licensed childcare (Launch).\n\nTo provide clarity, we’ve put together a quick guide: View the FAQ\n\nHave Questions?\n\nEmail enrichment@montlakepta.org\n\nVisit https://www.montlakepta.org/enrichment\n\nREGISTER ON 6CRICKETS",
+      "bodyHtml": "<p>Registration for our Fall After-School Enrichment opens <strong>tomorrow at 12:00 PM</strong>! Please visit <u><a href=\"https://46gaaoabb.cc.rs6.net/tn.jsp?f=0015jW3UbHfyy7EyQgATbTNU7QZQrIyYLtuCYiMLL6WxotQN43ZaViZBLZh6MA61k39BC2D6qec0erKSQDbtZ9lFRbvhv2ws21VvwnnoTt95PI6SjxH6k06zD3-1sHfNJzC-GPYojOhAib1jjs2lIsottZqjY18OXsy8YJxGWCSodRMHq6yHSoSJrXg4NpVhzz-CcROewFw362NTHkwKUk1UC4M1morgFZs5yFlNn9-J_wZPEw9_yLt94KHJ-DxUTtJS7JHnkD4JV8CpACIjXxKzKnbrz-VAwRXJEfho9OjRLbLHOJKYkJerrAFwQAsPGoiL1g7GKKv8pdL19jZqzk5wpQq-ArRY6lqQYeUTj0Htzrr8Mpkg62RbXOhHT8F-YPQsoeGC04ibsDNr_me6_8gTSzfTugZ20llChf4D6gOyJjHVrDV6Ge7IqVsxEHccSNu&amp;c=&amp;ch=\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>6crickets</strong></a></u> for course descriptions and registration.</p><p></p><p>Scholarships are available -- please reach out if cost is a barrier to participation. We want every child to have the opportunity to participate.</p><p></p><p><u><strong>Key Dates &amp; Registration Window</strong></u></p><p>You have one week to register for classes!</p><p></p><ul><li><p><strong>Registration Opens:</strong> Tuesday, September 15 at 12:00 PM</p></li><li><p><strong>Registration Closes:</strong> Tuesday, September 22 at 11:59 PM</p></li><li><p><strong>Session Dates</strong>: October 7 - December 18</p></li><li><p><strong>No classes:</strong> October 9, November 11, November 23-27</p></li></ul><p></p><p><u><strong>Program Costs &amp; Fees</strong></u></p><p>Class pricing varies by provider, curriculum, and the number of class days offered. Each transaction also includes <strong>management fees</strong> that help the PTA offset the cost of onsite coordination, provide financial aid, and support other costs involved in running the program. Also note that <strong>sales tax</strong> may appear at checkout, in accordance with Washington state law for certain instructional programs.</p><p></p><p><u><strong>Navigating After-School: Read Our New FAQ</strong></u></p><p>We know how critical after-school planning is for families, as well as the questions that arise around scheduling and how enrichment works alongside licensed childcare (Launch).</p><p></p><p>To provide clarity, we’ve put together a quick guide: <u><a href=\"https://46gaaoabb.cc.rs6.net/tn.jsp?f=0015jW3UbHfyy7EyQgATbTNU7QZQrIyYLtuCYiMLL6WxotQN43ZaViZBMjRjrX8zX4s5UrgVRNaFnfIEbDQBlL2yKv9X4IFS8Cz_qX76pjb1ZPkFBt2jHUl5e5Rc3bmq4cBvzW_S49k0_M7yMydhI-G09erdF6gATJ_RQoVZgvFM3_YLIBC5PnLM_0FfFOSuYbjKncPiItRX9t01fakJI4ppTdp9Vcio8HTeWV60E0jALg=&amp;c=&amp;ch=\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>View the FAQ</strong></a></u></p><p></p><p><u><strong>Have Questions?</strong></u></p><ul><li><p>Email <u><a href=\"mailto:enrichment@montlakepta.org\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>enrichment@montlakepta.org</strong></a></u></p></li><li><p>Visit <u><a href=\"https://www.montlakepta.org/enrichment\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>https://www.montlakepta.org/enrichment</strong></a></u></p><p></p></li></ul><p><u><a href=\"https://46gaaoabb.cc.rs6.net/tn.jsp?f=0015jW3UbHfyy7EyQgATbTNU7QZQrIyYLtuCYiMLL6WxotQN43ZaViZBLZh6MA61k39BC2D6qec0erKSQDbtZ9lFRbvhv2ws21VvwnnoTt95PI6SjxH6k06zD3-1sHfNJzC-GPYojOhAib1jjs2lIsottZqjY18OXsy8YJxGWCSodRMHq6yHSoSJrXg4NpVhzz-CcROewFw362NTHkwKUk1UC4M1morgFZs5yFlNn9-J_wZPEw9_yLt94KHJ-DxUTtJS7JHnkD4JV8CpACIjXxKzKnbrz-VAwRXJEfho9OjRLbLHOJKYkJerrAFwQAsPGoiL1g7GKKv8pdL19jZqzk5wpQq-ArRY6lqQYeUTj0Htzrr8Mpkg62RbXOhHT8F-YPQsoeGC04ibsDNr_me6_8gTSzfTugZ20llChf4D6gOyJh4Zhz6BDIdq7UtshVkibS3&amp;c=&amp;ch=\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>REGISTER ON 6CRICKETS</strong></a></u></p>",
+      "startAt": "2026-09-14T19:00:00.000Z",
+      "endAt": "2026-09-14T21:46:16.046Z",
+      "location": "https://www.montlakepta.org/enrichment",
+      "address": "",
+      "image": null,
+      "status": "ENDED",
+      "sourceUrl": "https://www.montlakepta.org/event-details/fall-after-school-enrichment-registration"
+    },
+    {
+      "id": "1f1a2fe9-ab7c-4cf9-a0db-4a7d25eb149b",
+      "slug": "fall-after-school-enrichment-registration-opens-9-23-at-noon",
+      "title": "Fall After School Enrichment Registration Opens 9/23 at noon!",
+      "summary": "ASE registration opens 9/23 at noon and runs through 9/30at 11:59PM. Register today!",
+      "descriptionText": "Registration for our Fall After-School Enrichment opens tomorrow at 12:00 PM! Please visit 6crickets for course descriptions and registration. Some classes fill quickly so register early for best selection!\n\nScholarships are available -- please reach out if cost is a barrier to participation. We want every child to have the opportunity to participate.\n\nKey Dates & Registration Window\n\nYou have one week to register for classes!\n\nRegistration Opens: Wednesday, September 23 at 12:00 PM\n\nRegistration Closes: Wednesday, September 30 at 11:59 PM\n\nSession Dates: October 7 - December 18\n\nNo classes: October 9, November 11, November 23-27\n\nProgram Costs & Fees\n\nClass pricing varies by provider, curriculum, and the number of class days offered. Each transaction also includes management fees that help the PTA offset the cost of onsite coordination, provide financial aid, and support other costs involved in running the program.\n\nNavigating After-School: Read Our New FAQ\n\nWe know how critical after-school planning is for families, as well as the questions that arise around scheduling and how enrichment works alongside licensed childcare (Launch).\n\nTo provide clarity, we’ve put together a quick guide: View the FAQ\n\nHave Questions?\n\nEmail enrichment@montlakepta.org\n\nVisit https://www.montlakepta.org/enrichment\n\nREGISTER ON 6CRICKETS",
+      "bodyHtml": "<p>Registration for our Fall After-School Enrichment opens <strong>tomorrow at 12:00 PM</strong>! Please visit <u><a href=\"https://46gaaoabb.cc.rs6.net/tn.jsp?f=0015jW3UbHfyy7EyQgATbTNU7QZQrIyYLtuCYiMLL6WxotQN43ZaViZBLZh6MA61k39BC2D6qec0erKSQDbtZ9lFRbvhv2ws21VvwnnoTt95PI6SjxH6k06zD3-1sHfNJzC-GPYojOhAib1jjs2lIsottZqjY18OXsy8YJxGWCSodRMHq6yHSoSJrXg4NpVhzz-CcROewFw362NTHkwKUk1UC4M1morgFZs5yFlNn9-J_wZPEw9_yLt94KHJ-DxUTtJS7JHnkD4JV8CpACIjXxKzKnbrz-VAwRXJEfho9OjRLbLHOJKYkJerrAFwQAsPGoiL1g7GKKv8pdL19jZqzk5wpQq-ArRY6lqQYeUTj0Htzrr8Mpkg62RbXOhHT8F-YPQsoeGC04ibsDNr_me6_8gTSzfTugZ20llChf4D6gOyJjHVrDV6Ge7IqVsxEHccSNu&amp;c=&amp;ch=\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>6crickets</strong></a></u> for course descriptions and registration. <strong>Some classes fill quickly so register early for best selection!</strong></p><p></p><p>Scholarships are available -- please reach out if cost is a barrier to participation. We want every child to have the opportunity to participate.</p><p></p><p><u><strong>Key Dates &amp; Registration Window</strong></u></p><p>You have one week to register for classes!</p><p></p><ul><li><p><strong>Registration Opens:</strong> Wednesday, September 23 at 12:00 PM</p></li><li><p><strong>Registration Closes:</strong> Wednesday, September 30 at 11:59 PM</p></li><li><p><strong>Session Dates</strong>: October 7 - December 18</p></li><li><p><strong>No classes:</strong> October 9, November 11, November 23-27</p></li></ul><p></p><p><u><strong>Program Costs &amp; Fees</strong></u></p><p>Class pricing varies by provider, curriculum, and the number of class days offered. Each transaction also includes <strong>management fees</strong> that help the PTA offset the cost of onsite coordination, provide financial aid, and support other costs involved in running the program.</p><p></p><p><u><strong>Navigating After-School: Read Our New FAQ</strong></u></p><p>We know how critical after-school planning is for families, as well as the questions that arise around scheduling and how enrichment works alongside licensed childcare (Launch).</p><p></p><p>To provide clarity, we’ve put together a quick guide: <u><a href=\"https://46gaaoabb.cc.rs6.net/tn.jsp?f=0015jW3UbHfyy7EyQgATbTNU7QZQrIyYLtuCYiMLL6WxotQN43ZaViZBMjRjrX8zX4s5UrgVRNaFnfIEbDQBlL2yKv9X4IFS8Cz_qX76pjb1ZPkFBt2jHUl5e5Rc3bmq4cBvzW_S49k0_M7yMydhI-G09erdF6gATJ_RQoVZgvFM3_YLIBC5PnLM_0FfFOSuYbjKncPiItRX9t01fakJI4ppTdp9Vcio8HTeWV60E0jALg=&amp;c=&amp;ch=\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>View the FAQ</strong></a></u></p><p></p><p><u><strong>Have Questions?</strong></u></p><ul><li><p>Email <u><a href=\"mailto:enrichment@montlakepta.org\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>enrichment@montlakepta.org</strong></a></u></p></li><li><p>Visit <u><a href=\"https://www.montlakepta.org/enrichment\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>https://www.montlakepta.org/enrichment</strong></a></u></p><p></p></li></ul><p><u><a href=\"https://46gaaoabb.cc.rs6.net/tn.jsp?f=0015jW3UbHfyy7EyQgATbTNU7QZQrIyYLtuCYiMLL6WxotQN43ZaViZBLZh6MA61k39BC2D6qec0erKSQDbtZ9lFRbvhv2ws21VvwnnoTt95PI6SjxH6k06zD3-1sHfNJzC-GPYojOhAib1jjs2lIsottZqjY18OXsy8YJxGWCSodRMHq6yHSoSJrXg4NpVhzz-CcROewFw362NTHkwKUk1UC4M1morgFZs5yFlNn9-J_wZPEw9_yLt94KHJ-DxUTtJS7JHnkD4JV8CpACIjXxKzKnbrz-VAwRXJEfho9OjRLbLHOJKYkJerrAFwQAsPGoiL1g7GKKv8pdL19jZqzk5wpQq-ArRY6lqQYeUTj0Htzrr8Mpkg62RbXOhHT8F-YPQsoeGC04ibsDNr_me6_8gTSzfTugZ20llChf4D6gOyJh4Zhz6BDIdq7UtshVkibS3&amp;c=&amp;ch=\" target=\"_blank\" rel=\"noopener noreferrer\"><strong>REGISTER ON 6CRICKETS</strong></a></u></p>",
+      "startAt": "2026-09-23T19:00:00.000Z",
+      "endAt": "2026-10-01T06:59:16.046Z",
+      "location": "https://www.montlakepta.org/enrichment",
+      "address": "",
+      "image": null,
+      "status": "ENDED",
+      "sourceUrl": "https://www.montlakepta.org/event-details/fall-after-school-enrichment-registration-opens-9-23-at-noon"
+    },
+    {
       "id": "2af4de8b-e21b-46af-a80c-d8ee4df90534",
       "slug": "fall-fundraiser-event-flatstick-pub",
       "title": "Fall Fundraiser Event @ Flatstick Pub",
@@ -719,7 +749,7 @@
       "location": "Lumen Field",
       "address": "Occidental Avenue South, Seattle, WA, 98134",
       "image": null,
-      "status": "UPCOMING",
+      "status": "ENDED",
       "sourceUrl": "https://www.montlakepta.org/event-details/join-the-montlake-pta-at-the-seattle-sounders"
     },
     {
@@ -862,14 +892,14 @@
       "slug": "montlake-elementary-welcome-back-party",
       "title": "Montlake Elementary Welcome Back Party!",
       "summary": "Join the Montlake Elementary PTA for our first PTA event of the year! Get to know your fellow Montlake families, learn about the PTA, and reconnect with the Montlake Community.\n\nDinner will be provided - please RSVP so we know how much food to order!",
-      "descriptionText": "More details coming soon, including an ask for volunteers! Mark your calendars and plan to join us!",
-      "bodyHtml": "<p>More details coming soon, including an ask for volunteers! Mark your calendars and plan to join us!</p>",
+      "descriptionText": "More details coming soon, including an ask for volunteers! Mark your calendars and plan to join us!\n\nHelp us put on a great event by grabbing a volunteer shift! Sign up here: https://www.signupgenius.com/go/10C044DAAAF2AA4FCCF8-65774904-montlake#/",
+      "bodyHtml": "<p>More details coming soon, including an ask for volunteers! Mark your calendars and plan to join us!</p><p></p><p>Help us put on a great event by grabbing a volunteer shift! Sign up here: <u><a href=\"https://www.signupgenius.com/go/10C044DAAAF2AA4FCCF8-65774904-montlake#/\" target=\"_blank\" rel=\"noopener noreferrer\">https://www.signupgenius.com/go/10C044DAAAF2AA4FCCF8-65774904-montlake#/</a></u></p>",
       "startAt": "2026-09-26T00:30:00.000Z",
       "endAt": "2026-09-26T02:30:00.000Z",
       "location": "Montlake Elementary",
       "address": "22nd Avenue East, Seattle, WA, 98112-2640",
       "image": null,
-      "status": "UPCOMING",
+      "status": "ENDED",
       "sourceUrl": "https://www.montlakepta.org/event-details/montlake-elementary-welcome-back-party"
     },
     {
@@ -949,6 +979,156 @@
     }
   ],
   "products": [
+    {
+      "id": "d62c64d0-44e0-7a72-8f4a-976578fae854",
+      "slug": "black-red-green-taper-candles",
+      "name": "Black, Red, & Green Taper Candles",
+      "description": "A set of 3 red, 3 green, & 1 black candles, perfect for celebrating Kwanzaa.",
+      "price": 25,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_c4ffc0a21aae4f889a387d0d7fc2641c~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/black-red-green-taper-candles",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "ed3a1bf6-74c2-1338-c9a8-73ebf4e19d46",
+      "slug": "blue-white-taper-candles",
+      "name": "Blue & White Taper Candles",
+      "description": "A set of 45 blue & white taper candles, perfect for Hannukah menorahs.",
+      "price": 25,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_3133e09edaa34ae0ae8c5a39e1e4497f~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/blue-white-taper-candles",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "92a0f051-9ff4-295c-a70f-c1c8f8376094",
+      "slug": "cedar-garland-25",
+      "name": "Cedar Garland (25')",
+      "description": "",
+      "price": 60,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_239f15ef3b2f4d728f550b69e4fc063d~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/cedar-garland-25",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "c006475c-922c-b009-86a6-262b32a5536d",
+      "slug": "cedar-garland-75",
+      "name": "Cedar Garland (75')",
+      "description": "",
+      "price": 115,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_239f15ef3b2f4d728f550b69e4fc063d~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/cedar-garland-75",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "4ee30ab1-ed03-1f53-323e-0734ecc0f6d2",
+      "slug": "deluxe-noble-fir-door-swag-28",
+      "name": "Deluxe Noble Fir Door Swag (28\")",
+      "description": "",
+      "price": 40,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_1861aeeeddee40c396724a5666fb7382~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/deluxe-noble-fir-door-swag-28",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "51a123f0-0e47-072d-6119-328a8372d926",
+      "slug": "deluxe-noble-fir-wreath-22",
+      "name": "Deluxe Noble Fir Wreath (22\")",
+      "description": "",
+      "price": 50,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_9d453b2d374541708058149044bd2455~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/deluxe-noble-fir-wreath-22",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "a07458e8-b05c-60d8-0766-3417885964ee",
+      "slug": "deluxe-noble-fir-wreath-26",
+      "name": "Deluxe Noble Fir Wreath (26\")",
+      "description": "",
+      "price": 60,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_9d453b2d374541708058149044bd2455~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/deluxe-noble-fir-wreath-26",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "82e192d6-ce21-22e8-4c6b-f2dc76c7cf50",
+      "slug": "douglas-fir-4-5",
+      "name": "Douglas Fir Tree 4' - 5'",
+      "description": "",
+      "price": 40,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_0e64eaaa46784e11b4e5489082584cc7~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/douglas-fir-4-5",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "80fb122e-378c-ddbd-1ab0-0719e170a72a",
+      "slug": "douglas-fir-5-6",
+      "name": "Douglas Fir Tree 5' - 6'",
+      "description": "",
+      "price": 45,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_0e64eaaa46784e11b4e5489082584cc7~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/douglas-fir-5-6",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "e791d845-3b65-b835-2bf1-ace321e5c271",
+      "slug": "douglas-fir-6-7",
+      "name": "Douglas Fir Tree 6' - 7'",
+      "description": "",
+      "price": 55,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_0e64eaaa46784e11b4e5489082584cc7~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/douglas-fir-6-7",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
     {
       "id": "ea0b3d1c-32a5-f4a5-64c6-eea7b124df98",
       "slug": "mr-azer-artwork-raffle-ticket",
@@ -1070,17 +1250,94 @@
       ]
     },
     {
+      "id": "2ec46440-0808-c181-4200-27943d745917",
+      "slug": "noble-fir-tree-4-5",
+      "name": "Noble Fir Tree 4' - 5'",
+      "description": "",
+      "price": 65,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_a748261415b14ae691dbaeae4512af02~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/noble-fir-tree-4-5",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "6681f089-386a-8a86-b427-fb54e035cd29",
+      "slug": "noble-fir-tree-5-6",
+      "name": "Noble Fir Tree 5' - 6'",
+      "description": "",
+      "price": 85,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_a748261415b14ae691dbaeae4512af02~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/noble-fir-tree-5-6",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "18e95b10-b3f2-2209-80aa-b9b1ac443251",
+      "slug": "noble-fir-tree-6-7",
+      "name": "Noble Fir Tree 6' - 7'",
+      "description": "",
+      "price": 110,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_a748261415b14ae691dbaeae4512af02~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/noble-fir-tree-6-7",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
       "id": "5d23d02b-466d-a433-a7f5-a541a4ba0794",
       "slug": "nordmann-fir-tree-5-6",
       "name": "Nordmann Fir Tree 5' - 6'",
       "description": "",
       "price": 85,
       "currency": "USD",
-      "availability": "OutOfStock",
+      "availability": "InStock",
       "image": "https://static.wixstatic.com/media/290ab3_741beb0fbb4a45fd8f4ec15a867964d1~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
       "visible": true,
       "sourceUrl": "https://www.montlakepta.org/product-page/nordmann-fir-tree-5-6",
-      "collectionIds": []
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "6bf6e0d7-9871-2b78-b621-b94c22ef80be",
+      "slug": "nordmann-fir-tree-6-7",
+      "name": "Nordmann Fir Tree 6' - 7'",
+      "description": "",
+      "price": 115,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_741beb0fbb4a45fd8f4ec15a867964d1~mv2.jpeg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/nordmann-fir-tree-6-7",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
+    },
+    {
+      "id": "a0ec776a-0750-b5e2-8377-dc9f37e88ed5",
+      "slug": "pillar-candles",
+      "name": "Pillar Candles",
+      "description": "Three 3” W Pillar Candle Set (one 4”, 6”, & 8” H candle in each set). Available in four colors: Ivory, White, Burgundy, & Dark Green.",
+      "price": 45,
+      "currency": "USD",
+      "availability": "InStock",
+      "image": "https://static.wixstatic.com/media/290ab3_607a8716ff04497bbee4734eea37f4d9~mv2.jpg/v1/fit/w_1024,h_1024,q_90/file.jpg",
+      "visible": true,
+      "sourceUrl": "https://www.montlakepta.org/product-page/pillar-candles",
+      "collectionIds": [
+        "7d29ed5f-9f98-d2a2-65a1-a420eef26c24"
+      ]
     },
     {
       "id": "d23bb453-8ee2-9980-797e-5dd13daa6b02",
@@ -1104,6 +1361,13 @@
       "slug": "2026-art-walk",
       "name": "2026 Art Walk",
       "image": "https://static.wixstatic.com/media/290ab3_248f4054489b4b879fe22e9fa27ebf97~mv2.jpeg/v1/fit/w_480,h_640,q_90/file.jpg",
+      "sourceUrl": null
+    },
+    {
+      "id": "7d29ed5f-9f98-d2a2-65a1-a420eef26c24",
+      "slug": "evergreens",
+      "name": "Evergreens",
+      "image": "https://static.wixstatic.com/media/e7fe8c_37a4113e207f4a378d2b8f7b55ef1f91~mv2.png/v1/fit/w_914,h_830,q_90/file.png",
       "sourceUrl": null
     }
   ]
