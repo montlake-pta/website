@@ -16,7 +16,6 @@
     "migrate:page-collections": "node scripts/migrate-page-collections.mjs",
     "setup:wix-cms": "node scripts/setup-wix-cms.mjs",
     "sync:calendar": "node scripts/sync-calendar.mjs",
-    "sync:newsletters": "node scripts/sync-newsletters.mjs",
     "sync:wix": "node scripts/sync-wix.mjs",
     "update:wix-page": "node scripts/update-wix-page.mjs",
     "test": "node scripts/check-site.mjs && npm run test:unit",

@@ -96,10 +96,6 @@ jobs:
           NODE
       - name: Sync public calendar
         run: npm run sync:calendar
-      - name: Sync public newsletter archive
-        env:
-          CONSTANT_CONTACT_ARCHIVE_ID: ${{ vars.CONSTANT_CONTACT_ARCHIVE_ID }}
-        run: npm run sync:newsletters
       - name: Validate public export format
         run: |
           node --input-type=module - <<'NODE'
@@ -114,7 +110,6 @@ jobs:
           path: |
             src/data/wix-content.json
             src/data/calendar-events.json
-            src/data/newsletters.json
           if-no-files-found: error
           retention-days: 7
       - name: Build and check the exported content

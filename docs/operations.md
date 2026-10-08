@@ -33,10 +33,8 @@ are not permanent invariants.
   allow adapter mutations.
   The active Welcome Back RSVP retains a marked legacy handoff until the
   remaining visitor activation gates in [#4](https://github.com/montlake-pta/website/issues/4) are met.
-- Constant Contact's public archive is configured as `a07eh3xf9of0`, but the
-  latest confirmed source response contained zero editions. Publishing
-  editions is an editor action in
-  [#3](https://github.com/montlake-pta/website/issues/3), not a missing OAuth flow.
+- The newsletter page is an overview with a Constant Contact signup link;
+  editions are not published on the site.
 - Current enrichment arrangements and the legacy Editor handoff remain in
   [#1](https://github.com/montlake-pta/website/issues/1). Dated school/program/fund
   confirmations remain in [#2](https://github.com/montlake-pta/website/issues/2).
@@ -52,8 +50,8 @@ gh variable list --repo montlake-pta/website
 ```
 
 Do not read secret values to diagnose an integration. `gh secret list` reports
-names, not values. The known Actions variables are `WIX_SITE_ID`,
-`WIX_SYNC_ENABLED=true` and `CONSTANT_CONTACT_ARCHIVE_ID`. `SITE_URL`,
+names, not values. The known Actions variables are `WIX_SITE_ID` and
+`WIX_SYNC_ENABLED=true`. `SITE_URL`,
 `WIX_HEADLESS_ENABLED`, `WIX_HEADLESS_CLIENT_ID` and `WIX_ACCOUNT_ID` were not
 configured at this review. Code defaults and current variables win over this
 dated observation.
@@ -219,7 +217,7 @@ Their definitions and real IDs are in `wix/page-publishing.mjs` and
 retained for rollback compatibility. See [trigger coverage](../README.md#on-demand-publishing-from-wix).
 
 1. Confirm the edit was made in an authoritative source. Legacy Editor text
-   blocks do not update CommonPages/FundraisingPages; newsletter and Google Calendar changes
+   blocks do not update CommonPages/FundraisingPages; Google Calendar changes
    do not originate in Wix. Blog drafts have no dedicated handlers here.
 2. In Wix **Developer Tools → Wix Logs**, look for
    `GitHub website publish requested` and its run ID. The matching named
@@ -550,7 +548,7 @@ both succeeded.
   loss was rich links, inline media and structure.
 - Know the [merge precedence and fallback semantics](content-authoring.md#source-precedence-and-fallback-behavior).
   Removing a CMS record for a static route can restore its fallback, not remove
-  the page. Specialized indexes and the board/newsletter renderers can override
+  the page. Specialized indexes and the board renderer can override
   ordinary CMS body copy.
 - `bootstrap:wix` overwrites the snapshot with a limited legacy-site extraction
   and empty CMS arrays. It is not a normal refresh or complete backup. Prefer

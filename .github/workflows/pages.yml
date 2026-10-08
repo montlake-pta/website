@@ -54,14 +54,6 @@ jobs:
         run: npm run sync:wix
       - name: Sync public school calendar
         run: npm run sync:calendar
-      - name: Sync public newsletter archive
-        if: vars.CONSTANT_CONTACT_ARCHIVE_ID != ''
-        env:
-          CONSTANT_CONTACT_ARCHIVE_ID: ${{ vars.CONSTANT_CONTACT_ARCHIVE_ID }}
-        run: npm run sync:newsletters
-      - name: Report newsletter snapshot mode
-        if: vars.CONSTANT_CONTACT_ARCHIVE_ID == ''
-        run: echo "::notice::Constant Contact archive is not configured; building the checked-in newsletter snapshot."
       - name: Report snapshot mode
         if: vars.WIX_SYNC_ENABLED != 'true'
         run: echo "::notice::Wix sync is not enabled; building the checked-in content snapshot."

@@ -26,8 +26,6 @@ The live switch still requires the website maintainer's readiness approval.
 - Shared page templates and metadata: `scripts/build.mjs`
 - Wix content snapshot: `src/data/wix-content.json`
 - Wix integration settings: `src/wix.config.json`
-- Newsletter archive snapshot: `src/data/newsletters.json`
-- Newsletter archive settings: `src/newsletter.config.json`
 - Public calendar snapshot: `src/data/calendar-events.json`
 - Public calendar settings: `src/calendar.config.json`
 - Product and audience guidance: `PRODUCT.md`
@@ -275,9 +273,8 @@ author's successful write even if notification fails.
 
 **Recovery and scope:** keep the hourly sync. Explicitly suppressed data hooks,
 reference-only writes and CSV import paths are not guaranteed immediate
-notifications by this integration. Nor do Constant Contact or Google Calendar
-changes originate in Wix; those feeds still refresh during deployments and
-the hourly run. Velo hook/event delivery is not claimed to have the
+notifications by this integration. Nor do Google Calendar changes originate
+in Wix; that feed still refreshes during deployments and the hourly run. Velo hook/event delivery is not claimed to have the
 acknowledgment/retry guarantees of an external Wix App webhook subscription.
 
 #### Maintaining the Wix sender
@@ -424,31 +421,13 @@ and uses descriptions rather than full rich bodies. Prefer the
 or the existing reviewed snapshot; do not discard the latter because a local
 API key is unavailable.
 
-## Newsletter archive
+## Newsletter
 
-The `/newsletter/` page uses Constant Contact's public Email Archive feed, so it
-does not require OAuth or an API secret. It displays the newest archived
-campaign by default, generates a stable page for every archived edition, and
-keeps signup calls to action above and below the current issue.
-
-In Constant Contact, open **Campaigns → Settings → Email Archive**, enable the
-archive, select the campaigns to publish, and copy the widget code. Find the
-public value in `data-m="..."`, then configure it as a repository variable:
-
-```sh
-gh variable set CONSTANT_CONTACT_ARCHIVE_ID --body '<data-m value>' --repo montlake-pta/website
-gh workflow run pages.yml --repo montlake-pta/website
-```
-
-The hourly Pages workflow requests:
-
-```text
-https://campaignlp.constantcontact.com/v1/archive/<data-m>/activities?limit=100
-```
-
-The response contains public campaign subjects and permanent URLs. The build
-embeds the selected campaign in a sandboxed iframe rather than injecting remote
-email HTML into the site.
+The `/newsletter/` page briefly describes the Montlake PTA Newsletter and links
+to its Constant Contact signup form (`newsletterUrl` in `src/site.mjs`). The
+page content lives in `src/site.mjs`; an optional Wix `GeneratedPages` record
+can override its title, heading and description. Newsletter editions are sent
+by email and are not published on the site.
 
 ## Existing services retained
 

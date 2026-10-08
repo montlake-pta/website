@@ -4,7 +4,6 @@ import test from "node:test";
 import { pages, transactionPages } from "../src/site.mjs";
 import { normalizeWixContent, assertPublicSnapshot } from "./normalize-wix-content.mjs";
 import { mergeWixContent } from "./render-wix-content.mjs";
-import { mergeNewsletterContent } from "./render-newsletters.mjs";
 import { readWixContent } from "./sync-wix.mjs";
 import { publicPage, updateWixPage } from "./update-wix-page.mjs";
 import { fundraisingFieldNames } from "./fundraising-fields.mjs";
@@ -95,12 +94,11 @@ test("generated pages use their metadata while their contents remain owned by th
     generatedPages: [row("pta-board", { description: "Authored board introduction" }), row("newsletter", { description: "Authored newsletter introduction" })],
     boardMembers: [{ role: "Treasurer", names: "Volunteer", schoolYear: "2030–31", active: true }],
   });
-  const merged = mergeNewsletterContent(mergeWixContent(pages, snapshot),
-    { schemaVersion: 1, source: "public-archive", archiveId: "test", editions: [] }, "https://example.org/signup");
+  const merged = mergeWixContent(pages, snapshot);
   assert.equal(merged.find(p => p.slug === "pta-board").description, "Authored board introduction");
   assert.match(merged.find(p => p.slug === "pta-board").content, /Volunteer/);
   assert.equal(merged.find(p => p.slug === "newsletter").description, "Authored newsletter introduction");
-  assert.match(merged.find(p => p.slug === "newsletter").content, /No editions have been added/);
+  assert.match(merged.find(p => p.slug === "newsletter").content, /Sign up for the Montlake PTA Newsletter/);
   assert.doesNotMatch(merged.find(p => p.slug === "pta-board").content, /Keep this content/);
 });
 

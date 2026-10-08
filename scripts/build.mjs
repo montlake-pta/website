@@ -3,7 +3,6 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pages, preserveCollectionRoutes, preserveRetiredProductRoutes, site, transactionPages } from "../src/site.mjs";
 import { mergeWixContent } from "./render-wix-content.mjs";
-import { mergeNewsletterContent } from "./render-newsletters.mjs";
 import { emitLegacyEventAliases } from "./legacy-event-aliases.mjs";
 import { visitorConfiguration } from "./visitor-config.mjs";
 import { build as bundleJavaScript } from "esbuild";
@@ -20,10 +19,9 @@ const visitor = visitorConfiguration();
 const visitorUpdates = visitor.enabled || visitor.readOnly;
 const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
 const calendarContent = JSON.parse(await readFile(join(root, "src", "data", "calendar-events.json"), "utf8"));
-const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
-const renderedPages = preserveRetiredProductRoutes(preserveCollectionRoutes(mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events, {
+const renderedPages = preserveRetiredProductRoutes(preserveCollectionRoutes(mergeWixContent(pages, wixContent, calendarContent.events, {
   transactionsEnabled: visitor.enabled, readOnly: visitor.readOnly,
-}), newsletterContent, site.newsletterUrl)));
+})));
 if (visitor.enabled) {
   for (const page of transactionPages) {
     if (renderedPages.some((existing) => existing.slug === page.slug)) throw new Error(`Reserved transaction route collision: ${page.slug}`);

@@ -1220,10 +1220,6 @@ body:has(.donate-hero) .site-footer {
   border-radius: 1rem;
 }
 
-.newsletter-signup:last-child {
-  margin: 4rem 0 0;
-}
-
 .newsletter-signup h2 {
   margin: 0 0 0.35rem;
   padding: 0;
@@ -1234,84 +1230,6 @@ body:has(.donate-hero) .site-footer {
 .newsletter-signup p {
   margin: 0;
   font-size: 0.95rem;
-}
-
-.newsletter-current {
-  margin: 0 0 5rem;
-}
-
-.newsletter-current-heading {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1.25rem;
-  gap: 1.5rem;
-  align-items: end;
-}
-
-.newsletter-current-heading h2 {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
-}
-
-.newsletter-current-heading .card-meta {
-  margin-bottom: 0.4rem;
-}
-
-.newsletter-frame {
-  min-height: 72rem !important;
-  background: white;
-  box-shadow: var(--shadow);
-}
-
-.newsletter-archive {
-  display: grid;
-  grid-template-columns: 0.7fr 1.3fr;
-  padding-top: 3rem;
-  gap: 3rem;
-  border-top: 1px solid var(--line);
-}
-
-.newsletter-archive h2 {
-  margin-top: 0;
-  padding: 0;
-  border: 0;
-}
-
-.newsletter-archive ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border-bottom: 1px solid var(--line);
-}
-
-.newsletter-archive li {
-  margin: 0;
-  border-top: 1px solid var(--line);
-}
-
-.newsletter-archive li a {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  min-height: 58px;
-  padding: 0.85rem 0;
-  gap: 1rem;
-  align-items: center;
-  color: var(--ink) !important;
-  text-decoration: none;
-}
-
-.newsletter-archive li a:hover span {
-  color: var(--blue-strong);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-}
-
-.newsletter-archive time {
-  color: var(--muted);
-  font-size: 0.8rem;
-  white-space: nowrap;
 }
 
 .content-grid {
@@ -1906,7 +1824,6 @@ body:has(.donate-hero) .site-footer {
   }
 
   .newsletter-signup,
-  .newsletter-archive,
   .related-action {
     grid-template-columns: 1fr;
   }
@@ -1921,10 +1838,6 @@ body:has(.donate-hero) .site-footer {
 
   .related-action .button {
     justify-self: start;
-  }
-
-  .newsletter-archive {
-    gap: 1.5rem;
   }
 }
 
@@ -2054,24 +1967,6 @@ body:has(.donate-hero) .site-footer {
   .home-post-image {
     width: 5.5rem;
     height: 4.5rem;
-  }
-
-  .newsletter-current-heading {
-    display: block;
-  }
-
-  .newsletter-current-heading .text-link {
-    display: inline-block;
-    margin-top: 0.75rem;
-  }
-
-  .newsletter-frame {
-    min-height: 55rem !important;
-  }
-
-  .newsletter-archive li a {
-    grid-template-columns: 1fr;
-    gap: 0.25rem;
   }
 
   .footer-main {

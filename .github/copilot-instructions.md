@@ -9,9 +9,8 @@ This is a Node.js 24, dependency-light static-site generator. Wix is the
 authoritative source for Blog, Events, Stores, `BoardMembers`, and
 `CommonPages`, `FundraisingPages`, and metadata-only `GeneratedPages`;
 `src/wix.config.json` selects legacy `WebsitePages` only during migration.
-Constant Contact's public archive is authoritative for
-newsletter editions; the public Google Calendar is authoritative for school
-dates; GitHub Actions builds static HTML for GitHub Pages.
+Constant Contact sends the newsletter and hosts its signup form; the public
+Google Calendar is authoritative for school dates; GitHub Actions builds static HTML for GitHub Pages.
 
 - Never edit or commit `dist/`.
 - Edit `src/site.mjs` for static fallback content and routes,

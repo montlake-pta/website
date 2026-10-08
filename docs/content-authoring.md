@@ -6,10 +6,10 @@
 |---|---|---|
 | Informational page bodies, including Enrichment, Advocacy, Budget and ordinary historical pages | Wix CMS `CommonPages`, selected by `slug` | Read during the next Pages build |
 | Complete Donate, Annual Fund and Spring Auction records, including campaign facts, primary actions, images and rich sections | Wix CMS `FundraisingPages` | Shared fundraising layout; summaries also appear on Donate and the homepage |
-| Blog, Events, Shop, PTA Board and optional Newsletter header overrides | Wix CMS `GeneratedPages` | Changes the header, not the generated lists, roster or editions |
+| Blog, Events, Shop, PTA Board and optional Newsletter header overrides | Wix CMS `GeneratedPages` | Changes the header, not the generated lists, roster or newsletter overview |
 | Board roster | Wix CMS `BoardMembers` | Replaces the roster section of the board page |
 | Posts, event details, products | Wix Blog, Events, Stores | Generated indexes and individual routes |
-| Newsletter editions | Constant Contact public Email Archive | Public newsletter permalink embedded on the site |
+| Newsletter overview and signup link | Repository source (`src/site.mjs`) | Editions are sent by Constant Contact email, not published on the site |
 | Calendar introduction and subscription copy | Wix CMS `CommonPages`, slug `calendar` | Authored copy appears above the code-owned calendar embed |
 | School dates | Public Google Calendar | Live calendar page and homepage upcoming events |
 | Layout, navigation, design, fallback copy | Repository source | Deployed with the code change |
@@ -71,11 +71,11 @@ renderer: CommonPages for ordinary content, FundraisingPages for fundraising,
 and GeneratedPages for metadata only. An editor cannot accidentally change
 the renderer by setting or clearing campaign status.
 
-The board roster, Blog/Events/Shop indexes and newsletter content have their
-own data sources. Their GeneratedPages records therefore have no body column.
+The board roster, Blog/Events/Shop indexes and newsletter overview have their
+own sources. Their GeneratedPages records therefore have no body column.
 The title, heading, description and tone are supported header overrides;
 leaving the description blank retains the normal fallback or automatically
-generated description, including the board year and empty newsletter state.
+generated description, including the board year.
 Layout, navigation and generic interface labels remain in source.
 
 The Calendar page keeps its introduction in CommonPages, but its Google Calendar
@@ -343,9 +343,9 @@ This is a completed migration, not an outstanding setup step.
 
 Changes appear after deployment finishes. Rapid edits can be combined into a
 newer queued build. Some imports, reference-only changes and deliberately
-suppressed hooks may wait for hourly recovery. Newsletter editions and Google
-Calendar changes are picked up on the next rebuild or hourly refresh, not by
-the Wix mutation sender.
+suppressed hooks may wait for hourly recovery. Google Calendar changes are
+picked up on the next rebuild or hourly refresh, not by the Wix mutation
+sender.
 
 Edit page copy in its typed collection, not the legacy WebsitePages backup or
 independent Editor text blocks.
@@ -401,7 +401,7 @@ creates a collection, or automatically rolls back a completed write.
 
 Use **Export Public Content Snapshot** after reviewing the normalizers at a
 committed revision. Supply its full commit SHA as `candidate_commit`. The manual
-workflow reads Wix, the public calendar and the public newsletter archive,
+workflow reads Wix and the public calendar,
 validates and exports only their normalized JSON snapshots, then builds and
 checks the site. The artifact remains available to diagnose a later build
 failure; it is not by itself a release approval. The workflow does not write to
@@ -414,7 +414,7 @@ gh run download RUN_ID --repo montlake-pta/website \
   --name public-content-RUN_ID --dir NEW_REVIEW_DIRECTORY
 ```
 
-The three exported JSON files are already normalized; review them before
+The two exported JSON files are already normalized; review them before
 copying them into `src/data/` and committing. The optional
 `inspect_event_forms=true` input logs public form field names/types only.
 It does not exercise visitor RSVP permissions.
@@ -428,11 +428,6 @@ fix that layer rather than hand-redacting each generated export.
 An offline snapshot supports local builds and recovery. Its contents do not
 prove what exists in the live CMS; compare the deployed pages or perform an
 authenticated read before diagnosing missing live records.
-
-The newsletter archive may be connected and still contain no public editions.
-An editor must publish editions in Constant Contact before the site can show
-them; this outstanding source action is tracked in
-[issue #3](https://github.com/montlake-pta/website/issues/3).
 
 ## Enrichment content handoff
 

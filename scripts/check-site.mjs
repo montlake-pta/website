@@ -4,8 +4,6 @@ import { fileURLToPath } from "node:url";
 import { pages, preserveCollectionRoutes, preserveRetiredProductRoutes, site, transactionPages } from "../src/site.mjs";
 import { visitorConfiguration } from "./visitor-config.mjs";
 import { mergeWixContent, sanitizeCmsHtml } from "./render-wix-content.mjs";
-import { mergeNewsletterContent } from "./render-newsletters.mjs";
-import { createNewsletterSnapshot } from "./sync-newsletters.mjs";
 import { createCalendarSnapshot } from "./sync-calendar.mjs";
 import { parseDocument } from "htmlparser2";
 import { selectAll, selectOne } from "css-select";
@@ -17,13 +15,12 @@ const output = join(root, "dist");
 const failures = [];
 const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
 const calendarContent = JSON.parse(await readFile(join(root, "src", "data", "calendar-events.json"), "utf8"));
-const newsletterContent = JSON.parse(await readFile(join(root, "src", "data", "newsletters.json"), "utf8"));
 const visitor = visitorConfiguration();
 const publicBasePath = new URL(site.previewUrl).pathname;
 const enrichmentRegistrationUrl = "https://www.6crickets.com/schools/US/WA/Seattle/Montlake-Elementary-School/147";
-const renderedPages = preserveRetiredProductRoutes(preserveCollectionRoutes(mergeNewsletterContent(mergeWixContent(pages, wixContent, calendarContent.events, {
+const renderedPages = preserveRetiredProductRoutes(preserveCollectionRoutes(mergeWixContent(pages, wixContent, calendarContent.events, {
   transactionsEnabled: visitor.enabled, readOnly: visitor.readOnly,
-}), newsletterContent, "https://example.com/signup")));
+})));
 if (visitor.enabled) renderedPages.push(...transactionPages);
 
 for (const page of renderedPages) {
@@ -490,73 +487,10 @@ if (calendarFixture.events.find((event) => event.title === "Single school event"
   failures.push("Google Calendar snapshot retained a credential-like location");
 }
 
-const newsletterFixture = mergeNewsletterContent(pages, {
-  schemaVersion: 1,
-  source: "test",
-  syncedAt: "2099-01-02T00:00:00Z",
-  archiveId: "a07example",
-  editions: [
-    {
-      id: "newest",
-      slug: "weekly-newsletter-january-2-2099-newest",
-      title: "Weekly Newsletter January 2, 2099",
-      publishedAt: "2099-01-02T12:00:00Z",
-      campaignUrl: "https://conta.cc/example-new",
-      archiveOrder: 0,
-    },
-    {
-      id: "older",
-      slug: "weekly-newsletter-december-20-2098-older",
-      title: "Weekly Newsletter December 20, 2098",
-      publishedAt: "2098-12-20T12:00:00Z",
-      campaignUrl: "https://myemail.constantcontact.com/example-old",
-      archiveOrder: 1,
-    },
-  ],
-}, "https://example.com/signup");
-const newsletterLanding = newsletterFixture.find((page) => page.slug === "newsletter");
-if (!newsletterLanding?.content.includes("Weekly Newsletter January 2, 2099")) failures.push("Newsletter landing page does not default to the latest edition");
-if (!newsletterLanding?.content.includes("Sign up for the Montlake PTA Newsletter")) failures.push("Newsletter landing page is missing its signup CTA");
-if (!newsletterFixture.some((page) => page.slug === "newsletter/weekly-newsletter-december-20-2098-older")) {
-  failures.push("Newsletter archive did not generate a stable edition route");
-}
-for (const [snapshot, expected] of [
-  [{ schemaVersion: 1, source: "public-archive", archiveId: "a07test", editions: [] }, "No editions have been added"],
-  [{ schemaVersion: 1, source: "unconfigured", editions: [] }, "Past editions are not available"],
-]) {
-  const content = mergeNewsletterContent(pages, snapshot, "https://example.com/signup")
-    .find((page) => page.slug === "newsletter").content;
-  if (!content.includes(expected) || content.includes("not connected") || !content.includes("Sign up for the Montlake PTA Newsletter")) {
-    failures.push("Newsletter empty state confuses archive availability or drops signup");
-  }
-}
-
-const syncedNewsletter = await createNewsletterSnapshot({
-  archiveId: "a07test",
-  syncedAt: "2099-01-02T00:00:00Z",
-  fetchImpl: async (url, options = {}) => {
-    if (url.includes("campaignlp.constantcontact.com")) {
-      return {
-        ok: true,
-        json: async () => [{
-          subject: "Weekly Newsletter January 2, 2099",
-          campaignUrl: "https://conta.cc/example",
-        }],
-      };
-    }
-    if (options.method === "HEAD" && url === "https://conta.cc/example") {
-      return {
-        ok: true,
-        url: "https://myemail.constantcontact.com/weekly-newsletter.html?soid=example",
-      };
-    }
-    throw new Error(`Unexpected newsletter test request: ${url}`);
-  },
-});
-if (syncedNewsletter.editions.length !== 1) failures.push("Public newsletter sync did not normalize a non-empty archive");
-if (syncedNewsletter.editions[0]?.campaignUrl !== "https://myemail.constantcontact.com/weekly-newsletter.html?soid=example") {
-  failures.push("Public newsletter sync did not resolve and validate the final campaign URL");
-}
+const newsletterHtml = await readFile(join(output, "newsletter", "index.html"), "utf8");
+const newsletterSignups = newsletterHtml.match(/class="button button-primary" href="https:\/\/lp\.constantcontactpages\.com\/sl\/tG8wj2x\/MontlakeSignUp"/g) || [];
+if (newsletterSignups.length !== 1) failures.push("Newsletter page needs exactly one primary signup action");
+if (/<iframe|Past editions|newsletter-archive/i.test(newsletterHtml)) failures.push("Newsletter page should present an overview and signup, not an edition archive");
 
 if (failures.length) {
   console.error(failures.join("\n"));

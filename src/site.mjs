@@ -158,12 +158,24 @@ export const pages = [
     title: "Newsletter",
     heading: "The Montlake PTA newsletter.",
     kicker: "Stay connected",
-    description: "Read the latest newsletter, browse past editions, and sign up for the Montlake PTA Newsletter.",
+    description: "School news, event reminders, and PTA announcements, sent to your inbox.",
     accent: "blue",
     disableOutline: true,
     content: `
-      <p class="lead">The newsletter archive will appear here.</p>
-      <p><a class="button button-primary" href="https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp">Sign up for the Montlake PTA Newsletter</a></p>`,
+      <div class="newsletter-signup">
+        <div>
+          <h2>Sign up by email</h2>
+          <p>The school cannot share family contact information with the PTA, so each family subscribes directly.</p>
+        </div>
+        <a class="button button-primary" href="https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp">Sign up for the Montlake PTA Newsletter</a>
+      </div>
+      <h2>What’s inside</h2>
+      <ul>
+        <li>Updates from school leadership and specialist teachers</li>
+        <li>Reminders about upcoming events and school dates</li>
+        <li>PTA announcements, programs, and ways to get involved</li>
+      </ul>
+      <p>Using Gmail? The newsletter may land in your Promotions tab. Move it to Primary so future emails are easy to find.</p>`,
   },
   {
     slug: "calendar",

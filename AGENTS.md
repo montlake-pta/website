@@ -66,11 +66,8 @@ the documented `user-invocable: false` agent-profile override.
 | CMS fundraising fields, rendering and one-time migration | `scripts/fundraising-fields.mjs`, `scripts/render-fundraising.mjs`, `scripts/migrate-fundraising.mjs` |
 | Typed page collection contracts and migration | `scripts/page-collections.mjs`, `scripts/migrate-page-collections.mjs`, `src/wix.config.json` |
 | Dynamic page rendering and HTML sanitization | `scripts/render-wix-content.mjs` |
-| Public newsletter archive synchronization | `scripts/sync-newsletters.mjs` |
-| Newsletter latest/archive page generation | `scripts/render-newsletters.mjs` |
 | Public Google Calendar synchronization | `scripts/sync-calendar.mjs` |
 | Offline/public migration snapshot | `src/data/wix-content.json` |
-| Offline newsletter snapshot | `src/data/newsletters.json` |
 | Offline public calendar snapshot | `src/data/calendar-events.json` |
 | Deployment | `.github/workflows/pages.yml` |
 | Automatic fundraising history | `scripts/archive-fundraising*.mjs`, `scripts/publish-fundraising-archive.mjs`, `.github/workflows/archive-fundraising.yml` |
@@ -204,18 +201,14 @@ python3 -m http.server 4173 --directory dist
   never activate the live profile, and block browser access to live Wix APIs.
   Public readiness checks are GET/DNS only, not transaction certification.
 
-### Newsletter integration
+### Newsletter
 
-- The Constant Contact archive feed is public and uses the archive widget's
-  non-secret `data-m` identifier; it does not require OAuth.
-- Accept campaign URLs only from `conta.cc` and
-  `myemail.constantcontact.com`.
-- Do not inject remote email HTML into the generated document. Render the public
-  campaign permalink in a sandboxed iframe and retain an explicit external link.
-- Preserve archive order because Constant Contact returns newest archived
-  campaigns first.
-- Keep `src/data/newsletters.json` deterministic and safe for public source
-  control.
+- Constant Contact sends the newsletter and hosts its signup form
+  (`newsletterUrl` in `src/site.mjs`). The site does not publish newsletter
+  editions.
+- `/newsletter/` is a repository-owned overview with one primary signup action.
+  Its GeneratedPages record may override only the header.
+- Do not promise a sending cadence in site copy.
 
 ### Google Calendar integration
 
