@@ -132,7 +132,7 @@ export const pages = [
       </ul>
 
       <h2>Stay connected</h2>
-      <p>The PTA shares a monthly newsletter and other important updates by email. The school cannot share family contact information with us, so please <a href="https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp">sign up for PTA communications</a> directly.</p>
+      <p>The PTA shares school news and important updates by email. The school cannot share family contact information with us, so please <a href="https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp">sign up for the Montlake PTA Newsletter</a> directly.</p>
 
       <h2>Kindergarten resources</h2>
       <h3>First day</h3>
@@ -156,14 +156,14 @@ export const pages = [
   {
     slug: "newsletter",
     title: "Newsletter",
-    heading: "The monthly Montlake PTA newsletter.",
+    heading: "The Montlake PTA newsletter.",
     kicker: "Stay connected",
-    description: "Read the latest monthly newsletter, browse past editions, and sign up for PTA communications.",
+    description: "Read the latest newsletter, browse past editions, and sign up for the Montlake PTA Newsletter.",
     accent: "blue",
     disableOutline: true,
     content: `
       <p class="lead">The newsletter archive will appear here.</p>
-      <p><a class="button button-primary" href="https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp">Sign up for PTA communications</a></p>`,
+      <p><a class="button button-primary" href="https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp">Sign up for the Montlake PTA Newsletter</a></p>`,
   },
   {
     slug: "calendar",
@@ -200,7 +200,7 @@ export const pages = [
     accent: "yellow",
     content: `
       <p class="lead">The PTA shop changes throughout the year.</p>
-      <div class="callout">There are no products listed right now. Watch the monthly newsletter and PTA emails for new seasonal fundraisers.</div>`,
+      <div class="callout">There are no products listed right now. Check the PTA newsletter for new seasonal fundraisers.</div>`,
   },
   {
     slug: "enrichment",
@@ -581,7 +581,7 @@ export const pages = [
     content: `
       <p class="lead">The annual evergreens sale is a community tradition and seasonal fundraiser for Montlake Elementary.</p>
       <p><a href="https://www.signupgenius.com/go/10C044DAAAF2AA4FCCF8-60124101-montlake">Volunteer for pickup</a></p>
-      <p>Ordering and pickup details are shared through PTA communications each fall. Questions can be sent to <a href="mailto:evergreens@montlakepta.org?subject=Evergreens%20Sale%20Question">evergreens@montlakepta.org</a>.</p>`,
+      <p>Ordering and pickup details are announced in the PTA newsletter each fall. Questions can be sent to <a href="mailto:evergreens@montlakepta.org?subject=Evergreens%20Sale%20Question">evergreens@montlakepta.org</a>.</p>`,
   },
   {
     slug: "blog",
@@ -594,8 +594,8 @@ export const pages = [
       <p class="lead">Current and historical school news remains available in the news archive while a new publishing workflow is completed.</p>
       <p><a class="button button-primary" href="https://www.montlakepta.org/blog">Open the news archive</a></p>
       <h2>Never miss an update</h2>
-      <p>Sign up for PTA communications to receive the monthly newsletter, event reminders, and other PTA announcements by email.</p>
-      <p><a href="https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp">Sign up for PTA communications</a>.</p>`,
+      <p>The Montlake PTA Newsletter shares school news, event reminders, and PTA announcements by email.</p>
+      <p><a href="https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp">Sign up for the Montlake PTA Newsletter</a>.</p>`,
   },
   {
     slug: "donation-thank-you-page",

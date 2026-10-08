@@ -153,7 +153,7 @@ function applyHomeFeed(pageMap, posts, wixEvents, calendarEvents) {
             </div>
             ${latestPosts.length
               ? `<div class="home-post-list">${latestPosts.map(homePost).join("")}</div>`
-              : `<div class="freshness-empty"><p>No updates are posted yet.</p><a href="${escapeAttribute("https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp")}">Sign up for PTA communications <span aria-hidden="true">→</span></a></div>`}
+              : `<div class="freshness-empty"><p>No updates are posted yet.</p><a href="${escapeAttribute("https://lp.constantcontactpages.com/sl/tG8wj2x/MontlakeSignUp")}">Sign up for the Montlake PTA Newsletter <span aria-hidden="true">→</span></a></div>`}
           </section>
         </div>
       </div>

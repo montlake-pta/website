@@ -9,7 +9,7 @@ export function mergeNewsletterContent(pages, snapshot, signupUrl) {
     .sort((left, right) => Number(left.archiveOrder || 0) - Number(right.archiveOrder || 0));
   const archiveConnected = snapshot.source === "public-archive" && Boolean(snapshot.archiveId);
   if (!editions.length && !newsletterPage.cmsDescription) {
-    newsletterPage.description = "Sign up for Montlake PTA communications, including the monthly newsletter.";
+    newsletterPage.description = "Read the latest edition and sign up for the Montlake PTA Newsletter.";
   }
   newsletterPage.content = renderNewsletterContent(editions[0], editions, signupUrl, "../", archiveConnected);
   newsletterPage.disableOutline = true;
@@ -37,10 +37,10 @@ function renderNewsletterContent(current, editions, signupUrl, base, archiveConn
   const signup = `
     <div class="newsletter-signup">
       <div>
-        <h2>Get PTA communications by email</h2>
-        <p>One signup covers the monthly PTA newsletter and other important updates from the Montlake PTA.</p>
+        <h2>Get the newsletter in your inbox</h2>
+        <p>School news and important updates from the Montlake PTA, sent by email.</p>
       </div>
-      <a class="button button-primary" href="${escapeAttribute(signupUrl)}">Sign up for PTA communications</a>
+      <a class="button button-primary" href="${escapeAttribute(signupUrl)}">Sign up for the Montlake PTA Newsletter</a>
     </div>`;
 
   if (!current) {
@@ -48,7 +48,7 @@ function renderNewsletterContent(current, editions, signupUrl, base, archiveConn
       ${signup}
       <div class="callout">
         <strong>${archiveConnected ? "No editions have been added to the public archive yet." : "Past editions are not available here yet."}</strong>
-        Sign up above to receive PTA communications, including the monthly newsletter.
+        Sign up above to receive the Montlake PTA Newsletter by email.
       </div>`;
   }
 
