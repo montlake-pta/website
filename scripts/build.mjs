@@ -124,7 +124,7 @@ function renderPage(page, base) {
     <header class="site-header">
       <div class="announcement">
         <p>School hours: 7:55 AM–2:25 PM · Wednesday dismissal: 1:10 PM</p>
-        <a href="${base}newsletter/">Tuesday newsletter <span aria-hidden="true">→</span></a>
+        <a href="${base}newsletter/">Monthly newsletter <span aria-hidden="true">→</span></a>
       </div>
       <div class="nav-shell">
         <a class="brand" href="${base}" aria-label="${site.name} home">
@@ -296,7 +296,7 @@ function renderFooter(base) {
         </div>
         <div>
           <h2>Connect</h2>
-          <a href="${base}newsletter/">Weekly newsletter</a>
+          <a href="${base}newsletter/">Monthly newsletter</a>
           <a href="mailto:askthepta@montlakepta.org">Email the PTA</a>
           <a href="https://www.facebook.com/montlakepta">Facebook</a>
           <a href="https://www.instagram.com/montlakepta">Instagram</a>
@@ -319,7 +319,7 @@ function renderDailyTools(base) {
     <nav class="daily-tools" aria-label="Frequently used school links">
       <div>
         <a href="${base}calendar/">${icon("calendar")}<span><strong>Calendar</strong><small>Dates & events</small></span></a>
-        <a href="${base}newsletter/">${icon("newsletter")}<span><strong>Weekly update</strong><small>PTA newsletter</small></span></a>
+        <a href="${base}newsletter/">${icon("newsletter")}<span><strong>PTA updates</strong><small>Monthly newsletter</small></span></a>
         <a href="${base}enrichment/">${icon("backpack")}<span><strong>After school</strong><small>Care & enrichment</small></span></a>
         <a href="mailto:montlake.attendance@seattleschools.org">${icon("check")}<span><strong>Report absence</strong><small>Email attendance</small></span></a>
       </div>

@@ -247,6 +247,9 @@ if (wixContent.blogPosts.length && !homeHtml.includes('href="./post/')) {
   failures.push("Homepage is not linking to the latest Wix blog posts");
 }
 if (!homeHtml.includes('href="./event-list/"')) failures.push("Homepage is missing the events archive link");
+if (!homeHtml.includes("Monthly newsletter") || /Tuesday newsletter|Weekly (newsletter|update)/i.test(homeHtml)) {
+  failures.push("Shared navigation does not describe the monthly PTA newsletter cadence");
+}
 
 const donateHtml = await readFile(join(output, "donate", "index.html"), "utf8");
 if (!donateHtml.includes('class="donate-hero"')) failures.push("Donation page is missing its landing-page hero");
@@ -513,7 +516,7 @@ const newsletterFixture = mergeNewsletterContent(pages, {
 }, "https://example.com/signup");
 const newsletterLanding = newsletterFixture.find((page) => page.slug === "newsletter");
 if (!newsletterLanding?.content.includes("Weekly Newsletter January 2, 2099")) failures.push("Newsletter landing page does not default to the latest edition");
-if (!newsletterLanding?.content.includes("Sign up for the newsletter")) failures.push("Newsletter landing page is missing its signup CTA");
+if (!newsletterLanding?.content.includes("Sign up for PTA communications")) failures.push("Newsletter landing page is missing its signup CTA");
 if (!newsletterFixture.some((page) => page.slug === "newsletter/weekly-newsletter-december-20-2098-older")) {
   failures.push("Newsletter archive did not generate a stable edition route");
 }
@@ -523,7 +526,7 @@ for (const [snapshot, expected] of [
 ]) {
   const content = mergeNewsletterContent(pages, snapshot, "https://example.com/signup")
     .find((page) => page.slug === "newsletter").content;
-  if (!content.includes(expected) || content.includes("not connected") || !content.includes("Sign up for the newsletter")) {
+  if (!content.includes(expected) || content.includes("not connected") || !content.includes("Sign up for PTA communications")) {
     failures.push("Newsletter empty state confuses archive availability or drops signup");
   }
 }

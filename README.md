@@ -454,7 +454,7 @@ email HTML into the site.
 
 The redesign keeps the PTA's current operational tools in place:
 
-- Constant Contact for the weekly newsletter
+- Constant Contact for the monthly newsletter and PTA communications signup
 - Givebacks for PTA membership
 - PayPal and employer portals for donations
 - Google Calendar for live dates and events

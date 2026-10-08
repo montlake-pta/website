@@ -9,7 +9,7 @@ export function mergeNewsletterContent(pages, snapshot, signupUrl) {
     .sort((left, right) => Number(left.archiveOrder || 0) - Number(right.archiveOrder || 0));
   const archiveConnected = snapshot.source === "public-archive" && Boolean(snapshot.archiveId);
   if (!editions.length && !newsletterPage.cmsDescription) {
-    newsletterPage.description = "Sign up for weekly school news and updates from Montlake PTA.";
+    newsletterPage.description = "Sign up for Montlake PTA communications, including the monthly newsletter.";
   }
   newsletterPage.content = renderNewsletterContent(editions[0], editions, signupUrl, "../", archiveConnected);
   newsletterPage.disableOutline = true;
@@ -22,8 +22,8 @@ export function mergeNewsletterContent(pages, snapshot, signupUrl) {
       title: edition.title,
       heading: edition.title,
       description: edition.publishedAt
-        ? `Montlake Elementary weekly newsletter from ${formatDate(edition.publishedAt)}.`
-        : "A Montlake Elementary weekly newsletter edition.",
+        ? `Montlake PTA newsletter from ${formatDate(edition.publishedAt)}.`
+        : "A Montlake PTA newsletter edition.",
       accent: "blue",
       content: renderNewsletterContent(edition, editions, signupUrl, "../../", archiveConnected),
       disableOutline: true,
@@ -37,10 +37,10 @@ function renderNewsletterContent(current, editions, signupUrl, base, archiveConn
   const signup = `
     <div class="newsletter-signup">
       <div>
-        <h2>Get the weekly update in your inbox</h2>
-        <p>The PTA newsletter is sent each Tuesday with school, classroom, program, and community news.</p>
+        <h2>Get PTA communications by email</h2>
+        <p>One signup covers the monthly PTA newsletter and other important updates from the Montlake PTA.</p>
       </div>
-      <a class="button button-primary" href="${escapeAttribute(signupUrl)}">Sign up for the newsletter</a>
+      <a class="button button-primary" href="${escapeAttribute(signupUrl)}">Sign up for PTA communications</a>
     </div>`;
 
   if (!current) {
@@ -48,7 +48,7 @@ function renderNewsletterContent(current, editions, signupUrl, base, archiveConn
       ${signup}
       <div class="callout">
         <strong>${archiveConnected ? "No editions have been added to the public archive yet." : "Past editions are not available here yet."}</strong>
-        Sign up above to receive the weekly newsletter in your inbox.
+        Sign up above to receive PTA communications, including the monthly newsletter.
       </div>`;
   }
 
