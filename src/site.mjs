@@ -580,7 +580,7 @@ export const pages = [
     accent: "blue",
     content: `
       <p class="lead">The annual evergreens sale is a community tradition and seasonal fundraiser for Montlake Elementary.</p>
-      <p><a class="button button-primary" href="https://www.signupgenius.com/go/10C044DAAAF2AA4FCCF8-60124101-montlake">Volunteer for pickup</a></p>
+      <p><a href="https://www.signupgenius.com/go/10C044DAAAF2AA4FCCF8-60124101-montlake">Volunteer for pickup</a></p>
       <p>Ordering and pickup details are shared through PTA communications each fall. Questions can be sent to <a href="mailto:evergreens@montlakepta.org?subject=Evergreens%20Sale%20Question">evergreens@montlakepta.org</a>.</p>`,
   },
   {
