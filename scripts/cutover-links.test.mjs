@@ -8,14 +8,14 @@ import { parseDocument } from "htmlparser2";
 import { selectAll, selectOne } from "css-select";
 import { textContent } from "domutils";
 import { legacyEventAliases } from "./legacy-event-aliases.mjs";
-import { emitLegacyDocuments, legacyDocuments, rewriteCutoverLinks } from "./cutover-links.mjs";
+import { emitLegacyDocuments, emitLegacyPageRoutes, legacyDocuments, legacyPageRoutes, rewriteCutoverLinks } from "./cutover-links.mjs";
 import { sanitizeCmsHtml } from "./render-wix-content.mjs";
 import { cutoverLinkProblems } from "./check-cutover.mjs";
 
 const baseUrl = "https://montlake-pta.github.io/website/";
 const post = "post/key-events-for-5th-grade-islandwood-parent-night-out-walk-a-thon-bake-sale-details";
 const routes = new Set([
-  "", "evergreens", "fifth-grade-promotion", "donate", "enrichment", "news",
+  "", "evergreens", "fifth-grade-promotion", "donate", "annual-fund", "enrichment", "news",
   "category/2026-art-walk", "event-details/parents-night-out", post,
   "event-details/5th-grade-promotion", "product-page/islandwood-donation",
   "product-page/islandwood-bake-sale", "post/nested/deep",
@@ -140,6 +140,41 @@ test("aliases must have a supplied canonical target and never use punctuation-st
     "/events-1/mioposto-dine-out---february-3rd%2C-2026",
     "/events-1/ai-%26-social-media---a-parents-only-forum-with-uw-professor%2C-katie-davis",
   ]) assert.throws(() => href(link(`https://www.montlakepta.org${path}`)), /Unknown cutover target|Unsafe internal path/);
+});
+
+test("reviewed legacy page addresses resolve to their canonical routes", () => {
+  assert.deepEqual(legacyPageRoutes.map(({ source, target }) => [source, target]), [["/fall-fundraiser", "annual-fund"]]);
+  for (const prefix of ["https://www.montlakepta.org", "//montlakepta.org", "/website", ""]) {
+    for (const trailing of ["", "/"]) {
+      assert.equal(href(link(`${prefix}/fall-fundraiser${trailing}?utm=x#give`)), "../../../annual-fund/?utm=x#give", prefix + trailing);
+    }
+  }
+  const text = textContent(selectOne("p", rewrite("<p>Details: https://www.montlakepta.org/fall-fundraiser.</p>")));
+  assert.equal(text, "Details: https://montlake-pta.github.io/website/annual-fund/.");
+  // Exact lookup only, and a rendered page at the source address wins.
+  assert.throws(() => href(link("https://www.montlakepta.org/fall-fundraiser-2026")), /Unknown cutover target/);
+  assert.throws(() => href(link("https://www.montlakepta.org/fall-fundraiser/extra")), /Unknown cutover target/);
+  assert.equal(href(link("https://www.montlakepta.org/fall-fundraiser"),
+    { ...options, routes: new Set([...routes, "fall-fundraiser"]) }), "../../../fall-fundraiser/");
+  assert.throws(() => href(link("https://www.montlakepta.org/fall-fundraiser"),
+    { ...options, routes: new Set([...routes].filter((route) => route !== "annual-fund")) }), /Missing reviewed page target: \/annual-fund/);
+});
+
+test("legacy page redirects are static, base-aware and never overwrite rendered routes", async (t) => {
+  const outputDir = await mkdtemp(join(tmpdir(), "montlake-page-routes-"));
+  t.after(() => rm(outputDir, { recursive: true, force: true }));
+  await assert.rejects(emitLegacyPageRoutes({ outputDir, routes, basePath: "/website/" }), /Missing reviewed page output/);
+  await mkdir(join(outputDir, "annual-fund"), { recursive: true });
+  await writeFile(join(outputDir, "annual-fund", "index.html"), "Canonical");
+  assert.deepEqual(await emitLegacyPageRoutes({ outputDir, routes, basePath: "/website/" }), ["fall-fundraiser/index.html"]);
+  const doc = parseDocument(await readFile(join(outputDir, "fall-fundraiser", "index.html"), "utf8"));
+  assert.equal(selectOne("meta[http-equiv=refresh]", doc).attribs.content, "0;url=/website/annual-fund/");
+  assert.equal(selectOne("main a", doc).attribs.href, "/website/annual-fund/");
+  assert.equal(selectOne("meta[name=robots]", doc).attribs.content, "noindex,follow");
+  await assert.rejects(emitLegacyPageRoutes({ outputDir, routes, basePath: "/website/" }), /Refusing to overwrite/);
+  const rendered = await mkdtemp(join(tmpdir(), "montlake-page-routes-"));
+  t.after(() => rm(rendered, { recursive: true, force: true }));
+  assert.deepEqual(await emitLegacyPageRoutes({ outputDir: rendered, routes: new Set([...routes, "fall-fundraiser"]), basePath: "/" }), []);
 });
 
 test("both PDFs rewrite without altering source identifiers, query bytes, or fragments", () => {

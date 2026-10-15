@@ -60,6 +60,7 @@ the documented `user-invocable: false` agent-profile override.
 | Wix querying and public normalization | `scripts/sync-wix.mjs`, `scripts/normalize-wix-content.mjs` |
 | Safe rich-content conversion and privacy filtering | `scripts/wix-public-content.mjs` |
 | Reviewed legacy event URL compatibility | `scripts/legacy-event-aliases.mjs`, `src/data/legacy-event-aliases.json` |
+| Reviewed legacy page URL compatibility | `legacyPageRoutes` in `scripts/cutover-links.mjs` |
 | Internal-link and document cutover | `scripts/cutover-links.mjs`, `scripts/check-cutover.mjs` |
 | Wix CMS creation and seed behavior | `scripts/setup-wix-cms.mjs` |
 | Reviewed repair of an existing CMS page | `scripts/update-wix-page.mjs`, `.github/workflows/update-wix-page.yml` |

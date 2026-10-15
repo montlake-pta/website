@@ -3,7 +3,7 @@ import { lstat, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { parseDocument } from "htmlparser2";
 import { getOuterHTML } from "domutils";
-import { resolveLegacyEventAlias } from "./legacy-event-aliases.mjs";
+import { renderRedirect, resolveLegacyEventAlias } from "./legacy-event-aliases.mjs";
 import { PREVIEW_SITE_URL } from "../src/deployment.mjs";
 
 const retiringHosts = new Set(["montlakepta.org", "www.montlakepta.org"]);
@@ -28,6 +28,14 @@ export const legacyDocuments = Object.freeze([
   }),
 ]);
 const documents = new Map(legacyDocuments.map(({ source, asset }) => [source, asset]));
+
+// Reviewed legacy Editor pages whose content lives at another canonical route.
+// Lookup is exact apart from one trailing slash. A rendered page at the source
+// route always wins, and a missing target is a build error.
+export const legacyPageRoutes = Object.freeze([
+  Object.freeze({ source: "/fall-fundraiser", target: "annual-fund" }),
+]);
+const pageRoutes = new Map(legacyPageRoutes.map(({ source, target }) => [source, target]));
 
 /**
  * Apply to the COMPLETE rendered document, AFTER the normal rich-content
@@ -121,15 +129,18 @@ export function rewriteCutoverLinks(html, { slug = "", routes, baseUrl, assetPat
     const decoded = decodePath(pathname, value, existingAsset);
     if (hasDotSegment(decoded) || decoded.includes("//")) fail("Unsafe internal path", value);
     const alias = resolveLegacyEventAlias(pathname);
+    const pageSource = decoded.length > 1 ? decoded.replace(/\/$/, "") : decoded;
+    const moved = !alias && !canonical.has(pageSource.slice(1)) ? pageRoutes.get(pageSource) : undefined;
     if (!alias && /%2f/i.test(rawPath)) fail("Unreviewed encoded slash", value);
     // Preserve authored asset URL bytes, including percent-encoded spaces and
     // Unicode filenames. Asset existence remains the build validator's job.
     if (existingAsset) return literal ? parsed.href : null;
     const document = documents.get(decoded);
-    const route = (alias || decoded).replace(/^\//, "").replace(/\/$/, "");
+    const route = (alias || (moved ? `/${moved}` : decoded)).replace(/^\//, "").replace(/\/$/, "");
     // Only already-local assets use the build's asset namespace. An arbitrary
     // /assets/... address on the old frontend is not evidence of a local file.
     const asset = isSiteAsset(decoded) && (!absolute || ownOrigin);
+    if (moved && !canonical.has(route)) fail("Missing reviewed page target", `/${moved}`);
     if (!document && !alias && !asset && !canonical.has(route)) {
       // Ordinary relative assets belong to check-site. Unknown navigation and
       // legacy namespaces cannot quietly become a retiring dependency.
@@ -147,7 +158,7 @@ export function rewriteCutoverLinks(html, { slug = "", routes, baseUrl, assetPat
     const suffix = value.slice(value.search(/[?#]/) < 0 ? value.length : value.search(/[?#]/));
     const absoluteTarget = `${base.href}${targetPath.slice(1)}${suffix}`;
     if (literal) return absoluteTarget;
-    if (!alias && !document && ((absolute && ownOrigin && (prefixed || base.pathname === "/")) ||
+    if (!alias && !moved && !document && ((absolute && ownOrigin && (prefixed || base.pathname === "/")) ||
         (!absolute && (relative || prefixed || base.pathname === "/")))) return null;
     return `${prefix}${targetPath.slice(1)}${suffix}`;
   }
@@ -263,6 +274,39 @@ function fail(message, value) {
   const path = pathOnly(safeInput).replace(/[^\x21-\x7e]|[<>"`\\]/gu,
     (character) => encodeURIComponent(character.toWellFormed())).slice(0, 200);
   throw new Error(`${message}: ${path.startsWith("/") ? path : `/${path}`}`);
+}
+
+/**
+ * Call after writing canonical pages. Emits a static redirect for each
+ * reviewed legacy page address so old bookmarks keep working after cutover.
+ * Sources that are themselves rendered routes are left untouched.
+ */
+export async function emitLegacyPageRoutes({ outputDir, routes, basePath }) {
+  if (typeof outputDir !== "string" || !outputDir || /^[a-z][a-z0-9+.-]*:/i.test(outputDir)) {
+    throw new Error("Page route outputDir must be a filesystem directory");
+  }
+  if (!(routes instanceof Set)) throw new Error("Page route inventory must be a Set");
+  const canonical = new Set([...routes].map(routeKey));
+  const root = resolve(outputDir);
+  const files = [];
+  for (const { source, target } of legacyPageRoutes) {
+    if (canonical.has(source.slice(1))) continue;
+    if (!canonical.has(target)) fail("Missing reviewed page target", `/${target}`);
+    const stat = await lstat(join(root, target, "index.html")).catch(() => null);
+    if (!stat?.isFile()) fail("Missing reviewed page output", `/${target}`);
+    files.push({
+      path: `${source.slice(1)}/index.html`,
+      content: renderRedirect(`${basePath}${target}/`, basePath,
+        { title: "Page moved", message: "This page has a new address.", action: "Continue" }),
+    });
+  }
+  for (const file of files) await assertVacant(root, file.path);
+  for (const file of files) {
+    const destination = join(root, file.path);
+    await mkdir(dirname(destination), { recursive: true });
+    await writeFile(destination, file.content, { flag: "wx" });
+  }
+  return files.map(({ path }) => path);
 }
 
 /**

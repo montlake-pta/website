@@ -241,6 +241,14 @@ retained for rollback compatibility. See [trigger coverage](../README.md#on-dema
    gh workflow run pages.yml --repo montlake-pta/website --ref main
    ```
 
+   A build error such as `Unknown cutover target: /some-page` means Wix content
+   links to a `montlakepta.org` page with no counterpart on the new site. The
+   build stops rather than publish a link that breaks at cutover. Find the
+   record with an authenticated
+   [public snapshot export](content-authoring.md#refreshing-the-offline-snapshot).
+   If the new site already covers that content, add a reviewed entry to
+   `legacyPageRoutes` in `scripts/cutover-links.mjs`; otherwise create the page
+   in the appropriate CMS collection or ask the editor to change the link.
 6. If no dispatch was requested, inspect the native automation status/filter or
    applicable hook coverage, the published Wix action code,
    the GitHub App installation and the **name** of its Wix secret. Do not print

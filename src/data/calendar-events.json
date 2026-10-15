@@ -1,55 +1,45 @@
 {
   "schemaVersion": 1,
   "source": "google-calendar",
-  "syncedAt": "2026-09-10T22:14:25.344Z",
+  "syncedAt": "2026-10-15T17:05:30.126Z",
   "events": [
     {
-      "id": "ca4969b433de71d4",
-      "title": "Fall Session After School Enrichment (ASE) Registration Opens",
-      "startAt": "2026-09-14T07:00:00.000Z",
-      "endAt": "2026-09-19T07:00:00.000Z",
+      "id": "71205a53a5d07646",
+      "title": "Fall Fundraiser",
+      "startAt": "2026-10-12T07:00:00.000Z",
+      "endAt": "2026-11-14T08:00:00.000Z",
       "allDay": true,
       "location": "",
       "status": "CONFIRMED",
       "source": "google-calendar"
     },
     {
-      "id": "f59b4ffc0b379bfd",
-      "title": "PTA Welcome Back Party",
-      "startAt": "2026-09-26T00:30:00.000Z",
-      "endAt": "2026-09-26T02:30:00.000Z",
+      "id": "810214dbea11bd26",
+      "title": "PTA Coffee & Donuts for Parents at Drop Off",
+      "startAt": "2026-10-23T14:45:00.000Z",
+      "endAt": "2026-10-23T15:15:00.000Z",
       "allDay": false,
-      "location": "2025 E Calhoun St, Seattle, WA 98112, USA",
+      "location": "Montlake Elementary School, 2409 22nd Ave E, Seattle, WA 98112, USA",
       "status": "CONFIRMED",
       "source": "google-calendar"
     },
     {
-      "id": "2440a71604f6a581",
-      "title": "Montlake @ Sounders Game",
-      "startAt": "2026-09-27T00:30:00.000Z",
-      "endAt": "2026-09-27T02:30:00.000Z",
+      "id": "25e3b9fe5a06fc32",
+      "title": "Montlake PTA General Membership Meeting",
+      "startAt": "2026-11-05T03:00:00.000Z",
+      "endAt": "2026-11-05T04:30:00.000Z",
       "allDay": false,
-      "location": "",
+      "location": "Montlake Elementary School, 2409 22nd Ave E, Seattle, WA 98112, USA",
       "status": "CONFIRMED",
       "source": "google-calendar"
     },
     {
-      "id": "9e53bd9918906208",
-      "title": "Enrichment: Fall Session Begins",
-      "startAt": "2026-10-07T07:00:00.000Z",
-      "endAt": "2026-10-08T07:00:00.000Z",
-      "allDay": true,
-      "location": "",
-      "status": "CONFIRMED",
-      "source": "google-calendar"
-    },
-    {
-      "id": "e23399d1d0710bd3",
-      "title": "No School: In-Service Day",
-      "startAt": "2026-10-09T07:00:00.000Z",
-      "endAt": "2026-10-10T07:00:00.000Z",
-      "allDay": true,
-      "location": "",
+      "id": "0e24d4f762c739a3",
+      "title": "PTA Coffee & Treats for Parents at School Drop Off",
+      "startAt": "2026-11-06T15:45:00.000Z",
+      "endAt": "2026-11-06T16:15:00.000Z",
+      "allDay": false,
+      "location": "Montlake Elementary School, 2409 22nd Ave E, Seattle, WA 98112, USA",
       "status": "CONFIRMED",
       "source": "google-calendar"
     },
@@ -58,6 +48,26 @@
       "title": "No School: Veterans Day",
       "startAt": "2026-11-11T08:00:00.000Z",
       "endAt": "2026-11-12T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "cb86dc7c24556712",
+      "title": "No ASE Classes",
+      "startAt": "2026-11-11T08:00:00.000Z",
+      "endAt": "2026-11-12T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "26738cdc4c206012",
+      "title": "No ASE Classes",
+      "startAt": "2026-11-23T08:00:00.000Z",
+      "endAt": "2026-11-26T08:00:00.000Z",
       "allDay": true,
       "location": "",
       "status": "CONFIRMED",
@@ -84,8 +94,48 @@
       "source": "google-calendar"
     },
     {
+      "id": "7e73e5f6aef42f22",
+      "title": "Giving Tuesday",
+      "startAt": "2026-12-01T08:00:00.000Z",
+      "endAt": "2026-12-02T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "7747f2dde5704cfd",
+      "title": "Evergreen Sale Pick Up & Bake Sale",
+      "startAt": "2026-12-05T17:00:00.000Z",
+      "endAt": "2026-12-05T20:00:00.000Z",
+      "allDay": false,
+      "location": "2025 E Calhoun St, Seattle, WA 98112, USA",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "4207837aae92d0c4",
+      "title": "Night Market & Winter Concert",
+      "startAt": "2026-12-18T01:00:00.000Z",
+      "endAt": "2026-12-18T03:00:00.000Z",
+      "allDay": false,
+      "location": "2025 E Calhoun St, Seattle, WA 98112, USA",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
       "id": "377ad3a98f88d608",
       "title": "Enrichment: Fall Session Ends",
+      "startAt": "2026-12-18T08:00:00.000Z",
+      "endAt": "2026-12-19T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "91ab11a571b624ff",
+      "title": "ASE Classes Begin 1-Hour Early",
       "startAt": "2026-12-18T08:00:00.000Z",
       "endAt": "2026-12-19T08:00:00.000Z",
       "allDay": true,
@@ -134,12 +184,62 @@
       "source": "google-calendar"
     },
     {
+      "id": "e40b59efe1ee219b",
+      "title": "No School: Day Between Semesters",
+      "startAt": "2027-01-28T08:00:00.000Z",
+      "endAt": "2027-01-29T08:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "fbe47b4d9bb9c224",
+      "title": "Literacy Night",
+      "startAt": "2027-02-12T01:00:00.000Z",
+      "endAt": "2027-02-12T03:00:00.000Z",
+      "allDay": false,
+      "location": "2025 E Calhoun Street Seattle, WA 98112",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
       "id": "263528df388ef881",
       "title": "No School - Mid-Winter Break",
       "startAt": "2027-02-15T08:00:00.000Z",
       "endAt": "2027-02-20T08:00:00.000Z",
       "allDay": true,
       "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "41a447350dc45812",
+      "title": "Spring Auction (Silent)",
+      "startAt": "2027-03-26T07:00:00.000Z",
+      "endAt": "2027-04-07T07:00:00.000Z",
+      "allDay": true,
+      "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "22ed504647420541",
+      "title": "Auction Kickoff Party (Adults Only)",
+      "startAt": "2027-03-27T01:00:00.000Z",
+      "endAt": "2027-03-27T04:00:00.000Z",
+      "allDay": false,
+      "location": "Tyee Yacht Club, 3229 Fairview Ave E, Seattle, WA 98102, USA",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "2e95f9528a6b496c",
+      "title": "Montlake STEM Fair",
+      "startAt": "2027-04-08T23:00:00.000Z",
+      "endAt": "2027-04-09T00:30:00.000Z",
+      "allDay": false,
+      "location": "2025 E Calhoun St, Seattle, WA 98112, USA",
       "status": "CONFIRMED",
       "source": "google-calendar"
     },
@@ -170,6 +270,16 @@
       "endAt": "2027-06-01T07:00:00.000Z",
       "allDay": true,
       "location": "",
+      "status": "CONFIRMED",
+      "source": "google-calendar"
+    },
+    {
+      "id": "8af5d73c6ac71aa4",
+      "title": "Montlake Art Walk",
+      "startAt": "2027-06-04T00:00:00.000Z",
+      "endAt": "2027-06-04T02:30:00.000Z",
+      "allDay": false,
+      "location": "2025 E Calhoun St, Seattle, WA 98112, USA",
       "status": "CONFIRMED",
       "source": "google-calendar"
     },

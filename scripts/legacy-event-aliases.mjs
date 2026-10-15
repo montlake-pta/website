@@ -182,7 +182,9 @@ function renderRecoveryScript(basePath, targets) {
 `;
 }
 
-function renderRedirect(target, basePath) {
+export function renderRedirect(target, basePath, {
+  title = "Event details", message = "This event has a new address.", action = "Continue to the event",
+} = {}) {
   // target consists solely of validated basePath + ASCII canonical slug.
   return `<!doctype html>
 <html lang="en">
@@ -194,14 +196,14 @@ function renderRedirect(target, basePath) {
     <link rel="canonical" href="${target}">
     <meta http-equiv="refresh" content="0;url=${target}">
     <script>window.location.replace(${JSON.stringify(target)});</script>
-    <title>Event details | Montlake PTA</title>
+    <title>${title} | Montlake PTA</title>
   </head>
   <body>
     <main class="page-hero">
       <div>
-        <h1>Event details</h1>
-        <p>This event has a new address.</p>
-        <p><a class="button button-primary" href="${target}">Continue to the event</a></p>
+        <h1>${title}</h1>
+        <p>${message}</p>
+        <p><a class="button button-primary" href="${target}">${action}</a></p>
       </div>
     </main>
   </body>

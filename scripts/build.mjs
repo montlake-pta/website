@@ -6,7 +6,7 @@ import { mergeWixContent } from "./render-wix-content.mjs";
 import { emitLegacyEventAliases } from "./legacy-event-aliases.mjs";
 import { visitorConfiguration } from "./visitor-config.mjs";
 import { build as bundleJavaScript } from "esbuild";
-import { emitLegacyDocuments, rewriteCutoverLinks } from "./cutover-links.mjs";
+import { emitLegacyDocuments, emitLegacyPageRoutes, rewriteCutoverLinks } from "./cutover-links.mjs";
 import { renderFundraisingOverview, renderFundraisingPage } from "./render-fundraising.mjs";
 import { escapeAttribute, prepareContent } from "./page-content.mjs";
 import { renderBlogArticle } from "./render-blog.mjs";
@@ -70,6 +70,8 @@ await emitLegacyEventAliases({
   canonicalRoutes: new Set(renderedPages.map((page) => page.slug)),
   basePath: deploymentBase,
 });
+
+await emitLegacyPageRoutes({ outputDir: output, routes: routeInventory, basePath: deploymentBase });
 
 await writeFile(join(output, "404.html"), rewriteCutoverLinks(renderNotFound(), {
   slug: "", routes: routeInventory, baseUrl: site.previewUrl, assetPaths,
