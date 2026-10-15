@@ -61,6 +61,7 @@ the documented `user-invocable: false` agent-profile override.
 | Safe rich-content conversion and privacy filtering | `scripts/wix-public-content.mjs` |
 | Reviewed legacy event URL compatibility | `scripts/legacy-event-aliases.mjs`, `src/data/legacy-event-aliases.json` |
 | Reviewed legacy page URL compatibility | `legacyPageRoutes` in `scripts/cutover-links.mjs` |
+| Partial deployment when individual content fails | `scripts/content-isolation.mjs`, `scripts/report-partial-deployment.mjs` |
 | Internal-link and document cutover | `scripts/cutover-links.mjs`, `scripts/check-cutover.mjs` |
 | Wix CMS creation and seed behavior | `scripts/setup-wix-cms.mjs` |
 | Reviewed repair of an existing CMS page | `scripts/update-wix-page.mjs`, `.github/workflows/update-wix-page.yml` |
@@ -243,6 +244,10 @@ python3 -m http.server 4173 --directory dist
 - Never echo secrets or write them into artifacts.
 - Keep Pages deployment reproducible with `npm ci`, `npm run build`, and
   `npm test`.
+- Pages publishes what succeeded and then fails the run when any Wix item or
+  sync was held back (`scripts/content-isolation.mjs`). Keep that final failure
+  step: the failure email is the notification. Code, template and test
+  failures must still stop deployment.
 - Keep the Wix publishing bridge server-only. Its GitHub App signing key
   belongs in Wix Secrets Manager; short-lived installation tokens must remain
   limited to this repository with Actions write, not Contents write.

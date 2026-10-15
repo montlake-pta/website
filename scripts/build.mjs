@@ -11,24 +11,16 @@ import { renderFundraisingOverview, renderFundraisingPage } from "./render-fundr
 import { escapeAttribute, prepareContent } from "./page-content.mjs";
 import { renderBlogArticle } from "./render-blog.mjs";
 import { prepareFundraisingArchive } from "./archive-fundraising.mjs";
+import { describeIsolatedItem, isolateContentFailures } from "./content-isolation.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const output = join(root, "dist");
 const deploymentBase = new URL(site.previewUrl).pathname;
 const visitor = visitorConfiguration();
 const visitorUpdates = visitor.enabled || visitor.readOnly;
-const wixContent = JSON.parse(await readFile(join(root, "src", "data", "wix-content.json"), "utf8"));
+const snapshotPath = join(root, "src", "data", "wix-content.json");
+const syncedContent = JSON.parse(await readFile(snapshotPath, "utf8"));
 const calendarContent = JSON.parse(await readFile(join(root, "src", "data", "calendar-events.json"), "utf8"));
-const renderedPages = preserveRetiredProductRoutes(preserveCollectionRoutes(mergeWixContent(pages, wixContent, calendarContent.events, {
-  transactionsEnabled: visitor.enabled, readOnly: visitor.readOnly,
-})));
-if (visitor.enabled) {
-  for (const page of transactionPages) {
-    if (renderedPages.some((existing) => existing.slug === page.slug)) throw new Error(`Reserved transaction route collision: ${page.slug}`);
-    renderedPages.push(page);
-  }
-}
-const routeInventory = new Set(renderedPages.map((page) => page.slug));
 const assetPaths = new Set();
 async function listAssets(directory, prefix = "assets") {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
@@ -39,6 +31,56 @@ async function listAssets(directory, prefix = "assets") {
   }
 }
 await listAssets(join(root, "src", "assets"));
+
+let wixContent;
+let renderedPages;
+let routeInventory;
+let documents;
+
+// Renders every page in memory so a failure is known before anything is written.
+function renderSite(content) {
+  wixContent = content;
+  renderedPages = preserveRetiredProductRoutes(preserveCollectionRoutes(mergeWixContent(pages, content, calendarContent.events, {
+    transactionsEnabled: visitor.enabled, readOnly: visitor.readOnly,
+  })));
+  if (visitor.enabled) {
+    for (const page of transactionPages) {
+      if (renderedPages.some((existing) => existing.slug === page.slug)) throw new Error(`Reserved transaction route collision: ${page.slug}`);
+      renderedPages.push(page);
+    }
+  }
+  routeInventory = new Set(renderedPages.map((page) => page.slug));
+  documents = new Map();
+  const failures = [];
+  for (const page of renderedPages) {
+    const base = page.slug ? "../".repeat(page.slug.split("/").length) : "./";
+    try {
+      documents.set(page.slug, rewriteCutoverLinks(renderPage(page, base), {
+        slug: page.slug, routes: routeInventory, baseUrl: site.previewUrl, assetPaths,
+        allowLegacyTransactions: !visitor.enabled,
+      }));
+    } catch (error) {
+      failures.push({ route: page.slug, error });
+    }
+  }
+  return failures;
+}
+
+// CONTENT_ISOLATION_REPORT opts into publishing the rest of the site when
+// individual Wix items fail. Without it, any failure stops the build.
+const isolationReport = process.env.CONTENT_ISOLATION_REPORT;
+if (isolationReport) {
+  const fallbackPath = process.env.WIX_FALLBACK_SNAPSHOT;
+  const fallback = fallbackPath ? JSON.parse(await readFile(fallbackPath, "utf8")) : null;
+  const result = isolateContentFailures({ content: syncedContent, fallback, render: renderSite });
+  for (const item of result.isolated) console.warn(describeIsolatedItem(item));
+  // Later checks and the deployed-content record must describe what was built.
+  if (result.isolated.length) await writeFile(snapshotPath, `${JSON.stringify(result.content, null, 2)}\n`);
+  await writeFile(isolationReport, `${JSON.stringify({ isolated: result.isolated }, null, 2)}\n`);
+} else {
+  const failures = renderSite(syncedContent);
+  if (failures.length) throw failures[0].error;
+}
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
@@ -57,12 +99,8 @@ if (visitorUpdates) {
 
 for (const page of renderedPages) {
   const pageDirectory = page.slug ? join(output, page.slug) : output;
-  const base = page.slug ? "../".repeat(page.slug.split("/").length) : "./";
   await mkdir(pageDirectory, { recursive: true });
-  await writeFile(join(pageDirectory, "index.html"), rewriteCutoverLinks(renderPage(page, base), {
-    slug: page.slug, routes: routeInventory, baseUrl: site.previewUrl, assetPaths,
-    allowLegacyTransactions: !visitor.enabled,
-  }));
+  await writeFile(join(pageDirectory, "index.html"), documents.get(page.slug));
 }
 
 await emitLegacyEventAliases({

@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -46,20 +47,51 @@ jobs:
       - name: Allow Wix changes to become visible to read APIs
         if: github.event_name == 'workflow_dispatch' && github.actor == 'montlake-pta-publish-bridge[bot]'
         run: sleep 15
+      - name: Restore last deployed content
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOYED_DIR: ${{ runner.temp }}/deployed-content
+        run: |
+          mkdir -p "$DEPLOYED_DIR"
+          id=$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/artifacts?name=deployed-content&per_page=100" \
+            --jq '.artifacts[] | select((.expired | not) and .workflow_run.head_branch == "main") | [.created_at, .id] | @tsv' \
+            | sort | tail -n 1 | cut -f 2 || true)
+          if [ -n "$id" ] \
+            && gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$id/zip" > "$RUNNER_TEMP/deployed-content.zip" \
+            && unzip -q -o "$RUNNER_TEMP/deployed-content.zip" -d "$DEPLOYED_DIR" \
+            && node -e 'for (const file of process.argv.slice(1)) JSON.parse(require("node:fs").readFileSync(file, "utf8"))' \
+              "$DEPLOYED_DIR/wix-content.json" "$DEPLOYED_DIR/calendar-events.json"; then
+            echo "Using deployed-content artifact $id as the last deployed version."
+          else
+            echo "::notice::No deployed-content record is available; the checked-in snapshots stand in for the last deployed version."
+            cp src/data/wix-content.json src/data/calendar-events.json "$DEPLOYED_DIR/"
+          fi
       - name: Sync content from Wix
+        id: sync_wix
         if: vars.WIX_SYNC_ENABLED == 'true'
+        continue-on-error: true
         env:
           WIX_API_KEY: ${{ secrets.WIX_API_KEY }}
           WIX_SITE_ID: ${{ vars.WIX_SITE_ID }}
         run: npm run sync:wix
+      - name: Reuse last deployed Wix content
+        if: steps.sync_wix.outcome == 'failure'
+        run: cp "$RUNNER_TEMP/deployed-content/wix-content.json" src/data/wix-content.json
       - name: Sync public school calendar
+        id: sync_calendar
+        continue-on-error: true
         run: npm run sync:calendar
+      - name: Reuse last deployed calendar
+        if: steps.sync_calendar.outcome == 'failure'
+        run: cp "$RUNNER_TEMP/deployed-content/calendar-events.json" src/data/calendar-events.json
       - name: Report snapshot mode
         if: vars.WIX_SYNC_ENABLED != 'true'
         run: echo "::notice::Wix sync is not enabled; building the checked-in content snapshot."
       - name: Build site
         env:
           FUNDRAISING_ARCHIVE_INPUT_DIR: ${{ runner.temp }}/fundraising-archive-input
+          CONTENT_ISOLATION_REPORT: ${{ runner.temp }}/content-isolation.json
+          WIX_FALLBACK_SNAPSHOT: ${{ runner.temp }}/deployed-content/wix-content.json
         run: npm run build
       - name: Check generated site
         run: npm test
@@ -81,3 +113,19 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Record deployed content
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-content
+          path: |
+            src/data/wix-content.json
+            src/data/calendar-events.json
+          if-no-files-found: error
+          retention-days: 14
+          overwrite: true
+      - name: Fail if any update was held back
+        env:
+          WIX_SYNC_OUTCOME: ${{ steps.sync_wix.outcome }}
+          CALENDAR_SYNC_OUTCOME: ${{ steps.sync_calendar.outcome }}
+          CONTENT_ISOLATION_REPORT: ${{ runner.temp }}/content-isolation.json
+        run: node scripts/report-partial-deployment.mjs

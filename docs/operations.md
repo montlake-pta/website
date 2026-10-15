@@ -241,14 +241,25 @@ retained for rollback compatibility. See [trigger coverage](../README.md#on-dema
    gh workflow run pages.yml --repo montlake-pta/website --ref main
    ```
 
-   A build error such as `Unknown cutover target: /some-page` means Wix content
-   links to a `montlakepta.org` page with no counterpart on the new site. The
-   build stops rather than publish a link that breaks at cutover. Find the
-   record with an authenticated
-   [public snapshot export](content-authoring.md#refreshing-the-offline-snapshot).
-   If the new site already covers that content, add a reviewed entry to
-   `legacyPageRoutes` in `scripts/cutover-links.mjs`; otherwise create the page
-   in the appropriate CMS collection or ask the editor to change the link.
+   A run can fail **after** a successful Deploy step. That is a partial
+   deployment: everything that could be published went live, and the
+   **Fail if any update was held back** step lists what did not. A Wix item
+   that cannot be built (a post, event, product, store collection or
+   CommonPages/FundraisingPages record) keeps its last deployed version, or
+   stays unpublished when it is new. A failed Wix or calendar sync republishes
+   that source's last deployed content. The deployed inputs are kept as the
+   `deployed-content` artifact for the next run; when none is available, the
+   checked-in snapshots stand in. More than three failing items, or a failure
+   in a page that combines many items (such as the homepage or an index), stops
+   the whole deployment because it points to a code or platform problem.
+
+   An item error such as `Unknown cutover target: /some-page` means Wix content
+   links to a `montlakepta.org` page with no counterpart on the new site; such a
+   link would break at cutover. If the new site already covers that content, add
+   a reviewed entry to `legacyPageRoutes` in `scripts/cutover-links.mjs`;
+   otherwise create the page in the appropriate CMS collection or ask the editor
+   to change the link. Local `npm run build` stays strict and stops on the first
+   failure.
 6. If no dispatch was requested, inspect the native automation status/filter or
    applicable hook coverage, the published Wix action code,
    the GitHub App installation and the **name** of its Wix secret. Do not print

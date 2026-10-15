@@ -4,6 +4,7 @@ import { getElementsByTagName } from "domutils";
 import visitorConfig from "../src/wix-client.config.json" with { type: "json" };
 import { emptyFundraisingFields, fundraisingFieldNames, normalizeFundraisingFields } from "./fundraising-fields.mjs";
 import { validatePagePlacement } from "./page-collections.mjs";
+import { ContentItemError } from "./content-isolation.mjs";
 import { publicUrl } from "./wix-public-content.mjs";
 
 const allowedCmsHtml = {
@@ -201,33 +202,41 @@ function applyCmsPages(pageMap, pages, typed = false) {
   for (const cmsPage of pages) {
     if (cmsPage.published === false || typeof cmsPage.slug !== "string"
       || !cmsPage.slug.split("/").every(slug => hasValidSlug({ slug }))) continue;
-    const existing = pageMap.get(cmsPage.slug);
-    if (typed) validatePagePlacement(cmsPage.pageType, cmsPage.slug);
-    const fundraising = typed ? cmsPage.pageType === "fundraising" : Boolean(cmsPage.campaignStatus)
-      || (existing?.layout === "fundraising" && fundraisingFieldNames.some(key => Object.hasOwn(cmsPage, key)));
-    const generated = typed && cmsPage.pageType === "generated";
-    if (!existing && (!cmsPage.title || !cmsPage.description || (!generated && !cmsPage.body))) {
-      console.warn(`Ignoring incomplete CMS page ${cmsPage.slug}.`);
-      continue;
+    try {
+      applyCmsPage(pageMap, cmsPage, typed);
+    } catch (error) {
+      throw new ContentItemError("cms.pages", cmsPage.slug, error);
     }
-    pageMap.set(cmsPage.slug, {
-      ...existing,
-      slug: cmsPage.slug,
-      title: cmsPage.title || existing?.title,
-      heading: cmsPage.heading || cmsPage.title || existing?.heading,
-      kicker: cmsPage.kicker || existing?.kicker,
-      description: fundraising ? cmsPage.description || "" : cmsPage.description || existing?.description,
-      accent: ["coral", "blue", "yellow"].includes(cmsPage.accent) ? cmsPage.accent : existing?.accent,
-      content: generated ? existing?.content : fundraising ? sanitizeCmsHtml(cmsPage.body || "") : cmsPage.body ? sanitizeCmsHtml(cmsPage.body) : existing?.content,
-      ...(fundraising ? emptyFundraisingFields : {}),
-      ...(!typed || fundraising ? normalizeFundraisingFields(cmsPage, {
-        html: sanitizeCmsHtml,
-        image: (value) => value,
-      }) : {}),
-      ...(fundraising ? { layout: "fundraising" } : {}),
-      ...(generated ? { cmsDescription: Boolean(cmsPage.description) } : {}),
-    });
   }
+}
+
+function applyCmsPage(pageMap, cmsPage, typed) {
+  const existing = pageMap.get(cmsPage.slug);
+  if (typed) validatePagePlacement(cmsPage.pageType, cmsPage.slug);
+  const fundraising = typed ? cmsPage.pageType === "fundraising" : Boolean(cmsPage.campaignStatus)
+    || (existing?.layout === "fundraising" && fundraisingFieldNames.some(key => Object.hasOwn(cmsPage, key)));
+  const generated = typed && cmsPage.pageType === "generated";
+  if (!existing && (!cmsPage.title || !cmsPage.description || (!generated && !cmsPage.body))) {
+    console.warn(`Ignoring incomplete CMS page ${cmsPage.slug}.`);
+    return;
+  }
+  pageMap.set(cmsPage.slug, {
+    ...existing,
+    slug: cmsPage.slug,
+    title: cmsPage.title || existing?.title,
+    heading: cmsPage.heading || cmsPage.title || existing?.heading,
+    kicker: cmsPage.kicker || existing?.kicker,
+    description: fundraising ? cmsPage.description || "" : cmsPage.description || existing?.description,
+    accent: ["coral", "blue", "yellow"].includes(cmsPage.accent) ? cmsPage.accent : existing?.accent,
+    content: generated ? existing?.content : fundraising ? sanitizeCmsHtml(cmsPage.body || "") : cmsPage.body ? sanitizeCmsHtml(cmsPage.body) : existing?.content,
+    ...(fundraising ? emptyFundraisingFields : {}),
+    ...(!typed || fundraising ? normalizeFundraisingFields(cmsPage, {
+      html: sanitizeCmsHtml,
+      image: (value) => value,
+    }) : {}),
+    ...(fundraising ? { layout: "fundraising" } : {}),
+    ...(generated ? { cmsDescription: Boolean(cmsPage.description) } : {}),
+  });
 }
 
 function applyBoardMembers(pageMap, members) {
