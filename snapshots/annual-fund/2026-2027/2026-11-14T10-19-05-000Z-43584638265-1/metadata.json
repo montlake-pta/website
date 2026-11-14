@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "slug": "annual-fund",
+  "title": "Fall Fundraiser",
+  "schoolYear": "2026–2027",
+  "campaignStatus": "active",
+  "source": "cms",
+  "sourceUrl": "https://montlake-pta.github.io/website/annual-fund/",
+  "fingerprint": "6af85e9138e977fe5a841317c8b0bd4530db753fb55c155370b8bcb796979f96",
+  "sourceHtmlSha256": "2407d026b5f2196733487c34e42b89fa35f757eedc87fa76891bf81d6b217471",
+  "sourceCommit": "51b776f7e9cf3588594af0a56ab9f332879f5bc7",
+  "sourceRunId": "43584638265",
+  "sourceRunAttempt": 1,
+  "runUrl": "https://github.com/montlake-pta/website/actions/runs/43584638265",
+  "preparedAt": "2026-11-14T10:18:48.305Z",
+  "deployedAt": "2026-11-14T10:19:05.000Z",
+  "capturedAt": "2026-11-14T10:19:59.034Z",
+  "capture": {
+    "browser": "153.0.8010.12",
+    "viewports": {
+      "desktop": [
+        1440,
+        1000
+      ],
+      "mobile": [
+        390,
+        1000
+      ]
+    },
+    "pdf": "A4 / screen media"
+  },
+  "files": [
+    {
+      "path": "assets/1e4cea71d75ec427581d6259fc07148a2e60d60d16cabf4b4f5360487b3f9dc3.woff2",
+      "sha256": "1e4cea71d75ec427581d6259fc07148a2e60d60d16cabf4b4f5360487b3f9dc3",
+      "bytes": 34024
+    },
+    {
+      "path": "assets/33b49c485e21a38bbfe68de764cc5b329b82c74e6ae4dc0cd9ace5b349da25fe.woff2",
+      "sha256": "33b49c485e21a38bbfe68de764cc5b329b82c74e6ae4dc0cd9ace5b349da25fe",
+      "bytes": 85780
+    },
+    {
+      "path": "assets/95ef7b07597103e9e8ba1cda33cd6e59eea2050651bd151406ac82faded8929f.css",
+      "sha256": "95ef7b07597103e9e8ba1cda33cd6e59eea2050651bd151406ac82faded8929f",
+      "bytes": 26845
+    },
+    {
+      "path": "assets/b031852c13763345bf8048335d24651e8c75826fe52482c1fa3e91ab996f653c.png",
+      "sha256": "b031852c13763345bf8048335d24651e8c75826fe52482c1fa3e91ab996f653c",
+      "bytes": 71011
+    },
+    {
+      "path": "index.html",
+      "sha256": "c2bcef3683259546dae2e9174a6423c7ae373ab3ddb5ab7b77647b56ed776d7e",
+      "bytes": 9390
+    },
+    {
+      "path": "page.json",
+      "sha256": "377f2e7597e56ee927e57eb19b409366f37a4767701a600eaef749c9cdac29ed",
+      "bytes": 6700
+    },
+    {
+      "path": "desktop.png",
+      "sha256": "87163ac7909ed711d0762f53a10e1587c30b55c088fb27efbd42c1caef225939",
+      "bytes": 334262
+    },
+    {
+      "path": "mobile.png",
+      "sha256": "0055298970a543b610a86260b1946f5cbfc099b05b7fa0a0c81051eb2ccbf523",
+      "bytes": 280825
+    },
+    {
+      "path": "page.pdf",
+      "sha256": "9c929e4e8bbe17a9e27d9a4ba71127cd7e190d287248c126d5c63736bfdf4ff4",
+      "bytes": 250672
+    }
+  ]
+}
