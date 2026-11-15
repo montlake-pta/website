@@ -111,7 +111,7 @@ export const pages = [
     accent: "blue",
     content: `
       <p class="lead">We’re so glad you’re here. Montlake is a small neighborhood school known for academic excellence, garden and art programs, and an active, welcoming community.</p>
-      <div class="callout"><strong>Have a new-family question?</strong> Email <a href="mailto:outreach@montlakepta.org?subject=New%20Family%20Question">outreach@montlakepta.org</a>. Incoming Kindergarten families can also <a href="https://forms.cloud.microsoft/r/Y9vi39Kxbq">register for Kindergarten Transition</a>.</div>
+      <div class="callout"><strong>Have a new-family question?</strong> Email <a href="mailto:outreach@montlakepta.org?subject=New%20Family%20Question">outreach@montlakepta.org</a>. Incoming Kindergarten families can also <a href="https://forms.cloud.microsoft/r/Y9vi39Kxbq">register for Kindergarten Transition</a>. Considering Montlake? School tours and RSVP details are posted on the <a href="../event-list/">events page</a>.</div>
 
       <h2>The school day</h2>
       <h3>Bell hours</h3>
@@ -228,7 +228,8 @@ export const pages = [
         <p><strong>Day-of help, absences, or pickup changes:</strong> Contact the Enrichment Coordinator at <a href="mailto:enrichcoordinator@montlakepta.org">enrichcoordinator@montlakepta.org</a>, or call/text <a href="tel:+12064866036">(206) 486-6036</a> during enrichment hours.</p>
         <p>Please do not contact the school office about enrichment arrangements; the program is managed by the Enrichment Team.</p>
       </div>
-      <p><strong>For the current session:</strong> Check class listings and your registration confirmation for dates, no-class days, fees, and dismissal times. If the next session is not listed, contact the <a href="mailto:enrichment@montlakepta.org">Enrichment Team</a>; do not use a previous session’s dates to plan care.</p>
+      <p><strong>Fall 2026 session:</strong> October 7–December 18. No classes October 9, November 11, or November 23–27. Check 6crickets for any course-specific dates.</p>
+      <p>For later sessions, check class listings and your registration confirmation for dates, no-class days, fees, and dismissal times. If the next session is not listed, contact the <a href="mailto:enrichment@montlakepta.org">Enrichment Team</a>; do not use a previous session’s dates to plan care.</p>
       <p>Learning does not stop when the bell rings. PTA-supported enrichment sparks curiosity, builds friendships across grades, and gives students a safe, inclusive place to learn beyond the classroom.</p>
 
       <h2>Register</h2>
@@ -242,7 +243,7 @@ export const pages = [
       </ul>
       <h3>Costs and financial assistance</h3>
       <p>Class prices vary by the number of days, provider, and curriculum. Each transaction also includes management fees that help cover the onsite coordinator, financial aid, and other program costs.</p>
-      <p>We want every student to have access to enrichment. Scholarships are available. For confidential help, contact the school counselor at <a href="mailto:meguerreroto@seattleschools.org?subject=Enrichment%20scholarship">meguerreroto@seattleschools.org</a>.</p>
+      <p>We want every student to have access to enrichment. Scholarships are available. For confidential help, contact the school counselor, Jamie Coughlin, at <a href="mailto:jacoughlin@seattleschools.org?subject=Enrichment%20scholarship">jacoughlin@seattleschools.org</a>.</p>
 
       <h2>Before class</h2>
       <ul>
@@ -285,7 +286,7 @@ export const pages = [
       <h2>Help</h2>
       <p><strong>Program, policy, or general questions:</strong> <a href="mailto:enrichment@montlakepta.org">enrichment@montlakepta.org</a>.</p>
       <p><strong>Absences, pickup changes, and day-of questions:</strong> The published program contact is Cindy, Enrichment Coordinator, at <a href="mailto:enrichcoordinator@montlakepta.org">enrichcoordinator@montlakepta.org</a> or <a href="tel:+12064866036">(206) 486-6036</a>.</p>
-      <p><strong>Scholarships:</strong> The published school counselor contact is Mr. Max at <a href="mailto:meguerreroto@seattleschools.org?subject=Enrichment%20scholarship">meguerreroto@seattleschools.org</a>.</p>
+      <p><strong>Scholarships:</strong> Contact the school counselor, Jamie Coughlin, at <a href="mailto:jacoughlin@seattleschools.org?subject=Enrichment%20scholarship">jacoughlin@seattleschools.org</a>.</p>
       <p>Staff assignments and session arrangements can change. Use these role-based contacts to confirm current information. The school office does not manage the enrichment program.</p>`,
   },
   {

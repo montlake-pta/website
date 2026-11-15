@@ -159,7 +159,6 @@ const enrichmentLinks = [
   "mailto:enrichcoordinator@montlakepta.org",
   "mailto:enrichcoordinator@montlakepta.org?subject=Enrichment%20absence",
   "mailto:enrichcoordinator@montlakepta.org?subject=Pickup%20changes",
-  "mailto:meguerreroto@seattleschools.org?subject=Enrichment%20scholarship",
   "tel:+12064866036",
   "../assets/documents/enrichment-positive-behavior-support-plan.pdf",
   "../assets/documents/enrichment-pickup-map.pdf",
@@ -179,6 +178,9 @@ for (const [label, html] of [
   const links = new Set(selectAll("a[href]", content).map((node) => node.attribs.href));
   for (const href of enrichmentLinks) {
     if (!links.has(href)) failures.push(`Enrichment ${label}: missing operational link ${href}`);
+  }
+  if (![...links].some((href) => /^mailto:[a-z0-9.]+@seattleschools\.org\?subject=Enrichment%20scholarship$/.test(href))) {
+    failures.push(`Enrichment ${label}: missing school counselor scholarship contact`);
   }
   const registrationLinks = selectAll("a[href]", content)
     .filter((node) => /6crickets/i.test(textContent(node)));
