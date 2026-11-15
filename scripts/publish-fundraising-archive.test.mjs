@@ -626,7 +626,7 @@ test("workflow uses trusted main, serialized automatic recovery, and a writer-on
   assert.match(workflow, /actions\/checkout@v6/);
   assert.match(workflow, /actions\/setup-node@v6/);
   assert.match(workflow, /node-version: 24/);
-  assert.match(workflow, /run: npm ci/);
+  assert.match(workflow, /npm ci && exit 0/);
   assert.match(workflow, /npx --no-install playwright install --with-deps chromium/);
   assert.match(workflow, /GH_TOKEN: \$\{\{ github\.token \}\}/);
   assert.doesNotMatch(workflow, /WIX|secrets\.|pages: write|id-token:|cache:|inputs:|continue-on-error/);

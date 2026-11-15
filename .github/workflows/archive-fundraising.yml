@@ -41,8 +41,15 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 24
+      # The registry occasionally resets connections; npm ci reinstalls the same lockfile on retry.
       - name: Install dependencies
-        run: npm ci
+        run: |
+          for attempt in 1 2 3; do
+            npm ci && exit 0
+            echo "::warning::npm ci attempt $attempt failed; retrying."
+            sleep $((attempt * 30))
+          done
+          exit 1
       - name: Install capture browser
         # Runner package mirrors occasionally fail DNS resolution; retry before failing the run.
         run: |

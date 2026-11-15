@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { rehearsalEnvironment, inspectFinalOutput } from "./rehearse-cutover.mjs";
 import { PUBLIC_SITE_URL } from "../src/deployment.mjs";
 import { legacyEventAliases } from "./legacy-event-aliases.mjs";
+import { legacyPageRoutes } from "./cutover-links.mjs";
 
 test("rehearsal uses only the launch preset and excludes live credentials and production overrides", () => {
   const env = rehearsalEnvironment({ PATH: "/bin", HOME: "/home/test", SITE_URL: "https://wrong.example/",
@@ -51,6 +52,19 @@ test("reviewed compatibility stubs may canonically name their new route with a r
   await mkdir(join(directory, alias.target), { recursive: true });
   await writeFile(join(directory, alias.target, "index.html"), "<html><head></head><body>Event</body></html>");
   await inspectFinalOutput(directory);
+});
+
+test("reviewed moved-page redirects must canonically name their reviewed target", async t => {
+  const { directory } = await fixture(t);
+  const { source, target } = legacyPageRoutes[0];
+  const redirect = canonical => `<html><head><link rel="canonical" href="${canonical}"></head><body>Moved</body></html>`;
+  await mkdir(join(directory, source.slice(1)), { recursive: true });
+  await mkdir(join(directory, target), { recursive: true });
+  await writeFile(join(directory, target, "index.html"), "<html><head></head><body>Target</body></html>");
+  await writeFile(join(directory, source.slice(1), "index.html"), redirect(`/${target}/`));
+  assert.equal((await inspectFinalOutput(directory)).compatibilityPages, 1);
+  await writeFile(join(directory, source.slice(1), "index.html"), redirect("/donate/"));
+  await assert.rejects(inspectFinalOutput(directory), /canonical mismatch/);
 });
 
 test("preview prefixes, preview-hosted images, handoffs, missing assets and wrong SDK mode cannot pass rehearsal", async t => {

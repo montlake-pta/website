@@ -12,6 +12,7 @@ import { captureArchivePage } from "./archive-fundraising.mjs";
 import { readWithin } from "./archive-fundraising-assets.mjs";
 import { deploymentProfiles, PUBLIC_SITE_URL, PREVIEW_SITE_URL, CHECKOUT_ORIGIN } from "../src/deployment.mjs";
 import { resolveLegacyEventAlias } from "./legacy-event-aliases.mjs";
+import { legacyPageRoutes } from "./cutover-links.mjs";
 
 const exec = promisify(execFile);
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -46,11 +47,14 @@ export async function inspectFinalOutput(distDir) {
     const document = parseDocument(html);
     const pageUrl = new URL(file.replace(/index\.html$/, ""), PUBLIC_SITE_URL);
     const alias = resolveLegacyEventAlias(pageUrl.pathname);
+    const movedPage = legacyPageRoutes.find(({ source }) => new URL(`${source.slice(1)}/`, PUBLIC_SITE_URL).href === pageUrl.href);
+    const redirectTarget = alias ? new URL(alias, PUBLIC_SITE_URL).href
+      : movedPage ? new URL(`${movedPage.target}/`, PUBLIC_SITE_URL).href : null;
     const canonical = selectOne('link[rel="canonical"]', document);
     if (canonical) {
-      if (alias) compatibilityPages++;
+      if (redirectTarget) compatibilityPages++;
       else canonicalPages++;
-      check(alias ? new URL(canonical.attribs.href, pageUrl).href === new URL(alias, PUBLIC_SITE_URL).href
+      check(redirectTarget ? new URL(canonical.attribs.href, pageUrl).href === redirectTarget
         : canonical.attribs.href === pageUrl.href,
         `Final-domain canonical mismatch: ${file}`);
     }
