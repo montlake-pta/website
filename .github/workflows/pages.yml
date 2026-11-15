@@ -110,6 +110,23 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist
+      # deploy-pages can list this run's artifacts before a just-finalized
+      # upload is visible (actions/deploy-pages#451), failing an otherwise
+      # successful build that a rerun cannot recover.
+      - name: Wait for the Pages artifact to become visible
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for attempt in $(seq 1 30); do
+            count=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=github-pages" \
+              --jq '.total_count' 2>/dev/null) || count=0
+            if [[ "$count" =~ ^[0-9]+$ ]] && [ "$count" -ge 1 ]; then
+              sleep 5
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::warning::The github-pages artifact was not listed after 60 seconds; attempting deployment anyway."
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

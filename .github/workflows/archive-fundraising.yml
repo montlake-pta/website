@@ -44,7 +44,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install capture browser
-        run: npx --no-install playwright install --with-deps chromium
+        # Runner package mirrors occasionally fail DNS resolution; retry before failing the run.
+        run: |
+          for attempt in 1 2 3; do
+            npx --no-install playwright install --with-deps chromium && exit 0
+            echo "::warning::Browser install attempt $attempt failed; retrying."
+            sleep $((attempt * 30))
+          done
+          exit 1
       - name: Recover and publish fundraising archive
         run: node scripts/publish-fundraising-archive.mjs
         env:

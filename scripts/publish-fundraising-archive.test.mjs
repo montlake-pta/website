@@ -631,3 +631,13 @@ test("workflow uses trusted main, serialized automatic recovery, and a writer-on
   assert.match(workflow, /GH_TOKEN: \$\{\{ github\.token \}\}/);
   assert.doesNotMatch(workflow, /WIX|secrets\.|pages: write|id-token:|cache:|inputs:|continue-on-error/);
 });
+
+test("Pages keeps one deploy job whose unique Deploy step waits for the uploaded artifact", async () => {
+  const workflow = await readFile(new URL("../.github/workflows/pages.yml", import.meta.url), "utf8");
+  const steps = [...workflow.matchAll(/^      - name: (.+)$/gm)].map(match => match[1]);
+  assert.deepEqual([...workflow.matchAll(/^  ([a-z-]+):$/gm)].map(match => match[1]).filter(name => name === "deploy"), ["deploy"]);
+  assert.equal(steps.filter(name => name === "Deploy").length, 1);
+  const upload = steps.indexOf("Upload site");
+  assert.deepEqual(steps.slice(upload, upload + 3), ["Upload site", "Wait for the Pages artifact to become visible", "Deploy"]);
+  assert.match(workflow, /runs\/\$GITHUB_RUN_ID\/artifacts\?name=github-pages/);
+});
