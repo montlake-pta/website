@@ -20,7 +20,6 @@ jobs:
       contents: read
       issues: write
     env:
-      REPORT_DIR: ${{ runner.temp }}/legacy-drift
       ISSUE_LABEL: legacy-site-edits
     steps:
       - name: Check out repository
@@ -51,12 +50,14 @@ jobs:
           exit 1
       - name: Compare legacy Editor pages with the reviewed baseline
         id: detect
-        run: node scripts/legacy-drift.mjs --output "$REPORT_DIR"
+        run: |
+          echo "REPORT_DIR=$RUNNER_TEMP/legacy-drift" >> "$GITHUB_ENV"
+          node scripts/legacy-drift.mjs --output "$RUNNER_TEMP/legacy-drift"
       - name: Keep the report
         uses: actions/upload-artifact@v4
         with:
           name: legacy-drift-${{ github.run_id }}
-          path: ${{ env.REPORT_DIR }}
+          path: ${{ runner.temp }}/legacy-drift
           retention-days: 30
       - name: Open or update the legacy edits issue
         if: steps.detect.outputs.changed == 'true'
