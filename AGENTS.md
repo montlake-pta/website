@@ -61,6 +61,7 @@ the documented `user-invocable: false` agent-profile override.
 | Safe rich-content conversion and privacy filtering | `scripts/wix-public-content.mjs` |
 | Reviewed legacy event URL compatibility | `scripts/legacy-event-aliases.mjs`, `src/data/legacy-event-aliases.json` |
 | Reviewed legacy page URL compatibility | `legacyPageRoutes` in `scripts/cutover-links.mjs` |
+| Legacy Editor edit detection and optional porting agent | `scripts/legacy-drift.mjs`, `src/data/legacy-editor-baseline.json`, `.github/workflows/legacy-drift.yml`, `.github/workflows/port-legacy-edits.md` |
 | Partial deployment when individual content fails | `scripts/content-isolation.mjs`, `scripts/report-partial-deployment.mjs` |
 | Internal-link and document cutover | `scripts/cutover-links.mjs`, `scripts/check-cutover.mjs` |
 | Wix CMS creation and seed behavior | `scripts/setup-wix-cms.mjs` |
@@ -264,6 +265,10 @@ python3 -m http.server 4173 --directory dist
   attempts and frozen artifact provenance before capturing or committing.
 - The Copilot setup workflow must contain exactly one job named
   `copilot-setup-steps`.
+- `port-legacy-edits.md` is a GitHub Agentic Workflow source. Edit it, then run
+  `gh aw compile port-legacy-edits`; never hand-edit its `.lock.yml`. Its agent
+  reads untrusted legacy-site text, so keep the agent job read-only, without
+  Wix credentials, and its draft pull requests limited by `allowed-files`.
 
 ## Validation Matrix
 

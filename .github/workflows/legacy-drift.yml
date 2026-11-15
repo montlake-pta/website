@@ -1,0 +1,84 @@
+name: Detect legacy site edits
+
+on:
+  schedule:
+    - cron: "23 14 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: legacy-drift
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write
+    env:
+      REPORT_DIR: ${{ runner.temp }}/legacy-drift
+      ISSUE_LABEL: legacy-site-edits
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      # The registry occasionally resets connections; npm ci reinstalls the same lockfile on retry.
+      - name: Install dependencies
+        run: |
+          for attempt in 1 2 3; do
+            npm ci && exit 0
+            echo "::warning::npm ci attempt $attempt failed; retrying."
+            sleep $((attempt * 30))
+          done
+          exit 1
+      - name: Install capture browser
+        run: |
+          for attempt in 1 2 3; do
+            npx --no-install playwright install --with-deps chromium && exit 0
+            echo "::warning::Browser install attempt $attempt failed; retrying."
+            sleep $((attempt * 30))
+          done
+          exit 1
+      - name: Compare legacy Editor pages with the reviewed baseline
+        id: detect
+        run: node scripts/legacy-drift.mjs --output "$REPORT_DIR"
+      - name: Keep the report
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy-drift-${{ github.run_id }}
+          path: ${{ env.REPORT_DIR }}
+          retention-days: 30
+      - name: Open or update the legacy edits issue
+        if: steps.detect.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create "$ISSUE_LABEL" --color FBCA04 \
+            --description "Edits on the legacy Wix Editor site that may need porting" 2>/dev/null || true
+          number=$(gh issue list --state open --label "$ISSUE_LABEL" --json number --jq '.[0].number // empty')
+          if [ -n "$number" ]; then
+            gh issue edit "$number" --body-file "$REPORT_DIR/report.md"
+          else
+            gh issue create --title "Port edits from the legacy Wix site" --label "$ISSUE_LABEL" \
+              --body-file "$REPORT_DIR/report.md"
+          fi
+          cat "$REPORT_DIR/report.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Close the issue once the baseline matches
+        if: steps.detect.outputs.changed == 'false' && steps.detect.outputs.complete == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          number=$(gh issue list --state open --label "$ISSUE_LABEL" --json number --jq '.[0].number // empty')
+          if [ -n "$number" ]; then
+            gh issue close "$number" --comment "The legacy Editor pages now match the reviewed baseline."
+          fi

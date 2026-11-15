@@ -35,6 +35,11 @@ are not permanent invariants.
   remaining visitor activation gates in [#4](https://github.com/montlake-pta/website/issues/4) are met.
 - The newsletter page is an overview with a Constant Contact signup link;
   editions are not published on the site.
+- The legacy Editor site stays live until cutover, and edits made there do not
+  reach the new site. **Detect legacy site edits** reports them daily in a
+  `legacy-site-edits` issue; see
+  [catching legacy-only edits](content-authoring.md#catching-legacy-only-edits)
+  for porting and for enabling the optional Copilot drafting agent.
 - Current enrichment arrangements and the legacy Editor handoff remain in
   [#1](https://github.com/montlake-pta/website/issues/1). Dated school/program/fund
   confirmations remain in [#2](https://github.com/montlake-pta/website/issues/2).

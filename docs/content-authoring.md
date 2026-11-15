@@ -486,6 +486,60 @@ Until that Editor handoff is completed, tell content editors to use the CMS
 for the new site and avoid making independent legacy-only updates. This is an
 outstanding site-owner action, not a change the repository can make by itself.
 
+### Catching legacy-only edits
+
+**Detect legacy site edits** (`.github/workflows/legacy-drift.yml`) runs daily
+and on demand. It loads each page in the legacy pages sitemap and compares its
+Editor-authored text, links and buttons with the reviewed baseline in
+`src/data/legacy-editor-baseline.json`. Tab panels are opened and captured.
+Events, Blog and Stores widgets are excluded because that data already syncs.
+A difference must appear in two captures before it is reported. The workflow
+only reads public pages; it never writes to Wix.
+
+Links are recorded with their visible labels, so a changed destination is
+reported. A sitemap error stops the run. Pages that fail to load, or whose two
+captures disagree, are listed as not confirmed and keep their baseline entry.
+
+When the legacy site differs from the baseline, the workflow opens or updates
+one issue labeled `legacy-site-edits` with the added and removed text and
+links. When every page is confirmed and matches the baseline again, it closes
+that issue.
+
+To port an edit:
+
+1. Decide whether the change is current information the new site lacks.
+   [Content parity](content-parity.md) records deliberate differences.
+2. Update the page's fallback in `src/site.mjs`, merge, then apply it to the
+   live CMS record with [Update One Wix Page](#reviewed-one-time-cms-repair).
+3. Record the review by refreshing the baseline from a fresh capture:
+
+   ```sh
+   node scripts/legacy-drift.mjs --update
+   ```
+
+   Commit `src/data/legacy-editor-baseline.json` with the port. The update
+   refuses to run until every page is confirmed.
+
+**Optional drafting agent.** `.github/workflows/port-legacy-edits.md` is a
+GitHub Agentic Workflow (compiled to `port-legacy-edits.lock.yml` with
+`gh aw compile`). When enabled, it runs daily unless a `legacy-site-edits`
+pull request is already open. It reruns the capture outside the agent sandbox
+and skips the agent at no cost unless a complete capture found changes. It
+gives Copilot the CMS content production last deployed, so a draft starts from
+current live copy, and limits the draft pull request to `src/site.mjs`, the
+baseline and `legacyPageRoutes`. The agent job has read-only repository access
+and no Wix credentials. Maintainers review the draft, including its
+JavaScript, and still run the CMS plan/apply themselves. Enable it with these
+one-time repository settings:
+
+1. Add the Actions secret `COPILOT_GITHUB_TOKEN`: a fine-grained personal access
+   token, from an account with a Copilot seat, with the **Copilot Requests**
+   permission. Its Copilot usage is billed to that account.
+2. Under **Settings → Actions → General → Workflow permissions**, allow GitHub
+   Actions to create pull requests. Without it the agent's proposal arrives as
+   an issue.
+3. Set the Actions variable `LEGACY_PORT_AGENT` to `true`.
+
 ## Retiring the legacy frontend
 
 Known internal links are rewritten at generation time using the actual route
